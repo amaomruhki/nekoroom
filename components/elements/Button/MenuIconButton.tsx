@@ -11,7 +11,7 @@ const MenuIconButton = (props: Props) => {
 	return (
 		<>
 			<IconButton
-				color="#8a8a8a"
+				color="#d6d6d6"
 				aria-label="メニューボタン"
 				icon={<HamburgerIcon w={6} h={6} />}
 				onClick={onOpen}

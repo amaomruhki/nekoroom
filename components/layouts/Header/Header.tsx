@@ -1,9 +1,9 @@
 import React from "react";
 import Image from "next/image";
-import MenuDrawer from "../../elements/MenuDrawer";
+import MenuDrawer from "../../elements/Drawer/MenuDrawer";
 import MenuIconButton from "../../elements/Button/MenuIconButton";
 import { Container, Flex, useDisclosure } from "@chakra-ui/react";
-// import SearchInput from "../../elements/SearchInput";
+import Link from "next/link";
 
 const Header = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -15,17 +15,16 @@ const Header = () => {
 				borderColor="gray.200"
 				py={2}
 				maxW="100%"
-				sx={{ position: "fixed" }}
+				sx={{ position: "fixed", zIndex: "99", top: 0 }}
 			>
 				<Container maxW="810px">
 					<Flex as="nav" justify="space-between" align="center">
-						<Image src="/logo.svg" alt="logo" width="158px" height="34px" />
+						<Link href="/">
+							<Image src="/logo.svg" alt="logo" width="158px" height="34px" />
+						</Link>
 						<MenuIconButton onOpen={onOpen} />
 						<MenuDrawer onClose={onClose} isOpen={isOpen} />
 					</Flex>
-					{/* <Flex my={2}>
-						<SearchInput placeholder={"写真やアイテムを探す"} />
-					</Flex> */}
 				</Container>
 			</Container>
 		</>

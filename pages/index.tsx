@@ -1,9 +1,11 @@
-import { Box, Container, Text } from "@chakra-ui/react";
+import { Container, VStack } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import SampleText from "../components/elements/SampleText";
-import Footer from "../components/layouts/Header/Footer";
+import PostCard from "../components/elements/Card/PostCard";
+import Footer from "../components/layouts/Footer/Footer";
 import Header from "../components/layouts/Header/Header";
+import Image from "next/image";
+import ImageDisplay from "../components/elements/ImageDisplay";
 
 const Home: NextPage = () => {
 	return (
@@ -18,11 +20,15 @@ const Home: NextPage = () => {
 				/>
 			</Head>
 			<Header />
-			<Container maxW="800px" padding={{ base: 3, md: 5 }}>
-				<Box>
-					<SampleText />
-				</Box>
-			</Container>
+			<VStack minH="100vh" pt={8} pb={8} mt="50px">
+				<VStack
+					w="100%"
+					maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
+					pb={100}
+				>
+					<ImageDisplay />
+				</VStack>
+			</VStack>
 			<Footer />
 		</>
 	);
