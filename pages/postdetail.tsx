@@ -28,7 +28,7 @@ const postdetail = () => {
 		<>
 			<Header />
 			<Container pt={8} pb={8} mt="50px">
-				<Box maxW="420px" bg="white" p={4} rounded="sm" boxShadow="md">
+				<Box maxW="420px" bg="white" p={4} rounded="md" boxShadow="md">
 					<Image src="/testphoto.jpg" width={400} height={400} alt="" />
 					<Flex alignItems="center" gap="2">
 						<HStack p={2}>

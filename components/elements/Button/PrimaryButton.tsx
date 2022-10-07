@@ -12,8 +12,14 @@ type Props = {
 	// onClick: () => void;
 };
 
-const PrimaryButton = (props: Props) => {
-	const { children, bg, color, variant, border, borderColor } = props;
+const PrimaryButton = ({
+	children,
+	bg,
+	color,
+	variant,
+	border,
+	borderColor,
+}: Props) => {
 	return (
 		<>
 			<Button

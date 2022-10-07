@@ -18,9 +18,16 @@ type Props = {
 	isOpen: boolean;
 };
 
-const MenuDrawer = (props: Props) => {
-	const { isOpen, onClose } = props;
+const MenuDrawer = ({ isOpen, onClose }: Props) => {
 	const { height } = useWindowSize();
+	const menuList = [
+		{ url: "/", text: "トップ" },
+		{ url: "/login", text: "ログイン" },
+		{ url: "/register", text: "新規登録" },
+		{ url: "/post", text: "投稿" },
+		{ url: "/postdetail", text: "投稿詳細" },
+	];
+
 	return (
 		<>
 			<Drawer
@@ -37,21 +44,11 @@ const MenuDrawer = (props: Props) => {
 					</DrawerHeader>
 					<DrawerBody>
 						<Stack spacing="24px">
-							<Box>
-								<Link href="/">トップ</Link>
-							</Box>
-							<Box>
-								<Link href="/login">ログイン</Link>
-							</Box>
-							<Box>
-								<Link href="/register">新規登録</Link>
-							</Box>
-							<Box>
-								<Link href="/post">投稿</Link>
-							</Box>
-							<Box>
-								<Link href="/postdetail">投稿詳細</Link>
-							</Box>
+							{menuList.map(({ url, text }) => (
+								<Box key={text}>
+									<Link href={url}>{text}</Link>
+								</Box>
+							))}
 						</Stack>
 					</DrawerBody>
 				</DrawerContent>

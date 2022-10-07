@@ -43,7 +43,6 @@ const ImageDisplay = () => {
 								<Image
 									alt="testphoto"
 									src={image}
-									// layout="responsive"
 									width={400}
 									height={400}
 									priority

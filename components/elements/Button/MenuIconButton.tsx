@@ -6,8 +6,7 @@ type Props = {
 	onOpen: () => void;
 };
 
-const MenuIconButton = (props: Props) => {
-	const { onOpen } = props;
+const MenuIconButton = ({ onOpen }: Props) => {
 	return (
 		<>
 			<IconButton
