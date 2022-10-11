@@ -52,8 +52,7 @@ const Detail = () => {
 	useEffect(() => {
 		const unsubscribe = onSnapshot(
 			query(
-				// collection(db, "todos", id as string, "comments"),
-				collection(db, "todos", "rvMETyCjqUG5Jk5v3mYm", "comments"),
+				collection(db, "todos", id as string, "comments"),
 				orderBy("timestamp", "desc")
 			),
 			(snapshot) => {
@@ -61,7 +60,7 @@ const Detail = () => {
 			}
 		);
 		return () => unsubscribe();
-	}, [db, "rvMETyCjqUG5Jk5v3mYm"]);
+	}, [db, id]);
 
 	//コメントの投稿
 	async function sendComment(event: React.MouseEvent<HTMLButtonElement>) {
