@@ -7,6 +7,7 @@ import {
 	orderBy,
 	query,
 	serverTimestamp,
+	Timestamp,
 } from "firebase/firestore";
 import { useRecoilState } from "recoil";
 import { userState } from "../Atoms/userAtom";
@@ -35,18 +36,23 @@ import {
 import { EditIcon } from "@chakra-ui/icons";
 import styles from "../styles/Detail.module.css";
 
-const Detail = () => {
-	type CommentUser = {
-		comment: string;
-		username: string;
-		timestamp: number;
-	};
+type CommentUser = {
+	comment: string;
+	username: string;
+	timestamp: Timestamp | string;
+	//firebaseと一致させないとだめ
+};
 
+const Detail = () => {
 	const [comment, setComment] = useState("");
 	const [commentUserName, setCommentUserName] = useState("");
-	const [comments, setComments] = useState([]);
+	const [comments, setComments] = useState([
+		{ comment: "", username: "", timestamp: "" },
+	]);
 	const router = useRouter();
 	// const { id } = router.query;
+
+	//実践firestoreという本がある
 
 	// コメントの取得
 	useEffect(() => {
@@ -56,11 +62,16 @@ const Detail = () => {
 				orderBy("timestamp", "desc")
 			),
 			(snapshot) => {
-				setComments(snapshot.docs);
+				const commentsData = snapshot.docs.map((doc) => ({
+					comment: doc.data().comment,
+					username: doc.data().username,
+					timestamp: doc.data().timestamp,
+				}));
+				setComments(commentsData as CommentUser[]);
 			}
 		);
 		return () => unsubscribe();
-	}, [db, id]);
+	}, []);
 
 	//コメントの投稿
 	async function sendComment(event: React.MouseEvent<HTMLButtonElement>) {
