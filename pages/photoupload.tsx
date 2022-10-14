@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import PrimaryButton from "../components/elements/Button/PrimaryButton";
 
-const Post = () => {
+const PhotoUpload = () => {
 	const category = [
 		{ text: "部屋全体", value: "1" },
 		{ text: "猫専用スペース", value: "2" },
@@ -123,4 +123,4 @@ const Post = () => {
 	);
 };
 
-export default Post;
+export default PhotoUpload;

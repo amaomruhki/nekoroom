@@ -6,5 +6,5 @@ type User = {
 
 export const userState: RecoilState<User> = atom({
 	key: "userState",
-	default: {},
+	default: { uid: "" },
 });

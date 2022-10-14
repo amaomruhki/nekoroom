@@ -1,11 +1,9 @@
-import { Container, VStack } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import PostCard from "../components/elements/Card/PostCard";
 import Footer from "../components/layouts/Footer/Footer";
 import Header from "../components/layouts/Header/Header";
-import Image from "next/image";
-import ImageDisplay from "../components/elements/ImageDisplay";
+import Posts from "../components/elements/Posts";
 
 const Home: NextPage = () => {
 	return (
@@ -26,7 +24,7 @@ const Home: NextPage = () => {
 					maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
 					pb={100}
 				>
-					<ImageDisplay />
+					<Posts />
 				</VStack>
 			</VStack>
 			<Footer />

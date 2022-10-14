@@ -24,7 +24,7 @@ const MenuDrawer = ({ isOpen, onClose }: Props) => {
 		{ url: "/", text: "トップ" },
 		{ url: "/login", text: "ログイン" },
 		{ url: "/register", text: "新規登録" },
-		{ url: "/post", text: "投稿" },
+		{ url: "/photoupload", text: "投稿" },
 		{ url: "/postdetail", text: "投稿詳細" },
 	];
 
