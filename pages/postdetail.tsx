@@ -104,14 +104,15 @@ const postdetail = () => {
 						placeholder="コメントを入力してください"
 					></Textarea>
 					<Center>
-						<PrimaryButton
+						{/* <PrimaryButton
 							bg="#ffffff"
 							color="gray.900"
 							borderColor="gray.900"
 							border="1px"
+							onClick={}
 						>
 							コメントする
-						</PrimaryButton>
+						</PrimaryButton> */}
 					</Center>
 					<VStack spacing={4} pt={6}>
 						<Box bg="white" p={4} rounded="md">

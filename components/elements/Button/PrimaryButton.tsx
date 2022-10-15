@@ -1,40 +1,45 @@
 import React from "react";
 import type { ReactNode } from "react";
-import { Button } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 
 type Props = {
 	children: ReactNode;
 	bg: "#E4626E" | "#ffffff" | "#D6D6D6";
 	color: "#ffffff" | "gray.900";
-	variant?: "solid" | "outline";
-	borderColor?: "gray.900";
+	borderColor?: "gray.300";
 	border?: "1px";
-	// onClick: () => void;
+	onClick: () => void;
+	disabled?: boolean;
 };
 
 const PrimaryButton = ({
 	children,
 	bg,
 	color,
-	variant,
 	border,
 	borderColor,
+	onClick,
+	disabled,
 }: Props) => {
 	return (
 		<>
-			<Button
-				// onClick={onClick}
+			<Box
+				as="button"
+				onClick={onClick}
 				width="200px"
 				height="45px"
 				bg={bg}
+				borderRadius="md"
+				fontWeight="semibold"
 				color={color}
-				variant={variant}
 				border={border}
 				borderColor={borderColor}
 				_hover={{ opacity: 0.8 }}
+				_disabled={{ bg: "#ffffff", color: "gray.200", opacity: 1 }}
+				disabled={disabled}
 			>
 				{children}
-			</Button>
+			</Box>
 		</>
 	);
 };

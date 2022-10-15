@@ -1,13 +1,11 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import type { NextPage } from "next";
-import Image from "next/image";
 import Footer from "../components/layouts/Footer/Footer";
 import Header from "../components/layouts/Header/Header";
 import {
 	Box,
 	Container,
 	Heading,
-	HStack,
 	VStack,
 	Text,
 	Textarea,
@@ -16,10 +14,63 @@ import {
 	Stack,
 	Spacer,
 	Center,
+	Image,
+	HStack,
 } from "@chakra-ui/react";
 import PrimaryButton from "../components/elements/Button/PrimaryButton";
+import {
+	addDoc,
+	collection,
+	doc,
+	serverTimestamp,
+	updateDoc,
+} from "firebase/firestore";
+import { db, storage } from "../lib/firebase";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 
-const Post = () => {
+const PhotoUpload = () => {
+	const filePickerRef = useRef<HTMLInputElement>(null);
+	const [selectedFile, setSelectedFile] = useState(null);
+	const [inputCaption, setInputCaption] = useState("");
+	const [loading, setLoading] = useState(false);
+
+	const uploadPost = async () => {
+		if (loading) return;
+		setLoading(true);
+		const docRef = await addDoc(collection(db, "posts"), {
+			caption: inputCaption,
+			userImg: "../../public/dummyuser.jp",
+			username: "dummy",
+			timestamp: serverTimestamp(),
+		});
+		setInputCaption("");
+		const imageRef = ref(storage, `posts/${docRef.id}/image`);
+		await uploadString(imageRef, selectedFile, "data_url").then(
+			async (snapshot) => {
+				const downloadURL = await getDownloadURL(imageRef);
+				await updateDoc(doc(db, "posts", docRef.id), {
+					image: downloadURL,
+				});
+			}
+		);
+		setLoading(false);
+		setSelectedFile(null);
+		// ここに投稿詳細ページに遷移する処理を追加する
+	};
+
+	const addImageToPost = (event) => {
+		const reader = new FileReader();
+		if (event.target.files[0]) {
+			reader.readAsDataURL(event.target.files[0]);
+		}
+
+		reader.onload = (readerEvent) => {
+			setSelectedFile(readerEvent.target.result);
+		};
+		//stateで管理している場合、onChangeは同じファイルを選択すると発火しないのでここで初期化
+		event.target.value = "";
+	};
+
 	const category = [
 		{ text: "部屋全体", value: "1" },
 		{ text: "猫専用スペース", value: "2" },
@@ -55,10 +106,45 @@ const Post = () => {
 						<br />
 						容量:10MB以内
 						<br />
-						推奨サイズ:？？
+						推奨サイズ:1536ピクセル×1536ピクセル
 					</Text>
 					<Box>
-						<Image src="/testphoto.jpg" width={400} height={400} alt="" />
+						{selectedFile ? (
+							<Stack>
+								<Image
+									src={selectedFile}
+									alt=""
+									boxSize="250px"
+									objectFit="cover"
+								/>
+								<PrimaryButton
+									borderColor="gray.300"
+									border="1px"
+									bg="#ffffff"
+									color="gray.900"
+									onClick={() => setSelectedFile(null)}
+								>
+									写真を変更
+								</PrimaryButton>
+							</Stack>
+						) : (
+							<PrimaryButton
+								borderColor="gray.300"
+								border="1px"
+								bg="#ffffff"
+								color="gray.900"
+								onClick={() => filePickerRef.current.click()}
+							>
+								写真を選択
+							</PrimaryButton>
+						)}
+
+						<input
+							type="file"
+							hidden
+							ref={filePickerRef}
+							onChange={addImageToPost}
+						/>
 					</Box>
 					<Heading as="h3" size="md">
 						テキストを追加する
@@ -66,6 +152,11 @@ const Post = () => {
 					<Textarea
 						bg="white"
 						placeholder="テキストを入力してください"
+						value={inputCaption}
+						onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+							setInputCaption(event.target.value);
+							console.log(inputCaption);
+						}}
 					></Textarea>
 					<HStack>
 						<Heading as="h3" size="md">
@@ -85,10 +176,10 @@ const Post = () => {
 					<Heading as="h3" size="md">
 						アイテムを追加する
 					</Heading>
-
+					{/* 
 					<PrimaryButton variant="outline" bg="#ffffff" color="gray.900">
 						アイテムを選択
-					</PrimaryButton>
+					</PrimaryButton> */}
 					<Box
 						bg="white"
 						boxShadow="sm"
@@ -112,7 +203,12 @@ const Post = () => {
 					</Box>
 					<Spacer />
 					<Center>
-						<PrimaryButton variant="solid" bg="#E4626E" color="#ffffff">
+						<PrimaryButton
+							bg="#E4626E"
+							color="#ffffff"
+							onClick={uploadPost}
+							disabled={!selectedFile || loading}
+						>
 							ネコルームを投稿する
 						</PrimaryButton>
 					</Center>
@@ -123,4 +219,4 @@ const Post = () => {
 	);
 };
 
-export default Post;
+export default PhotoUpload;
