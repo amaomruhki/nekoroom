@@ -9,7 +9,7 @@ type Props = {
 	variant?: "solid" | "outline";
 	borderColor?: "gray.900";
 	border?: "1px";
-	// onClick: () => void;
+	onClick: () => void;
 };
 
 const PrimaryButton = ({
@@ -19,11 +19,12 @@ const PrimaryButton = ({
 	variant,
 	border,
 	borderColor,
+	onClick,
 }: Props) => {
 	return (
 		<>
 			<Button
-				// onClick={onClick}
+				onClick={onClick}
 				width="200px"
 				height="45px"
 				bg={bg}

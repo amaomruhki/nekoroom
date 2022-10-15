@@ -1,13 +1,11 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import type { NextPage } from "next";
-import Image from "next/image";
 import Footer from "../components/layouts/Footer/Footer";
 import Header from "../components/layouts/Header/Header";
 import {
 	Box,
 	Container,
 	Heading,
-	HStack,
 	VStack,
 	Text,
 	Textarea,
@@ -16,10 +14,25 @@ import {
 	Stack,
 	Spacer,
 	Center,
+	Image,
+	HStack,
 } from "@chakra-ui/react";
 import PrimaryButton from "../components/elements/Button/PrimaryButton";
 
 const PhotoUpload = () => {
+	const filePickerRef = useRef<HTMLInputElement>(null);
+	const [selectedFile, setSelectedFile] = useState(null);
+	const addImageToPost = (event) => {
+		const reader = new FileReader();
+		if (event.target.files[0]) {
+			reader.readAsDataURL(event.target.files[0]);
+		}
+
+		reader.onload = (readerEvent) => {
+			setSelectedFile(readerEvent.target.result);
+		};
+	};
+
 	const category = [
 		{ text: "部屋全体", value: "1" },
 		{ text: "猫専用スペース", value: "2" },
@@ -58,7 +71,40 @@ const PhotoUpload = () => {
 						推奨サイズ:？？
 					</Text>
 					<Box>
-						<Image src="/testphoto.jpg" width={400} height={400} alt="" />
+						{selectedFile ? (
+							<Stack>
+								<Image
+									src={selectedFile}
+									alt=""
+									boxSize="250px"
+									objectFit="cover"
+								/>
+								<PrimaryButton
+									variant="outline"
+									bg="#ffffff"
+									color="gray.900"
+									onClick={() => setSelectedFile(null)}
+								>
+									写真を変更
+								</PrimaryButton>
+							</Stack>
+						) : (
+							<PrimaryButton
+								variant="outline"
+								bg="#ffffff"
+								color="gray.900"
+								onClick={() => filePickerRef.current.click()}
+							>
+								写真を選択
+							</PrimaryButton>
+						)}
+
+						<input
+							type="file"
+							hidden
+							ref={filePickerRef}
+							onChange={addImageToPost}
+						/>
 					</Box>
 					<Heading as="h3" size="md">
 						テキストを追加する
@@ -85,10 +131,10 @@ const PhotoUpload = () => {
 					<Heading as="h3" size="md">
 						アイテムを追加する
 					</Heading>
-
+					{/* 
 					<PrimaryButton variant="outline" bg="#ffffff" color="gray.900">
 						アイテムを選択
-					</PrimaryButton>
+					</PrimaryButton> */}
 					<Box
 						bg="white"
 						boxShadow="sm"
@@ -112,9 +158,9 @@ const PhotoUpload = () => {
 					</Box>
 					<Spacer />
 					<Center>
-						<PrimaryButton variant="solid" bg="#E4626E" color="#ffffff">
+						{/* <PrimaryButton variant="solid" bg="#E4626E" color="#ffffff">
 							ネコルームを投稿する
-						</PrimaryButton>
+						</PrimaryButton> */}
 					</Center>
 				</VStack>
 			</Container>

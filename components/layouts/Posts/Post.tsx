@@ -10,7 +10,7 @@ import {
 	Icon,
 	Image,
 } from "@chakra-ui/react";
-import { PadIcon } from "./Icon/Icon";
+import { PadIcon } from "../../elements/Icon/Icon";
 import type { ReactNode } from "react";
 
 type Props = {
