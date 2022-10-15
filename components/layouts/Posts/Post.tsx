@@ -18,18 +18,18 @@ type Props = {
 	id: string;
 	username: string;
 	userImg: string;
-	img: string;
+	image: string;
 	caption: string;
 };
 
-const Post = ({ id, username, userImg, img, caption }: Props) => {
+const Post = ({ id, username, userImg, image, caption }: Props) => {
 	return (
 		<GridItem key={id}>
 			<Box bg="white" boxShadow="md" rounded="md" p={4} m="8px">
 				<Stack align="center">
 					<Image
 						alt={`${username}'s photo`}
-						src={img}
+						src={image}
 						boxSize="220px"
 						objectFit="cover"
 					/>
