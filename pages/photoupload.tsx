@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import type { NextPage } from "next";
 import Footer from "../components/layouts/Footer/Footer";
 import Header from "../components/layouts/Header/Header";
 import {
@@ -10,13 +9,25 @@ import {
 	Text,
 	Textarea,
 	Select,
-	Button,
 	Stack,
 	Spacer,
 	Center,
 	Image,
 	HStack,
+	Modal,
+	ModalBody,
+	ModalCloseButton,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	ModalOverlay,
+	useDisclosure,
+	Input,
+	InputGroup,
+	InputLeftElement,
+	Button,
 } from "@chakra-ui/react";
+import { Search2Icon } from "@chakra-ui/icons";
 import PrimaryButton from "../components/elements/Button/PrimaryButton";
 import {
 	addDoc,
@@ -33,6 +44,12 @@ const PhotoUpload = () => {
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [inputCaption, setInputCaption] = useState("");
 	const [loading, setLoading] = useState(false);
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [search, setSearch] = useState("");
+
+	const updateSearch = (event) => {
+		setSearch(event.target.value);
+	};
 
 	const uploadPost = async () => {
 		if (loading) return;
@@ -176,11 +193,53 @@ const PhotoUpload = () => {
 					<Heading as="h3" size="md">
 						アイテムを追加する
 					</Heading>
-					{/* 
-					<PrimaryButton variant="outline" bg="#ffffff" color="gray.900">
+					<PrimaryButton
+						bg="#ffffff"
+						color="gray.900"
+						borderColor="gray.300"
+						border="1px"
+						onClick={onOpen}
+					>
 						アイテムを選択
-					</PrimaryButton> */}
-					<Box
+					</PrimaryButton>
+					<Modal isOpen={isOpen} onClose={onClose}>
+						<ModalOverlay />
+						<ModalContent>
+							<ModalHeader>
+								<HStack px={10}>
+									<InputGroup>
+										<InputLeftElement
+											pointerEvents="none"
+											// eslint-disable-next-line react/no-children-prop
+											children={<Search2Icon color="gray.300" />}
+										/>
+										<Input
+											variant="outline"
+											placeholder="アイテム名を入力"
+											value={search}
+											onChange={updateSearch}
+										/>
+									</InputGroup>
+									<Button
+										borderColor="gray.300"
+										border="1px"
+										bg="#ffffff"
+										color="gray.900"
+										size="md"
+										onClick={() => setSelectedFile(null)}
+										disabled={!search}
+									>
+										検索
+									</Button>
+								</HStack>
+							</ModalHeader>
+							<ModalCloseButton />
+							<ModalBody></ModalBody>
+
+							<ModalFooter></ModalFooter>
+						</ModalContent>
+					</Modal>
+					{/* <Box
 						bg="white"
 						boxShadow="sm"
 						width="120px"
@@ -200,7 +259,7 @@ const PhotoUpload = () => {
 						<Text fontWeight="bold" fontSize="xs">
 							アイテム情報がここに入りますアイテム情報がここに入りますアイテム情報がここに入ります
 						</Text>
-					</Box>
+					</Box> */}
 					<Spacer />
 					<Center>
 						<PrimaryButton

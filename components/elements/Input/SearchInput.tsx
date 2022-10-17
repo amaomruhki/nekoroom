@@ -6,8 +6,7 @@ type Props = {
 	placeholder: string;
 };
 
-const SearchInput = (props: Props) => {
-	const { placeholder } = props;
+const SearchInput = ({ placeholder }: Props) => {
 	return (
 		<InputGroup>
 			<InputLeftElement
