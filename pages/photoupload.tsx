@@ -1,8 +1,10 @@
 import React, { useRef, useState } from "react";
+import NextLink from "next/link";
 import Footer from "../components/layouts/Footer/Footer";
 import Header from "../components/layouts/Header/Header";
 import {
 	Box,
+	Link,
 	Container,
 	Heading,
 	VStack,
@@ -47,6 +49,7 @@ const PhotoUpload = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [search, setSearch] = useState("");
 
+	//あとで変更？
 	const updateSearch = (event) => {
 		setSearch(event.target.value);
 	};
@@ -236,7 +239,11 @@ const PhotoUpload = () => {
 							<ModalCloseButton />
 							<ModalBody></ModalBody>
 
-							<ModalFooter></ModalFooter>
+							<ModalFooter>
+								<NextLink href="https://developers.rakuten.com/" passHref>
+									<Link>Supported by Rakuten Developers</Link>
+								</NextLink>
+							</ModalFooter>
 						</ModalContent>
 					</Modal>
 					{/* <Box
