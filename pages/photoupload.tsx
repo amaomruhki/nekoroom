@@ -211,7 +211,7 @@ const PhotoUpload = () => {
 					<Modal isOpen={isOpen} onClose={onClose}>
 						<ModalOverlay />
 						<ModalContent>
-							<ModalHeader>
+							<ModalHeader mt={6}>
 								<ItemSearch
 									value={value}
 									handleFreeWord={handleFreeWord}

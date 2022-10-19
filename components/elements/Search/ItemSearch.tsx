@@ -10,8 +10,8 @@ import { Search2Icon } from "@chakra-ui/icons";
 
 const ItemSearch = ({ value, handleFreeWord, handleSubmit, placeholder }) => {
 	return (
-		<HStack px={10}>
-			<FormControl>
+		<FormControl>
+			<HStack>
 				<InputGroup>
 					<InputLeftElement
 						pointerEvents="none"
@@ -36,8 +36,8 @@ const ItemSearch = ({ value, handleFreeWord, handleSubmit, placeholder }) => {
 				>
 					検索
 				</Button>
-			</FormControl>
-		</HStack>
+			</HStack>
+		</FormControl>
 	);
 };
 
