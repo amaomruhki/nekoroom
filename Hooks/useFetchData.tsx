@@ -6,10 +6,7 @@ const BASE_URL =
 	"https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706?format=json";
 
 const useFetchData = () => {
-	//エラー監視用
-	const [error, setError] = useState({
-		freeWord: false,
-	}); //ローディング用
+	//ローディング用
 	const [fetching, setFetching] = useState(false);
 	//レスポンス格納用
 	const [result, setResult] = useState({});
@@ -24,7 +21,7 @@ const useFetchData = () => {
 
 			axios
 				.get(
-					`${BASE_URL}&keyword=${encodedParams}&page=1&${process.env.REACT_APP_APPLICATION_ID}=${process.env.REACT_APP_APPLICATION_ID}`
+					`${BASE_URL}&keyword=${encodedParams}&page=1&applicationId=${process.env.NEXT_PUBLIC_RAKUTEN_APP_ID}`
 				)
 				.then((response) => {
 					setResult(response.data);
@@ -37,10 +34,6 @@ const useFetchData = () => {
 		} else {
 			//null時はエラー
 			console.log(`検索条件を入力してください`);
-			setError({
-				freeWord: true,
-			});
-
 			setFetching(false);
 		}
 	};
@@ -51,7 +44,7 @@ const useFetchData = () => {
 		return urlEncode(params);
 	};
 
-	return { error, setError, fetching, result, handleSubmit };
+	return { fetching, result, handleSubmit };
 };
 
 export default useFetchData;

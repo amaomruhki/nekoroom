@@ -1,7 +1,5 @@
 import React, { useRef, useState } from "react";
 import NextLink from "next/link";
-import Footer from "../components/layouts/Footer/Footer";
-import Header from "../components/layouts/Header/Header";
 import {
 	Box,
 	Link,
@@ -24,13 +22,7 @@ import {
 	ModalHeader,
 	ModalOverlay,
 	useDisclosure,
-	Input,
-	InputGroup,
-	InputLeftElement,
-	Button,
 } from "@chakra-ui/react";
-import { Search2Icon } from "@chakra-ui/icons";
-import PrimaryButton from "../components/elements/Button/PrimaryButton";
 import {
 	addDoc,
 	collection,
@@ -38,8 +30,15 @@ import {
 	serverTimestamp,
 	updateDoc,
 } from "firebase/firestore";
-import { db, storage } from "../lib/firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { db, storage } from "../lib/firebase";
+import PrimaryButton from "../components/elements/Button/PrimaryButton";
+import Footer from "../components/layouts/Footer/Footer";
+import ItemSearch from "../components/elements/Search/ItemSearch";
+import Result from "../components/elements/Search/Result";
+import Header from "../components/layouts/Header/Header";
+import useFetchData from "../Hooks/useFetchData";
+import Loading from "../components/elements/Loading/Loading";
 
 const PhotoUpload = () => {
 	const filePickerRef = useRef<HTMLInputElement>(null);
@@ -47,11 +46,15 @@ const PhotoUpload = () => {
 	const [inputCaption, setInputCaption] = useState("");
 	const [loading, setLoading] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [search, setSearch] = useState("");
 
-	//あとで変更？
-	const updateSearch = (event) => {
-		setSearch(event.target.value);
+	//useFetchDataでreturnされたobjectのvalue
+	const { fetching, result, handleSubmit } = useFetchData();
+	//useFetchDataに渡すstate
+	const [value, setValue] = useState({ freeWord: "" });
+
+	//検索フィールド監視
+	const handleFreeWord = (event) => {
+		setValue({ freeWord: event.target.value });
 	};
 
 	const uploadPost = async () => {
@@ -209,35 +212,22 @@ const PhotoUpload = () => {
 						<ModalOverlay />
 						<ModalContent>
 							<ModalHeader>
-								<HStack px={10}>
-									<InputGroup>
-										<InputLeftElement
-											pointerEvents="none"
-											// eslint-disable-next-line react/no-children-prop
-											children={<Search2Icon color="gray.300" />}
-										/>
-										<Input
-											variant="outline"
-											placeholder="アイテム名を入力"
-											value={search}
-											onChange={updateSearch}
-										/>
-									</InputGroup>
-									<Button
-										borderColor="gray.300"
-										border="1px"
-										bg="#ffffff"
-										color="gray.900"
-										size="md"
-										onClick={() => setSelectedFile(null)}
-										disabled={!search}
-									>
-										検索
-									</Button>
-								</HStack>
+								<ItemSearch
+									value={value}
+									handleFreeWord={handleFreeWord}
+									handleSubmit={handleSubmit}
+									placeholder="アイテム名を入力"
+								/>
 							</ModalHeader>
 							<ModalCloseButton />
-							<ModalBody></ModalBody>
+							<ModalBody>
+								{fetching ? (
+									<Loading />
+								) : (
+									//fetch完了したらレスポンスデータを表示
+									<Result result={result} />
+								)}
+							</ModalBody>
 
 							<ModalFooter>
 								<NextLink href="https://developers.rakuten.com/" passHref>
