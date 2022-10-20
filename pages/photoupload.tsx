@@ -46,6 +46,7 @@ const PhotoUpload = () => {
 	const [inputCaption, setInputCaption] = useState("");
 	const [loading, setLoading] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [itemResult, setItemResult] = useState({});
 
 	//useFetchDataでreturnされたobjectのvalue
 	const { fetching, result, handleSubmit } = useFetchData();
@@ -57,6 +58,7 @@ const PhotoUpload = () => {
 		setValue({ freeWord: event.target.value });
 	};
 
+	//投稿内容をアップロード
 	const uploadPost = async () => {
 		if (loading) return;
 		setLoading(true);
@@ -65,6 +67,7 @@ const PhotoUpload = () => {
 			userImg: "../../public/dummyuser.jp",
 			username: "dummy",
 			timestamp: serverTimestamp(),
+			...itemResult,
 		});
 		setInputCaption("");
 		const imageRef = ref(storage, `posts/${docRef.id}/image`);
@@ -178,7 +181,6 @@ const PhotoUpload = () => {
 						value={inputCaption}
 						onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
 							setInputCaption(event.target.value);
-							console.log(inputCaption);
 						}}
 					></Textarea>
 					<HStack>
@@ -225,7 +227,12 @@ const PhotoUpload = () => {
 									<Loading />
 								) : (
 									//fetch完了したらレスポンスデータを表示
-									<Result result={result} />
+									<Result
+										result={result}
+										setItemResult={setItemResult}
+										onClose={onClose}
+										setValue={setValue}
+									/>
 								)}
 							</ModalBody>
 
@@ -236,27 +243,23 @@ const PhotoUpload = () => {
 							</ModalFooter>
 						</ModalContent>
 					</Modal>
-					{/* <Box
-						bg="white"
-						boxShadow="sm"
-						width="120px"
-						minW="120px"
-						rounded="md"
-						p="8px"
-						m="8px"
-					>
-						<Stack align="center">
+					{Object.keys(itemResult).length ? (
+						<HStack
+							bg="white"
+							boxShadow="md"
+							rounded="md"
+							w="140px"
+							h="140px"
+							justify="center"
+						>
 							<Image
-								alt="testphoto"
-								src="/testphoto.jpg"
-								width="100px"
-								height="100px"
+								alt={itemResult.itemName}
+								src={itemResult.imageUrl}
+								boxSize="100px"
+								objectFit="cover"
 							/>
-						</Stack>
-						<Text fontWeight="bold" fontSize="xs">
-							アイテム情報がここに入りますアイテム情報がここに入りますアイテム情報がここに入ります
-						</Text>
-					</Box> */}
+						</HStack>
+					) : null}
 					<Spacer />
 					<Center>
 						<PrimaryButton

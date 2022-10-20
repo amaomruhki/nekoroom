@@ -1,11 +1,11 @@
 import {
-	Box,
 	Button,
 	Grid,
 	GridItem,
 	Image,
 	Stack,
 	Text,
+	useDisclosure,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
@@ -13,16 +13,14 @@ import { AddIcon } from "@chakra-ui/icons";
 const convertSubstring = (string) => {
 	const name = string;
 	if (name.length > 45) {
-		const splitName = name.substring(0, 30);
+		const splitName = name.substring(0, 40);
 		return splitName + "...";
 	} else {
 		return name;
 	}
 };
 
-const Result = ({ result }) => {
-	console.log({ result });
-
+const Result = ({ result, setItemResult, onClose, setValue }) => {
 	return (
 		<>
 			<Grid
@@ -35,7 +33,7 @@ const Result = ({ result }) => {
 								<Stack bg="white" boxShadow="md" rounded="md" p={2} m="4px">
 									<Stack align="center">
 										<Image
-											alt={item.Item.mediumImageUrls[0].imageUrl}
+											alt={item.Item.itemUrl}
 											src={item.Item.mediumImageUrls[0].imageUrl}
 											boxSize="220px"
 											objectFit="scale-down"
@@ -57,7 +55,18 @@ const Result = ({ result }) => {
 										color="#E4626E"
 										size="sm"
 										_hover={{ bg: "#E4626E", color: "#ffffff" }}
-										onClick={() => handleSubmitItem(value)}
+										onClick={() => {
+											const data = {
+												imageUrl: item.Item.mediumImageUrls[0].imageUrl,
+												price: item.Item.itemPrice.toLocaleString(),
+												shopName: item.Item.shopName,
+												itemName: item.Item.itemName,
+												itemUrl: item.Item.itemUrl,
+											};
+											setItemResult(data);
+											setValue({ freeWord: "" });
+											onClose();
+										}}
 										leftIcon={<AddIcon />}
 									>
 										アイテムを追加
