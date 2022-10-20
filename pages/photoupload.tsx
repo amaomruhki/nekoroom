@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
-import Footer from "../components/layouts/Footer/Footer";
-import Header from "../components/layouts/Header/Header";
+import NextLink from "next/link";
 import {
 	Box,
+	Link,
 	Container,
 	Heading,
 	VStack,
@@ -22,13 +22,7 @@ import {
 	ModalHeader,
 	ModalOverlay,
 	useDisclosure,
-	Input,
-	InputGroup,
-	InputLeftElement,
-	Button,
 } from "@chakra-ui/react";
-import { Search2Icon } from "@chakra-ui/icons";
-import PrimaryButton from "../components/elements/Button/PrimaryButton";
 import {
 	addDoc,
 	collection,
@@ -36,8 +30,15 @@ import {
 	serverTimestamp,
 	updateDoc,
 } from "firebase/firestore";
-import { db, storage } from "../lib/firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { db, storage } from "../lib/firebase";
+import PrimaryButton from "../components/elements/Button/PrimaryButton";
+import Footer from "../components/layouts/Footer/Footer";
+import ItemSearch from "../components/elements/Search/ItemSearch";
+import Result from "../components/elements/Search/Result";
+import Header from "../components/layouts/Header/Header";
+import useFetchData from "../Hooks/useFetchData";
+import Loading from "../components/elements/Loading/Loading";
 
 const PhotoUpload = () => {
 	const filePickerRef = useRef<HTMLInputElement>(null);
@@ -45,12 +46,19 @@ const PhotoUpload = () => {
 	const [inputCaption, setInputCaption] = useState("");
 	const [loading, setLoading] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [search, setSearch] = useState("");
+	const [itemResult, setItemResult] = useState({});
 
-	const updateSearch = (event) => {
-		setSearch(event.target.value);
+	//useFetchDataでreturnされたobjectのvalue
+	const { fetching, result, handleSubmit } = useFetchData();
+	//useFetchDataに渡すstate
+	const [value, setValue] = useState({ freeWord: "" });
+
+	//検索フィールド監視
+	const handleFreeWord = (event) => {
+		setValue({ freeWord: event.target.value });
 	};
 
+	//投稿内容をアップロード
 	const uploadPost = async () => {
 		if (loading) return;
 		setLoading(true);
@@ -59,6 +67,7 @@ const PhotoUpload = () => {
 			userImg: "../../public/dummyuser.jp",
 			username: "dummy",
 			timestamp: serverTimestamp(),
+			...itemResult,
 		});
 		setInputCaption("");
 		const imageRef = ref(storage, `posts/${docRef.id}/image`);
@@ -172,7 +181,6 @@ const PhotoUpload = () => {
 						value={inputCaption}
 						onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
 							setInputCaption(event.target.value);
-							console.log(inputCaption);
 						}}
 					></Textarea>
 					<HStack>
@@ -205,61 +213,53 @@ const PhotoUpload = () => {
 					<Modal isOpen={isOpen} onClose={onClose}>
 						<ModalOverlay />
 						<ModalContent>
-							<ModalHeader>
-								<HStack px={10}>
-									<InputGroup>
-										<InputLeftElement
-											pointerEvents="none"
-											// eslint-disable-next-line react/no-children-prop
-											children={<Search2Icon color="gray.300" />}
-										/>
-										<Input
-											variant="outline"
-											placeholder="アイテム名を入力"
-											value={search}
-											onChange={updateSearch}
-										/>
-									</InputGroup>
-									<Button
-										borderColor="gray.300"
-										border="1px"
-										bg="#ffffff"
-										color="gray.900"
-										size="md"
-										onClick={() => setSelectedFile(null)}
-										disabled={!search}
-									>
-										検索
-									</Button>
-								</HStack>
+							<ModalHeader mt={6}>
+								<ItemSearch
+									value={value}
+									handleFreeWord={handleFreeWord}
+									handleSubmit={handleSubmit}
+									placeholder="アイテム名を入力"
+								/>
 							</ModalHeader>
 							<ModalCloseButton />
-							<ModalBody></ModalBody>
+							<ModalBody>
+								{fetching ? (
+									<Loading />
+								) : (
+									//fetch完了したらレスポンスデータを表示
+									<Result
+										result={result}
+										setItemResult={setItemResult}
+										onClose={onClose}
+										setValue={setValue}
+									/>
+								)}
+							</ModalBody>
 
-							<ModalFooter></ModalFooter>
+							<ModalFooter>
+								<NextLink href="https://developers.rakuten.com/" passHref>
+									<Link>Supported by Rakuten Developers</Link>
+								</NextLink>
+							</ModalFooter>
 						</ModalContent>
 					</Modal>
-					{/* <Box
-						bg="white"
-						boxShadow="sm"
-						width="120px"
-						minW="120px"
-						rounded="md"
-						p="8px"
-						m="8px"
-					>
-						<Stack align="center">
+					{Object.keys(itemResult).length ? (
+						<HStack
+							bg="white"
+							boxShadow="md"
+							rounded="md"
+							w="140px"
+							h="140px"
+							justify="center"
+						>
 							<Image
-								alt="testphoto"
-								src="/testphoto.jpg"
-								width="100px"
-								height="100px"
+								alt={itemResult.itemName}
+								src={itemResult.imageUrl}
+								boxSize="100px"
+								objectFit="cover"
 							/>
-						</Stack>
-						<Text fontWeight="bold" fontSize="xs">
-							アイテム情報がここに入りますアイテム情報がここに入りますアイテム情報がここに入ります
-						</Text>
-					</Box> */}
+						</HStack>
+					) : null}
 					<Spacer />
 					<Center>
 						<PrimaryButton
