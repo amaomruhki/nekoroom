@@ -1,14 +1,14 @@
 import React from "react";
 import type { ReactNode } from "react";
-import { Box, Button } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 type Props = {
 	children: ReactNode;
 	bg: "#E4626E" | "#ffffff" | "#D6D6D6";
-	color: "#ffffff" | "gray.900";
-	borderColor?: "gray.300";
+	color: "#ffffff" | "gray.900" | "#E4626E";
+	borderColor?: "gray.300" | "#E4626E";
 	border?: "1px";
-	onClick: () => void;
+	onClick?: () => void;
 	disabled?: boolean;
 };
 

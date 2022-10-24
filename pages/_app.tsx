@@ -3,7 +3,7 @@ import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "../components/theme/theme";
 import { RecoilRoot } from "recoil";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../components/elements/Auth/auth";
 import Loading from "../components/elements/Loading/Loading";
 import { ReactNode } from "react";
 

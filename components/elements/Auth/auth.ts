@@ -5,9 +5,9 @@ import {
 	GoogleAuthProvider,
 	onAuthStateChanged,
 } from "firebase/auth";
-import { app } from "./firebase";
+import { app } from "../../../lib/firebase";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { UserState, userState } from "../Atoms/userAtom";
+import { UserState, userState } from "../../../Atoms/userAtom";
 import { useEffect, useState } from "react";
 
 export const googleLogin = (): Promise<void> => {

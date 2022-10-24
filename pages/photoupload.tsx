@@ -201,15 +201,44 @@ const PhotoUpload = () => {
 					<Heading as="h3" size="md">
 						アイテムを追加する
 					</Heading>
-					<PrimaryButton
-						bg="#ffffff"
-						color="gray.900"
-						borderColor="gray.300"
-						border="1px"
-						onClick={onOpen}
-					>
-						アイテムを選択
-					</PrimaryButton>
+					{Object.keys(itemResult).length ? (
+						<HStack
+							bg="white"
+							boxShadow="md"
+							rounded="md"
+							w="140px"
+							h="140px"
+							justify="center"
+						>
+							<Image
+								alt={itemResult.itemName}
+								src={itemResult.imageUrl}
+								boxSize="100px"
+								objectFit="cover"
+							/>
+						</HStack>
+					) : null}
+					{!Object.keys(itemResult).length ? (
+						<PrimaryButton
+							bg="#ffffff"
+							color="gray.900"
+							borderColor="gray.300"
+							border="1px"
+							onClick={onOpen}
+						>
+							アイテムを選択
+						</PrimaryButton>
+					) : (
+						<PrimaryButton
+							bg="#ffffff"
+							color="gray.900"
+							borderColor="gray.300"
+							border="1px"
+							onClick={onOpen}
+						>
+							アイテムを変更
+						</PrimaryButton>
+					)}
 					<Modal isOpen={isOpen} onClose={onClose}>
 						<ModalOverlay />
 						<ModalContent>
@@ -235,7 +264,6 @@ const PhotoUpload = () => {
 									/>
 								)}
 							</ModalBody>
-
 							<ModalFooter>
 								<NextLink href="https://developers.rakuten.com/" passHref>
 									<Link>Supported by Rakuten Developers</Link>
@@ -243,23 +271,6 @@ const PhotoUpload = () => {
 							</ModalFooter>
 						</ModalContent>
 					</Modal>
-					{Object.keys(itemResult).length ? (
-						<HStack
-							bg="white"
-							boxShadow="md"
-							rounded="md"
-							w="140px"
-							h="140px"
-							justify="center"
-						>
-							<Image
-								alt={itemResult.itemName}
-								src={itemResult.imageUrl}
-								boxSize="100px"
-								objectFit="cover"
-							/>
-						</HStack>
-					) : null}
 					<Spacer />
 					<Center>
 						<PrimaryButton

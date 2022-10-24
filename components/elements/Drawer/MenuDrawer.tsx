@@ -10,24 +10,19 @@ import {
 	DrawerContent,
 	DrawerCloseButton,
 	DrawerBody,
+	Text,
 } from "@chakra-ui/react";
 import Link from "next/link";
 
-type Props = {
-	onClose: () => void;
-	isOpen: boolean;
-};
+// type Props = {
+// 	onClose: () => void;
+// 	isOpen: boolean;
+// 	onLogout:() => void;
+// 	currentUser: User | null;
+// };
 
-const MenuDrawer = ({ isOpen, onClose }: Props) => {
+const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 	const { height } = useWindowSize();
-	const menuList = [
-		{ url: "/", text: "トップ" },
-		{ url: "/login", text: "ログイン" },
-		{ url: "/register", text: "新規登録" },
-		{ url: "/photoupload", text: "投稿" },
-		{ url: "/postdetail", text: "投稿詳細" },
-	];
-
 	return (
 		<>
 			<Drawer
@@ -44,11 +39,31 @@ const MenuDrawer = ({ isOpen, onClose }: Props) => {
 					</DrawerHeader>
 					<DrawerBody>
 						<Stack spacing="24px">
-							{menuList.map(({ url, text }) => (
-								<Box key={text}>
-									<Link href={url}>{text}</Link>
-								</Box>
-							))}
+							{currentUser ? (
+								<>
+									<Box>
+										<Link href="/photoupload">投稿</Link>
+									</Box>
+									<Box>
+										<Link href="/myPage">マイページ</Link>
+									</Box>
+									<Box>
+										<Link href="/settings">設定</Link>
+									</Box>
+									<Box>
+										<Text onClick={onLogout}>ログアウト</Text>
+									</Box>
+								</>
+							) : (
+								<>
+									<Box>
+										<Link href="/auth/login">ログイン</Link>
+									</Box>
+									<Box>
+										<Link href="/auth//register">新規登録</Link>
+									</Box>
+								</>
+							)}
 						</Stack>
 					</DrawerBody>
 				</DrawerContent>
