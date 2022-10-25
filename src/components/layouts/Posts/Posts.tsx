@@ -1,7 +1,7 @@
 import { Grid } from "@chakra-ui/react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { db } from "../../../lib/firebase";
+import { db } from "../../../../lib/firebase";
 import Post from "./Post";
 
 type Post = {
@@ -12,8 +12,9 @@ type Post = {
 	caption: string;
 };
 
-const Posts: React.FC = () => {
+const Posts = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
+
 	useEffect(() => {
 		const unsubscribe = onSnapshot(
 			query(collection(db, "posts"), orderBy("timestamp", "desc")),
@@ -29,8 +30,8 @@ const Posts: React.FC = () => {
 				setPosts(postsData);
 			}
 		);
-		return unsubscribe;
-	});
+		return () => unsubscribe();
+	}, []);
 
 	return (
 		<Grid

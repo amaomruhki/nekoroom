@@ -1,24 +1,6 @@
-import {
-	Button,
-	Grid,
-	GridItem,
-	Image,
-	Stack,
-	Text,
-	useDisclosure,
-} from "@chakra-ui/react";
+import { Button, Grid, GridItem, Image, Stack, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-
-//商品名を45文字目以降「…」にする
-const convertSubstring = (string) => {
-	const name = string;
-	if (name.length > 45) {
-		const splitName = name.substring(0, 40);
-		return splitName + "...";
-	} else {
-		return name;
-	}
-};
+import { convertSubstring } from "../../../utils/DataFormat";
 
 const Result = ({ result, setItemResult, onClose, setValue }) => {
 	return (
@@ -40,13 +22,13 @@ const Result = ({ result, setItemResult, onClose, setValue }) => {
 										/>
 									</Stack>
 									<Text fontSize="sm" color="gray.500">
-										{convertSubstring(item.Item.shopName)}
+										{convertSubstring(item.Item.shopName, 30)}
 									</Text>
 									<Text fontSize="sm" as="b">
 										￥{item.Item.itemPrice.toLocaleString()}
 									</Text>
 									<Text fontSize="sm">
-										{convertSubstring(item.Item.itemName)}
+										{convertSubstring(item.Item.itemName, 30)}
 									</Text>
 									<Button
 										borderColor="#E4626E"
