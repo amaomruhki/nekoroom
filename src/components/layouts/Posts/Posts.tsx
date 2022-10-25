@@ -12,8 +12,9 @@ type Post = {
 	caption: string;
 };
 
-const Posts: React.FC = () => {
+const Posts = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
+
 	useEffect(() => {
 		const unsubscribe = onSnapshot(
 			query(collection(db, "posts"), orderBy("timestamp", "desc")),

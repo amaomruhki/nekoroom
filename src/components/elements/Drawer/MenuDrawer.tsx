@@ -41,25 +41,25 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 						<Stack spacing="24px">
 							{currentUser ? (
 								<>
-									<Box>
+									<Box cursor="pointer">
 										<Link href="/photoupload">投稿</Link>
 									</Box>
-									<Box>
+									<Box cursor="pointer">
 										<Link href="/myPage">マイページ</Link>
 									</Box>
-									<Box>
+									<Box cursor="pointer">
 										<Link href="/settings">設定</Link>
 									</Box>
-									<Box>
+									<Box cursor="pointer">
 										<Text onClick={onLogout}>ログアウト</Text>
 									</Box>
 								</>
 							) : (
 								<>
-									<Box>
+									<Box cursor="pointer">
 										<Link href="/auth/login">ログイン</Link>
 									</Box>
-									<Box>
+									<Box cursor="pointer">
 										<Link href="/auth//register">新規登録</Link>
 									</Box>
 								</>

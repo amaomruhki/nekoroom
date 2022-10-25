@@ -1,11 +1,14 @@
 import { VStack } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useState } from "react";
 import Footer from "../components/layouts/Footer/Footer";
 import Header from "../components/layouts/Header/Header";
 import Posts from "../components/layouts/Posts/Posts";
 
 const Home: NextPage = () => {
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+
 	return (
 		<>
 			<Head>

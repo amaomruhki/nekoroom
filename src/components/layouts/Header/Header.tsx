@@ -37,6 +37,7 @@ const Header = () => {
 	const onLogout = () => {
 		signOut(auth);
 		setCurrentUser(null);
+		router.push("/");
 	};
 
 	return (
