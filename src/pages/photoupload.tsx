@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { useRecoilState } from "recoil";
 import {
 	Box,
 	Link,
@@ -39,6 +41,7 @@ import Result from "../components/elements/Search/Result";
 import Header from "../components/layouts/Header/Header";
 import useFetchData from "../Hooks/useFetchData";
 import Loading from "../components/elements/Loading/Loading";
+import { userState } from "../Atoms/userAtom";
 
 const PhotoUpload = () => {
 	const filePickerRef = useRef<HTMLInputElement>(null);
@@ -47,6 +50,8 @@ const PhotoUpload = () => {
 	const [loading, setLoading] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [itemResult, setItemResult] = useState({});
+	const [currentUser] = useRecoilState(userState);
+	const router = useRouter();
 
 	//useFetchDataでreturnされたobjectのvalue
 	const { fetching, result, handleSubmit } = useFetchData();
@@ -77,8 +82,8 @@ const PhotoUpload = () => {
 		setLoading(true);
 		const docRef = await addDoc(collection(db, "posts"), {
 			caption: inputCaption,
-			userImg: "../../public/dummyuser.jp",
-			username: "dummy",
+			userImg: currentUser?.userImg,
+			username: currentUser?.username,
 			timestamp: serverTimestamp(),
 			...itemResult,
 		});
@@ -115,175 +120,180 @@ const PhotoUpload = () => {
 	return (
 		<>
 			<Header />
-			<Container maxW="800px" pt={8} pb={8} mt={20} mb={20}>
-				<VStack align="left" spacing={4}>
-					<Heading as="h2">ネコルームを投稿する</Heading>
-					<Spacer />
-					<HStack>
-						<Heading as="h3" size="md">
-							写真を追加する
-						</Heading>
-						<Text color="#E4626E" as="b">
-							※必須
+			{currentUser ? (
+				<Container maxW="800px" pt={8} pb={8} mt={20} mb={20}>
+					<VStack align="left" spacing={4}>
+						<Heading as="h2">ネコルームを投稿する</Heading>
+						<Spacer />
+						<HStack>
+							<Heading as="h3" size="md">
+								写真を追加する
+							</Heading>
+							<Text color="#E4626E" as="b">
+								※必須
+							</Text>
+						</HStack>
+						<Text>
+							画像形式:JPEG/PNG
+							<br />
+							容量:10MB以内
+							<br />
+							推奨サイズ:1536ピクセル×1536ピクセル
 						</Text>
-					</HStack>
-					<Text>
-						画像形式:JPEG/PNG
-						<br />
-						容量:10MB以内
-						<br />
-						推奨サイズ:1536ピクセル×1536ピクセル
-					</Text>
-					<Box>
-						{selectedFile ? (
-							<Stack>
-								<Image
-									src={selectedFile}
-									alt=""
-									boxSize="250px"
-									objectFit="cover"
-								/>
+						<Box>
+							{selectedFile ? (
+								<Stack>
+									<Image
+										src={selectedFile}
+										alt=""
+										boxSize="250px"
+										objectFit="cover"
+									/>
+									<PrimaryButton
+										borderColor="gray.300"
+										border="1px"
+										bg="#ffffff"
+										color="gray.900"
+										onClick={() => setSelectedFile(null)}
+									>
+										写真を変更
+									</PrimaryButton>
+								</Stack>
+							) : (
 								<PrimaryButton
 									borderColor="gray.300"
 									border="1px"
 									bg="#ffffff"
 									color="gray.900"
-									onClick={() => setSelectedFile(null)}
+									onClick={() => filePickerRef.current.click()}
 								>
-									写真を変更
+									写真を選択
 								</PrimaryButton>
-							</Stack>
-						) : (
+							)}
+
+							<input
+								type="file"
+								hidden
+								ref={filePickerRef}
+								onChange={addImageToPost}
+							/>
+						</Box>
+						<Heading as="h3" size="md">
+							テキストを追加する
+						</Heading>
+						<Textarea
+							bg="white"
+							placeholder="テキストを入力してください"
+							value={inputCaption}
+							onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+								setInputCaption(event.target.value);
+							}}
+						></Textarea>
+						<HStack>
+							<Heading as="h3" size="md">
+								カテゴリを追加する
+							</Heading>
+							<Text color="#E4626E" as="b">
+								※必須
+							</Text>
+						</HStack>
+						<Select bg="white" placeholder="カテゴリを選択してください">
+							{category.map(({ text, value }) => (
+								<option key={value} value={value}>
+									{text}
+								</option>
+							))}
+						</Select>
+						<Heading as="h3" size="md">
+							アイテムを追加する
+						</Heading>
+						{Object.keys(itemResult).length ? (
+							<HStack
+								bg="white"
+								boxShadow="md"
+								rounded="md"
+								w="140px"
+								h="140px"
+								justify="center"
+							>
+								<Image
+									alt={itemResult.itemName}
+									src={itemResult.imageUrl}
+									boxSize="100px"
+									objectFit="cover"
+								/>
+							</HStack>
+						) : null}
+						{!Object.keys(itemResult).length ? (
 							<PrimaryButton
-								borderColor="gray.300"
-								border="1px"
 								bg="#ffffff"
 								color="gray.900"
-								onClick={() => filePickerRef.current.click()}
+								borderColor="gray.300"
+								border="1px"
+								onClick={onOpen}
 							>
-								写真を選択
+								アイテムを選択
+							</PrimaryButton>
+						) : (
+							<PrimaryButton
+								bg="#ffffff"
+								color="gray.900"
+								borderColor="gray.300"
+								border="1px"
+								onClick={onOpen}
+							>
+								アイテムを変更
 							</PrimaryButton>
 						)}
-
-						<input
-							type="file"
-							hidden
-							ref={filePickerRef}
-							onChange={addImageToPost}
-						/>
-					</Box>
-					<Heading as="h3" size="md">
-						テキストを追加する
-					</Heading>
-					<Textarea
-						bg="white"
-						placeholder="テキストを入力してください"
-						value={inputCaption}
-						onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
-							setInputCaption(event.target.value);
-						}}
-					></Textarea>
-					<HStack>
-						<Heading as="h3" size="md">
-							カテゴリを追加する
-						</Heading>
-						<Text color="#E4626E" as="b">
-							※必須
-						</Text>
-					</HStack>
-					<Select bg="white" placeholder="カテゴリを選択してください">
-						{category.map(({ text, value }) => (
-							<option key={value} value={value}>
-								{text}
-							</option>
-						))}
-					</Select>
-					<Heading as="h3" size="md">
-						アイテムを追加する
-					</Heading>
-					{Object.keys(itemResult).length ? (
-						<HStack
-							bg="white"
-							boxShadow="md"
-							rounded="md"
-							w="140px"
-							h="140px"
-							justify="center"
-						>
-							<Image
-								alt={itemResult.itemName}
-								src={itemResult.imageUrl}
-								boxSize="100px"
-								objectFit="cover"
-							/>
-						</HStack>
-					) : null}
-					{!Object.keys(itemResult).length ? (
-						<PrimaryButton
-							bg="#ffffff"
-							color="gray.900"
-							borderColor="gray.300"
-							border="1px"
-							onClick={onOpen}
-						>
-							アイテムを選択
-						</PrimaryButton>
-					) : (
-						<PrimaryButton
-							bg="#ffffff"
-							color="gray.900"
-							borderColor="gray.300"
-							border="1px"
-							onClick={onOpen}
-						>
-							アイテムを変更
-						</PrimaryButton>
-					)}
-					<Modal isOpen={isOpen} onClose={onClose}>
-						<ModalOverlay />
-						<ModalContent>
-							<ModalHeader mt={6}>
-								<ItemSearch
-									value={value}
-									handleFreeWord={handleFreeWord}
-									handleSubmit={handleSubmit}
-									placeholder="アイテム名を入力"
-								/>
-							</ModalHeader>
-							<ModalCloseButton />
-							<ModalBody>
-								{fetching ? (
-									<Loading />
-								) : (
-									//fetch完了したらレスポンスデータを表示
-									<Result
-										result={result}
-										setItemResult={setItemResult}
-										onClose={onClose}
-										setValue={setValue}
+						<Modal isOpen={isOpen} onClose={onClose}>
+							<ModalOverlay />
+							<ModalContent>
+								<ModalHeader mt={6}>
+									<ItemSearch
+										value={value}
+										handleFreeWord={handleFreeWord}
+										handleSubmit={handleSubmit}
+										placeholder="アイテム名を入力"
 									/>
-								)}
-							</ModalBody>
-							<ModalFooter>
-								<NextLink href="https://developers.rakuten.com/" passHref>
-									<Link>Supported by Rakuten Developers</Link>
-								</NextLink>
-							</ModalFooter>
-						</ModalContent>
-					</Modal>
-					<Spacer />
-					<Center>
-						<PrimaryButton
-							bg="#E4626E"
-							color="#ffffff"
-							onClick={uploadPost}
-							disabled={!selectedFile || loading}
-						>
-							ネコルームを投稿する
-						</PrimaryButton>
-					</Center>
-				</VStack>
-			</Container>
+								</ModalHeader>
+								<ModalCloseButton />
+								<ModalBody>
+									{fetching ? (
+										<Loading />
+									) : (
+										//fetch完了したらレスポンスデータを表示
+										<Result
+											result={result}
+											setItemResult={setItemResult}
+											onClose={onClose}
+											setValue={setValue}
+										/>
+									)}
+								</ModalBody>
+								<ModalFooter>
+									<NextLink href="https://developers.rakuten.com/" passHref>
+										<Link>Supported by Rakuten Developers</Link>
+									</NextLink>
+								</ModalFooter>
+							</ModalContent>
+						</Modal>
+						<Spacer />
+						<Center>
+							<PrimaryButton
+								bg="#E4626E"
+								color="#ffffff"
+								onClick={uploadPost}
+								disabled={!selectedFile || loading}
+							>
+								ネコルームを投稿する
+							</PrimaryButton>
+						</Center>
+					</VStack>
+				</Container>
+			) : (
+				<Text>ログアウトしました</Text>
+			)}
+
 			<Footer />
 		</>
 	);

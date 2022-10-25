@@ -1,8 +1,8 @@
 import React from "react";
 import type { NextPage } from "next";
 import Image from "next/image";
-import Footer from "../components/layouts/Footer/Footer";
-import Header from "../components/layouts/Header/Header";
+import Footer from "../../components/layouts/Footer/Footer";
+import Header from "../../components/layouts/Header/Header";
 import {
 	Box,
 	Container,
@@ -11,7 +11,6 @@ import {
 	VStack,
 	Text,
 	Textarea,
-	Select,
 	Button,
 	Stack,
 	Icon,
@@ -19,9 +18,8 @@ import {
 	Spacer,
 	Center,
 } from "@chakra-ui/react";
-import PrimaryButton from "../components/elements/Button/PrimaryButton";
-import { Avatar, AvatarBadge, AvatarGroup } from "@chakra-ui/react";
-import { PadIcon } from "../components/elements/Icon/Icon";
+import { Avatar } from "@chakra-ui/react";
+import { PadIcon } from "../../components/elements/Icon/Icon";
 
 const postdetail = () => {
 	return (
