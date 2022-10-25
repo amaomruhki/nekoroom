@@ -5,7 +5,7 @@ import MenuIconButton from "../../elements/Button/MenuIconButton";
 import { Container, Flex, useDisclosure } from "@chakra-ui/react";
 import Link from "next/link";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { db } from "../../../lib/firebase";
+import { db } from "../../../../lib/firebase";
 import { useRecoilState } from "recoil";
 import { userState } from "../../../Atoms/userAtom";
 import { doc, getDoc } from "firebase/firestore";
@@ -18,15 +18,11 @@ const Header = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	useEffect(() => {
-		const unsubScribe = onAuthStateChanged(auth, (user) => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
 				console.log(user);
 				const fetchUser = async () => {
-					const docRef = doc(
-						db,
-						"users",
-						user.auth.currentUser.providerData[0].uid
-					);
+					const docRef = doc(db, "users", user.auth.currentUser.uid);
 					const docSnap = await getDoc(docRef);
 					if (docSnap.exists()) {
 						setCurrentUser(docSnap.data());
@@ -35,8 +31,8 @@ const Header = () => {
 				fetchUser();
 			}
 		});
-		return unsubScribe;
-	}, []);
+		return () => unsubscribe();
+	}, [auth, setCurrentUser]);
 
 	const onLogout = () => {
 		signOut(auth);

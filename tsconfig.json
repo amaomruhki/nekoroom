@@ -19,7 +19,7 @@
 		"next-env.d.ts",
 		"**/*.ts",
 		"**/*.tsx",
-		"components/elements/Posts.jsx"
+		"src/components/elements/Posts.jsx"
 	],
 	"exclude": ["node_modules"]
 }

@@ -5,7 +5,7 @@ import {
 	GoogleAuthProvider,
 	onAuthStateChanged,
 } from "firebase/auth";
-import { app } from "../../../lib/firebase";
+import { app } from "../../../../lib/firebase";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { UserState, userState } from "../../../Atoms/userAtom";
 import { useEffect, useState } from "react";

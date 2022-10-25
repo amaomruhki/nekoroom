@@ -1,7 +1,7 @@
 import { Grid } from "@chakra-ui/react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { db } from "../../../lib/firebase";
+import { db } from "../../../../lib/firebase";
 import Post from "./Post";
 
 type Post = {
@@ -29,8 +29,8 @@ const Posts: React.FC = () => {
 				setPosts(postsData);
 			}
 		);
-		return unsubscribe;
-	});
+		return () => unsubscribe();
+	}, []);
 
 	return (
 		<Grid

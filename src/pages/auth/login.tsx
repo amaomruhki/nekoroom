@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import router from "next/router";
+import { useRouter } from "next/router";
 import Footer from "../../components/layouts/Footer/Footer";
 import Header from "../../components/layouts/Header/Header";
 import {
@@ -15,15 +15,14 @@ import {
 import PrimaryButton from "../../components/elements/Button/PrimaryButton";
 import { FcGoogle } from "react-icons/Fc";
 import { useGoogleLogin } from "../../Hooks/useGoogleLogin";
-import {
-	getAuth,
-	signInWithEmailAndPassword,
-	signInAnonymously,
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const Login = (): JSX.Element => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const guestEmail = "guest@dummy.com";
+	const guestPassword = "guestDummy";
+	const router = useRouter();
 
 	const emailLogin = async () => {
 		try {
@@ -38,7 +37,7 @@ const Login = (): JSX.Element => {
 	const guestLogin = async () => {
 		try {
 			const auth = getAuth();
-			await signInAnonymously(auth);
+			await signInWithEmailAndPassword(auth, guestEmail, guestPassword);
 			router.push("/");
 		} catch (error) {
 			alert("エラーが発生しました");

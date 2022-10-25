@@ -31,7 +31,7 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
-import { db, storage } from "../lib/firebase";
+import { db, storage } from "../../lib/firebase";
 import PrimaryButton from "../components/elements/Button/PrimaryButton";
 import Footer from "../components/layouts/Footer/Footer";
 import ItemSearch from "../components/elements/Search/ItemSearch";
@@ -58,6 +58,19 @@ const PhotoUpload = () => {
 		setValue({ freeWord: event.target.value });
 	};
 
+	const addImageToPost = (event) => {
+		const reader = new FileReader();
+		if (event.target.files[0]) {
+			reader.readAsDataURL(event.target.files[0]);
+		}
+
+		reader.onload = (readerEvent) => {
+			setSelectedFile(readerEvent.target.result);
+		};
+		//stateで管理している場合、onChangeは同じファイルを選択すると発火しないのでここで初期化
+		event.target.value = "";
+	};
+
 	//投稿内容をアップロード
 	const uploadPost = async () => {
 		if (loading) return;
@@ -82,19 +95,6 @@ const PhotoUpload = () => {
 		setLoading(false);
 		setSelectedFile(null);
 		// ここに投稿詳細ページに遷移する処理を追加する
-	};
-
-	const addImageToPost = (event) => {
-		const reader = new FileReader();
-		if (event.target.files[0]) {
-			reader.readAsDataURL(event.target.files[0]);
-		}
-
-		reader.onload = (readerEvent) => {
-			setSelectedFile(readerEvent.target.result);
-		};
-		//stateで管理している場合、onChangeは同じファイルを選択すると発火しないのでここで初期化
-		event.target.value = "";
 	};
 
 	const category = [

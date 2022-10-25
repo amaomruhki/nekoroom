@@ -1,5 +1,5 @@
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { db } from "../lib/firebase";
+import { db } from "../../lib/firebase";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import router from "next/router";
 
@@ -8,17 +8,20 @@ export const useGoogleLogin = async (): Promise<void> => {
 		const auth = getAuth();
 		const provider = new GoogleAuthProvider();
 		await signInWithPopup(auth, provider);
-		const user = auth.currentUser.providerData[0];
+		const user = auth.currentUser;
 		const docRef = doc(db, "users", user.uid);
 		const docSnap = await getDoc(docRef);
 		if (!docSnap.exists()) {
 			await setDoc(docRef, {
-				name: user.displayName,
-				email: user.email,
-				userImg: user.photoURL,
+				name: user.providerData[0].displayName,
+				email: user.providerData[0].email,
+				userImg: user.providerData[0].photoURL,
 				uid: user.uid,
 				timestamp: serverTimestamp(),
-				username: user.displayName.split(" ").join("").toLocaleLowerCase(),
+				username: user.providerData[0].displayName
+					.split(" ")
+					.join("")
+					.toLocaleLowerCase(),
 			});
 		}
 		router.push("/");
