@@ -1,8 +1,8 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import Image from "next/image";
-import Footer from "../components/layouts/Footer/Footer";
-import Header from "../components/layouts/Header/Header";
+import Footer from "../../components/layouts/Footer/Footer";
+import Header from "../../components/layouts/Header/Header";
 import {
 	Box,
 	Container,
@@ -11,7 +11,6 @@ import {
 	VStack,
 	Text,
 	Textarea,
-	Select,
 	Button,
 	Stack,
 	Icon,
@@ -19,11 +18,32 @@ import {
 	Spacer,
 	Center,
 } from "@chakra-ui/react";
-import PrimaryButton from "../components/elements/Button/PrimaryButton";
-import { Avatar, AvatarBadge, AvatarGroup } from "@chakra-ui/react";
-import { PadIcon } from "../components/elements/Icon/Icon";
+import { Avatar } from "@chakra-ui/react";
+import { PadIcon } from "../../components/elements/Icon/Icon";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "../../../lib/firebase";
 
-const postdetail = () => {
+const Postdetail = () => {
+	const [detail, setDetail] = useState(null);
+
+	useEffect(() => {
+		const unsubscribe = onSnapshot(
+			query(collection(db, "posts"), orderBy("timestamp", "desc")),
+			(snapshot) => {
+				const detailData = snapshot.docs.map((doc) => ({
+					...doc.data(),
+					id: doc.id,
+					username: doc.data().username,
+					userImg: doc.data().userImg,
+					image: doc.data().image,
+					caption: doc.data().caption,
+				}));
+				setDetail(detailData);
+			}
+		);
+		return () => unsubscribe();
+	}, []);
+
 	return (
 		<>
 			<Header />
@@ -177,4 +197,4 @@ const postdetail = () => {
 	);
 };
 
-export default postdetail;
+export default Postdetail;

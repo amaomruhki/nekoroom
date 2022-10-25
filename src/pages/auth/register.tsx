@@ -68,6 +68,7 @@ const Register = () => {
 			router.push("/");
 		} catch (error) {
 			alert(error);
+			setIsLoading(false);
 		}
 	};
 
