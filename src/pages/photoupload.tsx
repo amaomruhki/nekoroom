@@ -84,6 +84,7 @@ const PhotoUpload = () => {
 			caption: inputCaption,
 			userImg: currentUser?.userImg,
 			username: currentUser?.username,
+			userId: currentUser?.uid,
 			timestamp: serverTimestamp(),
 			...itemResult,
 		});
@@ -99,7 +100,7 @@ const PhotoUpload = () => {
 		);
 		setLoading(false);
 		setSelectedFile(null);
-		// ここに投稿詳細ページに遷移する処理を追加する
+		router.push("");
 	};
 
 	const category = [
