@@ -17,7 +17,8 @@ export const useGoogleLogin = async (): Promise<void> => {
 				email: user.providerData[0].email,
 				userImg: user.providerData[0].photoURL,
 				uid: user.uid,
-				timestamp: serverTimestamp(),
+				createTime: serverTimestamp(),
+				updateTime: serverTimestamp(),
 				username: user.providerData[0].displayName
 					.split(" ")
 					.join("")

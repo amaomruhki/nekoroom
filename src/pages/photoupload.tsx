@@ -80,22 +80,37 @@ const PhotoUpload = () => {
 	const uploadPost = async () => {
 		if (loading) return;
 		setLoading(true);
-		const docRef = await addDoc(collection(db, "posts"), {
-			caption: inputCaption,
-			userImg: currentUser?.userImg,
-			username: currentUser?.username,
-			userId: currentUser?.uid,
-			timestamp: serverTimestamp(),
-			...itemResult,
-		});
+		const postsRef = await addDoc(
+			collection(db, "users", currentUser!.uid, "posts"),
+			{
+				caption: inputCaption,
+				timestamp: serverTimestamp(),
+				createTime: serverTimestamp(),
+				updateTime: serverTimestamp(),
+			}
+		);
 		setInputCaption("");
-		const imageRef = ref(storage, `posts/${docRef.id}/image`);
+		const imageRef = ref(storage, `posts/${postsRef.id}/image`);
 		await uploadString(imageRef, selectedFile, "data_url").then(
 			async (snapshot) => {
 				const downloadURL = await getDownloadURL(imageRef);
-				await updateDoc(doc(db, "posts", docRef.id), {
-					image: downloadURL,
-				});
+				await updateDoc(
+					doc(db, "users", currentUser!.uid, "posts", postsRef.id),
+					{
+						image: downloadURL,
+					}
+				);
+			}
+		);
+		await addDoc(
+			collection(db, "users", currentUser!.uid, "posts", postsRef.id, "items"),
+			{
+				...itemResult,
+				itemImg: itemResult.imageUrl,
+				itemName: itemResult.itemName,
+				price: itemResult.price,
+				shopName: itemResult.shopName,
+				itemUrl: itemResult.itemUrl,
 			}
 		);
 		setLoading(false);

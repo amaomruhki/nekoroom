@@ -1,5 +1,11 @@
 import { Grid } from "@chakra-ui/react";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+	collection,
+	collectionGroup,
+	onSnapshot,
+	orderBy,
+	query,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
 import Post from "./Post";
@@ -17,15 +23,15 @@ const Posts = () => {
 
 	useEffect(() => {
 		const unsubscribe = onSnapshot(
-			query(collection(db, "posts"), orderBy("timestamp", "desc")),
+			query(collectionGroup(db, "users"), orderBy("updateTime", "desc")),
 			(snapshot) => {
 				const postsData: Post[] = snapshot.docs.map((doc) => ({
 					...doc.data(),
-					id: doc.id,
+					id: doc.data().posts.id,
 					username: doc.data().username,
 					userImg: doc.data().userImg,
-					image: doc.data().image,
-					caption: doc.data().caption,
+					image: doc.data().posts.image,
+					caption: doc.data().posts.caption,
 				}));
 				setPosts(postsData);
 			}
