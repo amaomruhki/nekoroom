@@ -23,6 +23,35 @@ import Link from "next/link";
 
 const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 	const { height } = useWindowSize();
+	const Login_Menu_List = [
+		{
+			title: "photoUpload",
+			text: <Link href="/photoUpload">投稿</Link>,
+		},
+		{
+			title: "myPage",
+			text: <Link href="/myPage">マイページ</Link>,
+		},
+		{
+			title: "settings",
+			text: <Link href="/settings">設定</Link>,
+		},
+		{
+			title: "logout",
+			text: <Text onClick={onLogout}>ログアウト</Text>,
+		},
+	];
+	const Logout_Menu_List = [
+		{
+			title: "login",
+			text: <Link href="/auth/login">ログイン</Link>,
+		},
+		{
+			title: "register",
+			text: <Link href="/auth//register">新規登録</Link>,
+		},
+	];
+
 	return (
 		<>
 			<Drawer
@@ -39,31 +68,17 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 					</DrawerHeader>
 					<DrawerBody>
 						<Stack spacing="24px">
-							{currentUser ? (
-								<>
-									<Box cursor="pointer">
-										<Link href="/photoupload">投稿</Link>
-									</Box>
-									<Box cursor="pointer">
-										<Link href="/myPage">マイページ</Link>
-									</Box>
-									<Box cursor="pointer">
-										<Link href="/settings">設定</Link>
-									</Box>
-									<Box cursor="pointer">
-										<Text onClick={onLogout}>ログアウト</Text>
-									</Box>
-								</>
-							) : (
-								<>
-									<Box cursor="pointer">
-										<Link href="/auth/login">ログイン</Link>
-									</Box>
-									<Box cursor="pointer">
-										<Link href="/auth//register">新規登録</Link>
-									</Box>
-								</>
-							)}
+							{currentUser
+								? Login_Menu_List.map((list) => (
+										<Box key="title" cursor="pointer">
+											{list.text}
+										</Box>
+								  ))
+								: Logout_Menu_List.map((list) => (
+										<Box key="title" cursor="pointer">
+											{list.text}
+										</Box>
+								  ))}
 						</Stack>
 					</DrawerBody>
 				</DrawerContent>
