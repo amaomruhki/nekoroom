@@ -2,16 +2,20 @@ import { Grid } from "@chakra-ui/react";
 import {
 	collection,
 	collectionGroup,
+	getDoc,
+	getDocs,
 	onSnapshot,
 	orderBy,
 	query,
+	doc,
+	where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
 import Post from "./Post";
 
 type Post = {
-	id: string;
+	postId: string;
 	username: string;
 	userImg: string;
 	image: string;
@@ -23,17 +27,28 @@ const Posts = () => {
 
 	useEffect(() => {
 		const unsubscribe = onSnapshot(
-			query(collectionGroup(db, "users"), orderBy("updateTime", "desc")),
+			query(collectionGroup(db, "posts")),
 			(snapshot) => {
-				const postsData: Post[] = snapshot.docs.map((doc) => ({
-					...doc.data(),
-					id: doc.data().posts.id,
-					username: doc.data().username,
-					userImg: doc.data().userImg,
-					image: doc.data().posts.image,
-					caption: doc.data().posts.caption,
-				}));
-				setPosts(postsData);
+				Promise.all(
+					snapshot.docs.map(async (document) => {
+						// ユーザーデータ取得
+						const userId = document.data().userId;
+						const userRef = doc(db, "users", userId);
+						const userInfo = await getDoc(userRef);
+
+						return {
+							...document.data(),
+							postId: document.id,
+							username: userInfo.data().username,
+							userImg: userInfo.data().userImg,
+							image: document.data().image,
+							caption: document.data().caption,
+						};
+					})
+				).then((data) => {
+					data;
+					setPosts(data);
+				});
 			}
 		);
 		return () => unsubscribe();

@@ -83,6 +83,7 @@ const PhotoUpload = () => {
 		const postsRef = await addDoc(
 			collection(db, "users", currentUser!.uid, "posts"),
 			{
+				userId: currentUser!.uid,
 				caption: inputCaption,
 				timestamp: serverTimestamp(),
 				createTime: serverTimestamp(),
@@ -102,17 +103,27 @@ const PhotoUpload = () => {
 				);
 			}
 		);
-		await addDoc(
-			collection(db, "users", currentUser!.uid, "posts", postsRef.id, "items"),
-			{
-				...itemResult,
-				itemImg: itemResult.imageUrl,
-				itemName: itemResult.itemName,
-				price: itemResult.price,
-				shopName: itemResult.shopName,
-				itemUrl: itemResult.itemUrl,
-			}
-		);
+		if (itemResult) {
+			await addDoc(
+				collection(
+					db,
+					"users",
+					currentUser!.uid,
+					"posts",
+					postsRef.id,
+					"items"
+				),
+				{
+					...itemResult,
+					postId: postsRef.id,
+					itemImg: itemResult.imageUrl,
+					itemName: itemResult.itemName,
+					price: itemResult.price,
+					shopName: itemResult.shopName,
+					itemUrl: itemResult.itemUrl,
+				}
+			);
+		}
 		setLoading(false);
 		setSelectedFile(null);
 		router.push("");

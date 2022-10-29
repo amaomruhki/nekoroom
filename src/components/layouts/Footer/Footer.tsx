@@ -39,7 +39,7 @@ const Footer = () => {
 						h={6}
 						_hover={{ color: "#E4626E" }}
 					/>
-					<Link href="/photoupload">
+					<Link href="/photoUpload">
 						<Icon
 							as={FaPlusCircle}
 							color="#d6d6d6"
