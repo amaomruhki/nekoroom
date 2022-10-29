@@ -49,7 +49,8 @@ const Register = () => {
 					name: userName,
 					email: email,
 					uid: user.uid,
-					timestamp: serverTimestamp(),
+					createTime: serverTimestamp(),
+					updateTime: serverTimestamp(),
 					username: userName,
 					userImg: "",
 				});

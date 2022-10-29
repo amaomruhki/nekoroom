@@ -43,7 +43,7 @@ const Post = ({ id, username, userImg, image, caption }: Props) => {
 						)}
 
 						<HStack alignItems="center">
-							<Text fontSize="md" as="b">
+							<Text fontSize="sm" as="b">
 								{username}
 							</Text>
 						</HStack>
@@ -52,12 +52,12 @@ const Post = ({ id, username, userImg, image, caption }: Props) => {
 						<Icon
 							as={PadIcon}
 							color="#d6d6d6"
-							w={8}
-							h={8}
+							w={6}
+							h={6}
 							_hover={{ color: "#E4626E" }}
 						/>
 					</HStack>
-					<Text>{caption}</Text>
+					<Text fontSize="xs">{caption}</Text>
 				</Box>
 			</GridItem>
 		</Link>
