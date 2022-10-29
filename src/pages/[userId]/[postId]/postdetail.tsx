@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import Image from "next/image";
-import Footer from "../../components/layouts/Footer/Footer";
-import Header from "../../components/layouts/Header/Header";
+import Footer from "../../../components/layouts/Footer/Footer";
+import Header from "../../../components/layouts/Header/Header";
 import {
 	Box,
 	Container,
@@ -19,30 +19,45 @@ import {
 	Center,
 } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
-import { PadIcon } from "../../components/elements/Icon/Icon";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { db } from "../../../lib/firebase";
+import { PadIcon } from "../../../components/elements/Icon/Icon";
+import {
+	collection,
+	collectionGroup,
+	doc,
+	getDoc,
+	getDocs,
+	onSnapshot,
+	orderBy,
+	query,
+} from "firebase/firestore";
+import { db } from "../../../../lib/firebase";
+import { useRouter } from "next/router";
 
 const Postdetail = () => {
-	const [detail, setDetail] = useState(null);
+	const [detail, setDetail] = useState([]);
+	const [posts, setPosts] = useState([]);
+	const [item, setItem] = useState([]);
+	const [author, setAuthor] = useState([]);
+	const router = useRouter();
 
 	useEffect(() => {
-		const unsubscribe = onSnapshot(
-			query(collection(db, "posts"), orderBy("timestamp", "desc")),
-			(snapshot) => {
-				const detailData = snapshot.docs.map((doc) => ({
-					...doc.data(),
-					id: doc.id,
-					username: doc.data().username,
-					userImg: doc.data().userImg,
-					image: doc.data().image,
-					caption: doc.data().caption,
-				}));
-				setDetail(detailData);
+		const docRef = async () => {
+			if (router.isReady) {
+				const userId = router.query.userId;
+				const userRef = doc(db, "users", userId);
+				const postId = router.query.postId;
+				const postRef = doc(userRef, "posts", postId);
+				const docSnap = await getDoc(postRef);
+				console.log(docSnap.data());
+				const items = await getDocs(collection(postRef, "items"));
+				items.forEach((doc) => {
+					console.log(doc.id, " => ", doc.data());
+				});
+				// console.log(items);
 			}
-		);
-		return () => unsubscribe();
-	}, []);
+		};
+		docRef();
+	}, [router.isReady, router.query.userId]);
 
 	return (
 		<>
@@ -54,7 +69,7 @@ const Postdetail = () => {
 						<HStack p={2}>
 							<Avatar
 								size="md"
-								name="Kent Dodds"
+								name="dummy"
 								src="https://bit.ly/kent-c-dodds"
 							/>
 							<VStack align="left">
@@ -155,11 +170,7 @@ const Postdetail = () => {
 						</Box>
 						<Box bg="white" p={4} rounded="md">
 							<HStack p={2}>
-								<Avatar
-									size="sm"
-									name="Kent Dodds"
-									src="https://bit.ly/kent-c-dodds"
-								/>
+								<Avatar size="sm" name="dummy" src="dummy" />
 								<HStack alignItems="center">
 									<Text fontSize="md" as="b">
 										Kent Dodds

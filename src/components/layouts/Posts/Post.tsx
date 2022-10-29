@@ -15,17 +15,18 @@ import Link from "next/link";
 
 type Props = {
 	children?: ReactNode;
-	id: string;
+	postId: string;
+	userId: string;
 	username: string;
 	userImg: string;
 	image: string;
 	caption: string;
 };
 
-const Post = ({ id, username, userImg, image, caption }: Props) => {
+const Post = ({ userId, postId, username, userImg, image, caption }: Props) => {
 	return (
-		<Link href={`${id}/postdetail`}>
-			<GridItem key={id}>
+		<Link href={`${userId}/${postId}/postdetail`}>
+			<GridItem key={postId}>
 				<Box bg="white" boxShadow="md" rounded="md" p={4} m="8px">
 					<Stack align="center">
 						<Image

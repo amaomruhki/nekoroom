@@ -8,7 +8,6 @@ import {
 	orderBy,
 	query,
 	doc,
-	where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
@@ -16,6 +15,7 @@ import Post from "./Post";
 
 type Post = {
 	postId: string;
+	userId: string;
 	username: string;
 	userImg: string;
 	image: string;
@@ -38,6 +38,7 @@ const Posts = () => {
 
 						return {
 							...document.data(),
+							userId: userId,
 							postId: document.id,
 							username: userInfo.data().username,
 							userImg: userInfo.data().userImg,
@@ -63,8 +64,9 @@ const Posts = () => {
 			{posts &&
 				posts.map((post) => (
 					<Post
-						key={post.id}
-						id={post.id}
+						key={post.postId}
+						userId={post.userId}
+						postId={post.postId}
 						username={post.username}
 						userImg={post.userImg}
 						image={post.image}
