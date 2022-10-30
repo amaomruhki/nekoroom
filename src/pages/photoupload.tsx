@@ -103,7 +103,7 @@ const PhotoUpload = () => {
 				);
 			}
 		);
-		if (itemResult) {
+		if (Object.keys(itemResult).length != 0) {
 			await addDoc(
 				collection(
 					db,

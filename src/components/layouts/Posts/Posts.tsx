@@ -24,10 +24,9 @@ type Post = {
 
 const Posts = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
-
 	useEffect(() => {
 		const unsubscribe = onSnapshot(
-			query(collectionGroup(db, "posts")),
+			query(collectionGroup(db, "posts"), orderBy("createTime", "desc")),
 			(snapshot) => {
 				Promise.all(
 					snapshot.docs.map(async (document) => {

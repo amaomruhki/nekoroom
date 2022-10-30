@@ -4,8 +4,13 @@ import { HiHome } from "react-icons/Hi";
 import { FaSearch, FaPlusCircle, FaUser } from "react-icons/Fa";
 import { PadIcon } from "../../elements/Icon/Icon";
 import Link from "next/link";
+import { useRecoilState } from "recoil";
+import { userState } from "../../../Atoms/userAtom";
+import { Tooltip } from "@chakra-ui/react";
 
 const Footer = () => {
+	const [currentUser] = useRecoilState(userState);
+
 	return (
 		<>
 			<Container
@@ -39,15 +44,27 @@ const Footer = () => {
 						h={6}
 						_hover={{ color: "#E4626E" }}
 					/>
-					<Link href="/photoUpload">
-						<Icon
-							as={FaPlusCircle}
-							color="#d6d6d6"
-							w={6}
-							h={6}
-							_hover={{ color: "#E4626E" }}
-						/>
-					</Link>
+					{currentUser ? (
+						<Link href="/photoUpload">
+							<Icon
+								as={FaPlusCircle}
+								color="#d6d6d6"
+								w={6}
+								h={6}
+								_hover={{ color: "#E4626E" }}
+							/>
+						</Link>
+					) : (
+						<Link href="/auth/login">
+							<Icon
+								as={FaPlusCircle}
+								color="#d6d6d6"
+								w={6}
+								h={6}
+								_hover={{ color: "#E4626E" }}
+							/>
+						</Link>
+					)}
 					<Icon
 						as={PadIcon}
 						color="#d6d6d6"
