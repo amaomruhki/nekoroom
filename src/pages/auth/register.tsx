@@ -30,7 +30,7 @@ import Loading from "../../components/elements/Loading/Loading";
 const Register = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [userName, setUserName] = useState("");
+	const [username, setusername] = useState("");
 	const filePickerRef = useRef<HTMLInputElement>(null);
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -46,12 +46,12 @@ const Register = () => {
 			const docSnap = await getDoc(docRef);
 			if (!docSnap.exists()) {
 				await setDoc(docRef, {
-					name: userName,
+					name: username,
 					email: email,
 					uid: user.uid,
 					createTime: serverTimestamp(),
 					updateTime: serverTimestamp(),
-					username: userName,
+					username: username,
 					userImg: "",
 				});
 			}
@@ -102,7 +102,7 @@ const Register = () => {
 							<VStack>
 								{selectedFile ? (
 									<HStack>
-										<Avatar size="md" name={userName} src={selectedFile} />
+										<Avatar size="md" name={username} src={selectedFile} />
 										<PrimaryButton
 											borderColor="gray.300"
 											border="1px"
@@ -115,7 +115,7 @@ const Register = () => {
 									</HStack>
 								) : (
 									<HStack>
-										<Avatar size="md" name={userName} />
+										<Avatar size="md" name={username} />
 										<PrimaryButton
 											borderColor="gray.300"
 											border="1px"
@@ -143,9 +143,9 @@ const Register = () => {
 							bg="white"
 							placeholder="ニックネーム"
 							type="text"
-							value={userName}
+							value={username}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								setUserName(e.target.value);
+								setusername(e.target.value);
 							}}
 						/>
 

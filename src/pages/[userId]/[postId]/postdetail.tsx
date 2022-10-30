@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import type { NextPage } from "next";
-import Image from "next/image";
 import Footer from "../../../components/layouts/Footer/Footer";
 import Header from "../../../components/layouts/Header/Header";
 import {
+	Image,
 	Box,
 	Container,
 	Heading,
@@ -29,15 +28,15 @@ import {
 	onSnapshot,
 	orderBy,
 	query,
+	Timestamp,
 } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useRouter } from "next/router";
+import { parseTimestampToDate } from "../../../utils/DataFormat";
 
 const Postdetail = () => {
-	const [detail, setDetail] = useState([]);
-	const [posts, setPosts] = useState([]);
-	const [item, setItem] = useState([]);
-	const [author, setAuthor] = useState([]);
+	const [postDetail, setPostDetail] = useState([]);
+	const [items, setItems] = useState([]);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -45,15 +44,37 @@ const Postdetail = () => {
 			if (router.isReady) {
 				const userId = router.query.userId;
 				const userRef = doc(db, "users", userId);
+				const userSnap = await getDoc(userRef);
+
 				const postId = router.query.postId;
 				const postRef = doc(userRef, "posts", postId);
-				const docSnap = await getDoc(postRef);
-				console.log(docSnap.data());
-				const items = await getDocs(collection(postRef, "items"));
-				items.forEach((doc) => {
-					console.log(doc.id, " => ", doc.data());
-				});
-				// console.log(items);
+				const postSnap = await getDoc(postRef);
+
+				const postInfo = {
+					userId: userId,
+					postId: postId,
+					username: userSnap.data().username,
+					userImg: userSnap.data().userImg,
+					image: postSnap.data().image,
+					caption: postSnap.data().caption,
+					createTime: postSnap.data().createTime as Timestamp,
+				};
+				setPostDetail(postInfo);
+
+				const itemsSnap = await getDocs(collection(postRef, "items"));
+				const itemsInfo = itemsSnap.docs.map((doc) => ({
+					...doc.data(),
+					itemId: doc.id,
+					postId: doc.data().postId,
+					itemImg: doc.data().itemImg,
+					itemName: doc.data().itemName,
+					price: doc.data().price,
+					shopName: doc.data().shopName,
+					itemUrl: doc.data().itemUrl,
+				}));
+				setItems(itemsInfo);
+				console.log(itemsInfo);
+				console.log(postDetail.username);
 			}
 		};
 		docRef();
@@ -64,19 +85,26 @@ const Postdetail = () => {
 			<Header />
 			<Container pt={8} pb={8} mt="50px">
 				<Box maxW="420px" bg="white" p={4} rounded="md" boxShadow="md">
-					<Image src="/testphoto.jpg" width={400} height={400} alt="" />
+					<Image
+						src={postDetail.image}
+						boxSize="400px"
+						alt={`${postDetail.username}'s photo`}
+						objectFit="cover"
+					/>
 					<Flex alignItems="center" gap="2">
 						<HStack p={2}>
 							<Avatar
 								size="md"
-								name="dummy"
-								src="https://bit.ly/kent-c-dodds"
+								name={postDetail.username}
+								src={postDetail.userImg}
 							/>
 							<VStack align="left">
 								<Text fontSize="md" as="b">
-									Kent Dodds
+									{postDetail.username}
 								</Text>
-								<Text fontSize="sm">2022/10/03 19:00</Text>
+								<Text fontSize="sm">
+									{parseTimestampToDate(postDetail.createTime, "/")}
+								</Text>
 							</VStack>
 						</HStack>
 						<Spacer />
@@ -88,6 +116,7 @@ const Postdetail = () => {
 							_hover={{ color: "#E4626E" }}
 						/>
 					</Flex>
+					<Text fontSize="sm">{postDetail.caption}</Text>
 				</Box>
 				<VStack
 					w="100%"
@@ -110,27 +139,24 @@ const Postdetail = () => {
 					<Heading as="h3" size="md">
 						アイテム
 					</Heading>
-					<Box
-						bg="white"
-						boxShadow="sm"
-						width="120px"
-						minW="120px"
-						rounded="md"
-						p="8px"
-						m="8px"
-					>
-						<Stack align="center">
-							<Image
-								alt="testphoto"
-								src="/testphoto.jpg"
-								width="100px"
-								height="100px"
-							/>
-						</Stack>
-						<Text fontWeight="bold" fontSize="xs">
-							アイテム情報がここに入りますアイテム情報がここに入りますアイテム情報がここに入ります
-						</Text>
-					</Box>
+					{Object.keys(items).length != 0 &&
+						items.map((item) => {
+							<HStack
+								bg="white"
+								boxShadow="md"
+								rounded="md"
+								w="140px"
+								h="140px"
+								justify="center"
+							>
+								<Image
+									alt={item.itemName}
+									src={item.itemImg}
+									boxSize="100px"
+									objectFit="cover"
+								/>
+							</HStack>;
+						})}
 					<Heading as="h3" size="md">
 						コメント
 					</Heading>
