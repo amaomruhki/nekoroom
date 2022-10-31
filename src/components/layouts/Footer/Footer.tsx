@@ -1,9 +1,17 @@
 import React from "react";
-import { Center, Container, Flex, Icon } from "@chakra-ui/react";
+import {
+	Text,
+	Box,
+	Container,
+	Flex,
+	Icon,
+	Link,
+	HStack,
+	VStack,
+} from "@chakra-ui/react";
 import { HiHome } from "react-icons/Hi";
 import { FaSearch, FaPlusCircle, FaUser } from "react-icons/Fa";
 import { PadIcon } from "../../elements/Icon/Icon";
-import Link from "next/link";
 import { useRecoilState } from "recoil";
 import { userState } from "../../../Atoms/userAtom";
 import { Tooltip } from "@chakra-ui/react";
@@ -26,7 +34,7 @@ const Footer = () => {
 					justify="space-between"
 					align="center"
 					height="100%"
-					px={4}
+					px={6}
 				>
 					<Link href="/">
 						<Icon
@@ -45,7 +53,7 @@ const Footer = () => {
 						_hover={{ color: "#E4626E" }}
 					/>
 					{currentUser ? (
-						<Link href="/photoUpload">
+						<Link as="a" href="/photoUpload">
 							<Icon
 								as={FaPlusCircle}
 								color="#d6d6d6"

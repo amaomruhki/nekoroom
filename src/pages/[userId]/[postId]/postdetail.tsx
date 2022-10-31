@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Footer from "../../../components/layouts/Footer/Footer";
 import Header from "../../../components/layouts/Header/Header";
+import NextLink from "next/link";
 import {
 	Image,
 	Box,
@@ -16,6 +17,15 @@ import {
 	Flex,
 	Spacer,
 	Center,
+	Modal,
+	ModalBody,
+	ModalCloseButton,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	ModalOverlay,
+	useDisclosure,
+	Link,
 } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
 import { PadIcon } from "../../../components/elements/Icon/Icon";
@@ -32,11 +42,17 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useRouter } from "next/router";
-import { parseTimestampToDate } from "../../../utils/DataFormat";
+import {
+	convertSubstring,
+	parseTimestampToDate,
+} from "../../../utils/DataFormat";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import PrimaryButton from "../../../components/elements/Button/PrimaryButton";
 
 const Postdetail = () => {
 	const [postDetail, setPostDetail] = useState([]);
-	const [items, setItems] = useState([]);
+	const [items, setItems] = useState();
+	const { isOpen, onOpen, onClose } = useDisclosure();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -73,8 +89,6 @@ const Postdetail = () => {
 					itemUrl: doc.data().itemUrl,
 				}));
 				setItems(itemsInfo);
-				console.log(itemsInfo);
-				console.log(postDetail.username);
 			}
 		};
 		docRef();
@@ -125,39 +139,88 @@ const Postdetail = () => {
 					mt={4}
 					align="left"
 				>
-					<Heading as="h3" size="md">
-						カテゴリ
-					</Heading>
-					<HStack p={1}>
+					{/* <HStack p={1}>
 						<Button variant="outline" bg="#ffffff" color="gray.900">
 							キャットタワー
 						</Button>
 						<Button variant="outline" bg="#ffffff" color="gray.900">
 							部屋全体
 						</Button>
-					</HStack>
-					<Heading as="h3" size="md">
-						アイテム
+					</HStack> */}
+					<Heading as="h3" fontSize="md">
+						使用アイテム
 					</Heading>
-					{Object.keys(items).length != 0 &&
-						items.map((item) => {
-							<HStack
-								bg="white"
-								boxShadow="md"
-								rounded="md"
-								w="140px"
-								h="140px"
-								justify="center"
-							>
-								<Image
-									alt={item.itemName}
-									src={item.itemImg}
-									boxSize="100px"
-									objectFit="cover"
-								/>
-							</HStack>;
-						})}
-					<Heading as="h3" size="md">
+					<Flex gap={2}>
+						{items?.map((item) => (
+							<>
+								<HStack
+									bg="white"
+									boxShadow="md"
+									rounded="md"
+									w="140px"
+									h="140px"
+									justify="center"
+									key={item.itemName}
+									onClick={onOpen}
+								>
+									<Image
+										alt={item.itemName}
+										src={item.itemImg}
+										boxSize="100px"
+										objectFit="cover"
+									/>
+								</HStack>
+								<Modal isOpen={isOpen} onClose={onClose}>
+									<ModalOverlay />
+									<ModalContent>
+										<ModalHeader mt={6}></ModalHeader>
+										<ModalCloseButton />
+										<ModalBody>
+											<Stack p={2} m="4px">
+												<Stack align="center">
+													<Image
+														alt={item.itemUrl}
+														src={item.imageUrl}
+														boxSize="250px"
+														objectFit="cover"
+													/>
+												</Stack>
+												<Text fontSize="md" color="gray.500">
+													{convertSubstring(item.shopName, 50)}
+												</Text>
+												<Text fontSize="md" as="b">
+													￥{item.price.toLocaleString()}
+												</Text>
+												<Text fontSize="md">
+													{convertSubstring(item.itemName, 100)}
+												</Text>
+												<Button
+													as="a"
+													href={item.itemUrl}
+													target="_blank"
+													borderColor="#E4626E"
+													border="1px"
+													bg="#ffffff"
+													color="#E4626E"
+													size="md"
+													_hover={{ bg: "#E4626E", color: "#ffffff" }}
+													leftIcon={<ExternalLinkIcon />}
+												>
+													楽天市場で見る
+												</Button>
+											</Stack>
+										</ModalBody>
+										<ModalFooter>
+											<NextLink href="https://developers.rakuten.com/" passHref>
+												<Link>Supported by Rakuten Developers</Link>
+											</NextLink>
+										</ModalFooter>
+									</ModalContent>
+								</Modal>
+							</>
+						))}
+					</Flex>
+					<Heading as="h3" fontSize="md">
 						コメント
 					</Heading>
 					<Textarea
@@ -165,15 +228,15 @@ const Postdetail = () => {
 						placeholder="コメントを入力してください"
 					></Textarea>
 					<Center>
-						{/* <PrimaryButton
+						<PrimaryButton
 							bg="#ffffff"
 							color="gray.900"
-							borderColor="gray.900"
+							borderColor="gray.300"
 							border="1px"
-							onClick={}
+							onClick={onClose}
 						>
 							コメントする
-						</PrimaryButton> */}
+						</PrimaryButton>
 					</Center>
 					<VStack spacing={4} pt={6}>
 						<Box bg="white" p={4} rounded="md">
