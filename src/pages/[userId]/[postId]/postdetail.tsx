@@ -30,6 +30,7 @@ import {
 import { Avatar } from "@chakra-ui/react";
 import { PadIcon } from "../../../components/elements/Icon/Icon";
 import {
+	addDoc,
 	collection,
 	collectionGroup,
 	doc,
@@ -38,6 +39,7 @@ import {
 	onSnapshot,
 	orderBy,
 	query,
+	serverTimestamp,
 	Timestamp,
 } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
@@ -49,14 +51,28 @@ import {
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import PrimaryButton from "../../../components/elements/Button/PrimaryButton";
 import Loading from "../../../components/elements/Loading/Loading";
+import { userState } from "../../../Atoms/userAtom";
+import { useRecoilState } from "recoil";
+
+type CommentUser = {
+	commentedUserId: string;
+	comment: string;
+	commentedUsername: string;
+	commentedUserImg: string;
+	createTime: Timestamp;
+};
 
 const Postdetail = () => {
 	const [postDetail, setPostDetail] = useState([]);
 	const [items, setItems] = useState();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [comment, setComment] = useState("");
+	const [comments, setComments] = useState<CommentUser[] | null>(null);
+	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
 
+	// 投稿内容取得
 	useEffect(() => {
 		setIsLoading(true);
 		const docRef = async () => {
@@ -76,7 +92,7 @@ const Postdetail = () => {
 					userImg: userSnap.data().userImg,
 					image: postSnap.data().image,
 					caption: postSnap.data().caption,
-					createTime: postSnap.data().createTime as Timestamp,
+					createTime: postSnap.data().createTime,
 				};
 				setPostDetail(postInfo);
 
@@ -97,6 +113,63 @@ const Postdetail = () => {
 		setIsLoading(false);
 		docRef();
 	}, [router.isReady, router.query.userId]);
+
+	// コメントの取得
+	useEffect(() => {
+		setIsLoading(true);
+		const userId = router.query.userId;
+		const postId = router.query.postId;
+		const unsubscribe = () => {
+			if (router.isReady) {
+				onSnapshot(
+					query(
+						collection(db, "users", userId, "posts", postId, "comments"),
+						orderBy("createTime", "desc")
+					),
+					(snapshot) => {
+						Promise.all(
+							snapshot.docs.map(async (document) => {
+								// コメントユーザーデータ取得
+								const commentedUserId = document.data().commentedUserId;
+								if (commentedUserId) {
+									const commentedUserRef = doc(db, "users", commentedUserId);
+									const commentedUserInfo = await getDoc(commentedUserRef);
+									return {
+										...document.data(),
+										commentedUsername: commentedUserInfo.data().username,
+										commentedUserImg: commentedUserInfo.data().userImg,
+										comment: document.data().comment,
+										createTime: document.data().createTime,
+									};
+								}
+							})
+						).then((data) => {
+							data;
+							setComments(data);
+						});
+					}
+				);
+			}
+		};
+		setIsLoading(false);
+		return () => unsubscribe();
+	}, []);
+
+	// コメント投稿
+	async function sendComment(event: React.MouseEvent<HTMLButtonElement>) {
+		event.preventDefault();
+		const commentToSend = comment;
+		const commentedUserUid = currentUser?.uid;
+		const userId = router.query.userId;
+		const postId = router.query.postId;
+
+		setComment("");
+		await addDoc(collection(db, "users", userId, "posts", postId, "comments"), {
+			comment: commentToSend,
+			commentedUserId: commentedUserUid,
+			createTime: serverTimestamp(),
+		});
+	}
 
 	return (
 		<>
@@ -152,151 +225,140 @@ const Postdetail = () => {
 							部屋全体
 						</Button>
 					</HStack> */}
-						<Heading as="h3" fontSize="md">
-							使用アイテム
-						</Heading>
-						<Flex gap={2}>
-							{items?.map((item) => (
-								<>
-									<HStack
-										bg="white"
-										boxShadow="md"
-										rounded="md"
-										w="140px"
-										h="140px"
-										justify="center"
-										key={item.itemName}
-										onClick={onOpen}
-									>
-										<Image
-											alt={item.itemName}
-											src={item.itemImg}
-											boxSize="100px"
-											objectFit="cover"
-										/>
-									</HStack>
-									<Modal isOpen={isOpen} onClose={onClose}>
-										<ModalOverlay />
-										<ModalContent>
-											<ModalHeader mt={6}></ModalHeader>
-											<ModalCloseButton />
-											<ModalBody>
-												<Stack p={2} m="4px">
-													<Stack align="center">
-														<Image
-															alt={item.itemUrl}
-															src={item.imageUrl}
-															boxSize="250px"
-															objectFit="cover"
-														/>
-													</Stack>
-													<Text fontSize="md" color="gray.500">
-														{convertSubstring(item.shopName, 50)}
-													</Text>
-													<Text fontSize="md" as="b">
-														￥{item.price.toLocaleString()}
-													</Text>
-													<Text fontSize="md">
-														{convertSubstring(item.itemName, 100)}
-													</Text>
-													<Button
-														as="a"
-														href={item.itemUrl}
-														target="_blank"
-														borderColor="#E4626E"
-														border="1px"
-														bg="#ffffff"
-														color="#E4626E"
-														size="md"
-														_hover={{ bg: "#E4626E", color: "#ffffff" }}
-														leftIcon={<ExternalLinkIcon />}
-													>
-														楽天市場で見る
-													</Button>
-												</Stack>
-											</ModalBody>
-											<ModalFooter>
-												<NextLink
-													href="https://developers.rakuten.com/"
-													passHref
-												>
-													<Link>Supported by Rakuten Developers</Link>
-												</NextLink>
-											</ModalFooter>
-										</ModalContent>
-									</Modal>
-								</>
-							))}
-						</Flex>
+						{items?.length >= 1 && (
+							<>
+								<Heading as="h3" fontSize="md">
+									使用アイテム
+								</Heading>
+								<Flex gap={2}>
+									{items?.map((item) => (
+										<>
+											<HStack
+												bg="white"
+												boxShadow="md"
+												rounded="md"
+												w="140px"
+												h="140px"
+												justify="center"
+												key={item.itemName}
+												onClick={onOpen}
+											>
+												<Image
+													alt={item.itemName}
+													src={item.itemImg}
+													boxSize="100px"
+													objectFit="cover"
+												/>
+											</HStack>
+											<Modal isOpen={isOpen} onClose={onClose}>
+												<ModalOverlay />
+												<ModalContent>
+													<ModalHeader mt={6}></ModalHeader>
+													<ModalCloseButton />
+													<ModalBody>
+														<Stack p={2} m="4px">
+															<Stack align="center">
+																<Image
+																	alt={item.itemUrl}
+																	src={item.imageUrl}
+																	boxSize="250px"
+																	objectFit="cover"
+																/>
+															</Stack>
+															<Text fontSize="md" color="gray.500">
+																{convertSubstring(item.shopName, 50)}
+															</Text>
+															<Text fontSize="md" as="b">
+																￥{item.price.toLocaleString()}
+															</Text>
+															<Text fontSize="md">
+																{convertSubstring(item.itemName, 100)}
+															</Text>
+															<Button
+																as="a"
+																href={item.itemUrl}
+																target="_blank"
+																borderColor="#E4626E"
+																border="1px"
+																bg="#ffffff"
+																color="#E4626E"
+																size="md"
+																_hover={{ bg: "#E4626E", color: "#ffffff" }}
+																leftIcon={<ExternalLinkIcon />}
+															>
+																楽天市場で見る
+															</Button>
+														</Stack>
+													</ModalBody>
+													<ModalFooter>
+														<NextLink
+															href="https://developers.rakuten.com/"
+															passHref
+														>
+															<Link>Supported by Rakuten Developers</Link>
+														</NextLink>
+													</ModalFooter>
+												</ModalContent>
+											</Modal>
+										</>
+									))}
+								</Flex>
+							</>
+						)}
 						<Heading as="h3" fontSize="md">
 							コメント
 						</Heading>
-						<Textarea
-							bg="white"
-							placeholder="コメントを入力してください"
-						></Textarea>
-						<Center>
-							<PrimaryButton
-								bg="#ffffff"
-								color="gray.900"
-								borderColor="gray.300"
-								border="1px"
-								onClick={onClose}
-							>
-								コメントする
-							</PrimaryButton>
-						</Center>
-						<VStack spacing={4} pt={6}>
-							<Box bg="white" p={4} rounded="md">
-								<HStack p={2}>
-									<Avatar
-										size="sm"
-										name="Kent Dodds"
-										src="https://bit.ly/kent-c-dodds"
-									/>
-									<HStack alignItems="center">
-										<Text fontSize="md" as="b">
-											Kent Dodds
-										</Text>
-										<Text fontSize="sm">2022/10/03 19:00</Text>
-									</HStack>
-								</HStack>
-								<Text>
-									ここにコメントが入りますここにコメントが入りますここにコメントが入ります
-								</Text>
-							</Box>
-							<Box bg="white" p={4} rounded="md">
-								<HStack p={2}>
-									<Avatar size="sm" name="dummy" src="dummy" />
-									<HStack alignItems="center">
-										<Text fontSize="md" as="b">
-											Kent Dodds
-										</Text>
-										<Text fontSize="sm">2022/10/03 19:00</Text>
-									</HStack>
-								</HStack>
-								<Text>
-									ここにコメントが入りますここにコメントが入りますここにコメントが入ります
-								</Text>
-							</Box>
-							<Box bg="white" p={4} rounded="md">
-								<HStack p={2}>
-									<Avatar
-										size="sm"
-										name="Kent Dodds"
-										src="https://bit.ly/kent-c-dodds"
-									/>
-									<HStack alignItems="center">
-										<Text fontSize="md" as="b">
-											Kent Dodds
-										</Text>
-										<Text fontSize="sm">2022/10/03 19:00</Text>
-									</HStack>
-								</HStack>
-								<Text>
-									ここにコメントが入りますここにコメントが入りますここにコメントが入ります
-								</Text>
-							</Box>
+						{currentUser && (
+							<>
+								<Textarea
+									bg="white"
+									placeholder="コメントを入力してください"
+									value={comment}
+									onChange={(event) => setComment(event.target.value)}
+								/>
+								<Center>
+									<PrimaryButton
+										bg="#ffffff"
+										color="gray.900"
+										borderColor="gray.300"
+										border="1px"
+										onClick={sendComment}
+										disabled={!comment.trim()}
+									>
+										コメントする
+									</PrimaryButton>
+								</Center>
+							</>
+						)}
+						<VStack spacing={4}>
+							{comments &&
+								comments?.map((comment) => (
+									<Box
+										w="100%"
+										maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
+										bg="white"
+										p={4}
+										rounded="md"
+										key={comment.commentedUserId}
+									>
+										<HStack>
+											<Avatar
+												size="sm"
+												name={comment.commentedUserId}
+												src={comment.commentedUserImg}
+											/>
+											<HStack alignItems="center">
+												<Text fontSize="md" as="b">
+													{comment.commentedUsername}
+												</Text>
+												<Text fontSize="sm">
+													{parseTimestampToDate(comment.createTime, "/")}
+												</Text>
+											</HStack>
+										</HStack>
+										<Text>{comment.comment}</Text>
+									</Box>
+								))}
 						</VStack>
 					</VStack>
 				</Container>

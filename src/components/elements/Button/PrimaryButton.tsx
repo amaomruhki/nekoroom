@@ -8,7 +8,7 @@ type Props = {
 	color: "#ffffff" | "gray.900" | "#E4626E";
 	borderColor?: "gray.300" | "#E4626E";
 	border?: "1px";
-	onClick?: () => void;
+	onClick?: (() => void) | (() => Promise<string | void>);
 	disabled?: boolean;
 };
 
