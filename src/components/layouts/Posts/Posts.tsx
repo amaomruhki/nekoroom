@@ -8,14 +8,15 @@ import {
 	orderBy,
 	query,
 	doc,
-	where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
 import Post from "./Post";
+import Loading from "../../elements/Loading/Loading";
 
 type Post = {
 	postId: string;
+	userId: string;
 	username: string;
 	userImg: string;
 	image: string;
@@ -24,10 +25,12 @@ type Post = {
 
 const Posts = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	useEffect(() => {
+		setIsLoading(true);
 		const unsubscribe = onSnapshot(
-			query(collectionGroup(db, "posts")),
+			query(collectionGroup(db, "posts"), orderBy("createTime", "desc")),
 			(snapshot) => {
 				Promise.all(
 					snapshot.docs.map(async (document) => {
@@ -38,6 +41,7 @@ const Posts = () => {
 
 						return {
 							...document.data(),
+							userId: userId,
 							postId: document.id,
 							username: userInfo.data().username,
 							userImg: userInfo.data().userImg,
@@ -45,10 +49,12 @@ const Posts = () => {
 							caption: document.data().caption,
 						};
 					})
-				).then((data) => {
-					data;
-					setPosts(data);
-				});
+				)
+					.then((data) => {
+						data;
+						setPosts(data);
+					})
+					.finally(() => setIsLoading(false));
 			}
 		);
 		return () => unsubscribe();
@@ -59,18 +65,21 @@ const Posts = () => {
 			templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }}
 			gap={1}
 		>
-			{/* ポストが存在してたら表示 */}
-			{posts &&
+			{posts && !isLoading ? (
 				posts.map((post) => (
 					<Post
-						key={post.id}
-						id={post.id}
+						key={post.postId}
+						userId={post.userId}
+						postId={post.postId}
 						username={post.username}
 						userImg={post.userImg}
 						image={post.image}
 						caption={post.caption}
 					/>
-				))}
+				))
+			) : (
+				<Loading />
+			)}
 		</Grid>
 	);
 };
