@@ -47,7 +47,7 @@ const PhotoUpload = () => {
 	const filePickerRef = useRef<HTMLInputElement>(null);
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [inputCaption, setInputCaption] = useState("");
-	const [loading, setLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [itemResult, setItemResult] = useState({});
 	const [currentUser] = useRecoilState(userState);
@@ -78,8 +78,8 @@ const PhotoUpload = () => {
 
 	//投稿内容をアップロード
 	const uploadPost = async () => {
-		if (loading) return;
-		setLoading(true);
+		if (isLoading) return;
+		setIsLoading(true);
 		const postsRef = await addDoc(
 			collection(db, "users", currentUser!.uid, "posts"),
 			{
@@ -103,6 +103,7 @@ const PhotoUpload = () => {
 				);
 			}
 		);
+
 		if (Object.keys(itemResult).length != 0) {
 			await addDoc(
 				collection(
@@ -124,30 +125,30 @@ const PhotoUpload = () => {
 				}
 			);
 		}
-		setLoading(false);
 		setSelectedFile(null);
-		router.push("");
+		setIsLoading(false);
+		router.push(`${currentUser!.uid}/${postsRef.id}/postdetail`);
 	};
 
-	const category = [
-		{ text: "部屋全体", value: "1" },
-		{ text: "猫専用スペース", value: "2" },
-		{ text: "キャットタワー", value: "3" },
-		{ text: "猫トイレ", value: "4" },
-		{ text: "猫食器", value: "5" },
-		{ text: "つめとぎ", value: "6" },
-		{ text: "猫ベッド", value: "7" },
-		{ text: "猫おもちゃ", value: "8" },
-		{ text: "ごはん台", value: "9" },
-		{ text: "猫グッズ収納", value: "10" },
-		{ text: "ネコ飼いライフハック", value: "11" },
-		{ text: "お掃除グッズ", value: "12" },
-	];
+	// const category = [
+	// 	{ text: "部屋全体", value: "1" },
+	// 	{ text: "猫専用スペース", value: "2" },
+	// 	{ text: "キャットタワー", value: "3" },
+	// 	{ text: "猫トイレ", value: "4" },
+	// 	{ text: "猫食器", value: "5" },
+	// 	{ text: "つめとぎ", value: "6" },
+	// 	{ text: "猫ベッド", value: "7" },
+	// 	{ text: "猫おもちゃ", value: "8" },
+	// 	{ text: "ごはん台", value: "9" },
+	// 	{ text: "猫グッズ収納", value: "10" },
+	// 	{ text: "ネコ飼いライフハック", value: "11" },
+	// 	{ text: "お掃除グッズ", value: "12" },
+	// ];
 
 	return (
 		<>
 			<Header />
-			{currentUser ? (
+			{currentUser && !isLoading ? (
 				<Container maxW="800px" pt={8} pb={8} mt={20} mb={20}>
 					<VStack align="left" spacing={4}>
 						<Heading as="h2">ネコルームを投稿する</Heading>
@@ -216,21 +217,21 @@ const PhotoUpload = () => {
 								setInputCaption(event.target.value);
 							}}
 						></Textarea>
-						<HStack>
+						{/* <HStack>
 							<Heading as="h3" size="md">
 								カテゴリを追加する
 							</Heading>
 							<Text color="#E4626E" as="b">
 								※必須
 							</Text>
-						</HStack>
-						<Select bg="white" placeholder="カテゴリを選択してください">
+						</HStack> */}
+						{/* <Select bg="white" placeholder="カテゴリを選択してください">
 							{category.map(({ text, value }) => (
 								<option key={value} value={value}>
 									{text}
 								</option>
 							))}
-						</Select>
+						</Select> */}
 						<Heading as="h3" size="md">
 							アイテムを追加する
 						</Heading>
@@ -310,7 +311,7 @@ const PhotoUpload = () => {
 								bg="#E4626E"
 								color="#ffffff"
 								onClick={uploadPost}
-								disabled={!selectedFile || loading}
+								disabled={!selectedFile || isLoading}
 							>
 								ネコルームを投稿する
 							</PrimaryButton>
@@ -318,7 +319,7 @@ const PhotoUpload = () => {
 					</VStack>
 				</Container>
 			) : (
-				<Text>ログアウトしました</Text>
+				<Loading />
 			)}
 
 			<Footer />

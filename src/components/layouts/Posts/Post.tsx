@@ -58,7 +58,7 @@ const Post = ({ userId, postId, username, userImg, image, caption }: Props) => {
 							_hover={{ color: "#E4626E" }}
 						/>
 					</HStack>
-					<Text fontSize="xs">{caption}</Text>
+					<Text fontSize="sm">{caption}</Text>
 				</Box>
 			</GridItem>
 		</Link>
