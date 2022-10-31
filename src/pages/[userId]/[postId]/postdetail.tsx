@@ -32,9 +32,13 @@ import { PadIcon } from "../../../components/elements/Icon/Icon";
 import {
 	addDoc,
 	collection,
+	collectionGroup,
 	doc,
 	getDoc,
 	getDocs,
+	onSnapshot,
+	orderBy,
+	query,
 	serverTimestamp,
 	Timestamp,
 } from "firebase/firestore";
@@ -51,9 +55,10 @@ import { userState } from "../../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
 
 type CommentUser = {
-	id: string;
+	commentedUserId: string;
 	comment: string;
-	username: string;
+	commentedUsername: string;
+	commentedUserImg: string;
 	createTime: Timestamp;
 };
 
@@ -63,7 +68,6 @@ const Postdetail = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [comment, setComment] = useState("");
-	const [commentUserName, setCommentUserName] = useState("");
 	const [comments, setComments] = useState<CommentUser[] | null>(null);
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
@@ -88,7 +92,7 @@ const Postdetail = () => {
 					userImg: userSnap.data().userImg,
 					image: postSnap.data().image,
 					caption: postSnap.data().caption,
-					createTime: postSnap.data().createTime as Timestamp,
+					createTime: postSnap.data().createTime,
 				};
 				setPostDetail(postInfo);
 
@@ -110,7 +114,46 @@ const Postdetail = () => {
 		docRef();
 	}, [router.isReady, router.query.userId]);
 
-	console.log(currentUser);
+	// コメントの取得
+	useEffect(() => {
+		setIsLoading(true);
+		const userId = router.query.userId;
+		const postId = router.query.postId;
+		const unsubscribe = () => {
+			if (router.isReady) {
+				onSnapshot(
+					query(
+						collection(db, "users", userId, "posts", postId, "comments"),
+						orderBy("createTime", "desc")
+					),
+					(snapshot) => {
+						Promise.all(
+							snapshot.docs.map(async (document) => {
+								// コメントユーザーデータ取得
+								const commentedUserId = document.data().commentedUserId;
+								if (commentedUserId) {
+									const commentedUserRef = doc(db, "users", commentedUserId);
+									const commentedUserInfo = await getDoc(commentedUserRef);
+									return {
+										...document.data(),
+										commentedUsername: commentedUserInfo.data().username,
+										commentedUserImg: commentedUserInfo.data().userImg,
+										comment: document.data().comment,
+										createTime: document.data().createTime,
+									};
+								}
+							})
+						).then((data) => {
+							data;
+							setComments(data);
+						});
+					}
+				);
+			}
+		};
+		setIsLoading(false);
+		return () => unsubscribe();
+	}, []);
 
 	// コメント投稿
 	async function sendComment(event: React.MouseEvent<HTMLButtonElement>) {
@@ -288,56 +331,34 @@ const Postdetail = () => {
 							</>
 						)}
 						<VStack spacing={4}>
-							<Box bg="white" p={4} rounded="md">
-								<HStack p={2}>
-									<Avatar
-										size="sm"
-										name="Kent Dodds"
-										src="https://bit.ly/kent-c-dodds"
-									/>
-									<HStack alignItems="center">
-										<Text fontSize="md" as="b">
-											Kent Dodds
-										</Text>
-										<Text fontSize="sm">2022/10/03 19:00</Text>
-									</HStack>
-								</HStack>
-								<Text>
-									ここにコメントが入りますここにコメントが入りますここにコメントが入ります
-								</Text>
-							</Box>
-							<Box bg="white" p={4} rounded="md">
-								<HStack p={2}>
-									<Avatar size="sm" name="dummy" src="dummy" />
-									<HStack alignItems="center">
-										<Text fontSize="md" as="b">
-											Kent Dodds
-										</Text>
-										<Text fontSize="sm">2022/10/03 19:00</Text>
-									</HStack>
-								</HStack>
-								<Text>
-									ここにコメントが入りますここにコメントが入りますここにコメントが入ります
-								</Text>
-							</Box>
-							<Box bg="white" p={4} rounded="md">
-								<HStack p={2}>
-									<Avatar
-										size="sm"
-										name="Kent Dodds"
-										src="https://bit.ly/kent-c-dodds"
-									/>
-									<HStack alignItems="center">
-										<Text fontSize="md" as="b">
-											Kent Dodds
-										</Text>
-										<Text fontSize="sm">2022/10/03 19:00</Text>
-									</HStack>
-								</HStack>
-								<Text>
-									ここにコメントが入りますここにコメントが入りますここにコメントが入ります
-								</Text>
-							</Box>
+							{comments &&
+								comments?.map((comment) => (
+									<Box
+										w="100%"
+										maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
+										bg="white"
+										p={4}
+										rounded="md"
+										key={comment.commentedUserId}
+									>
+										<HStack>
+											<Avatar
+												size="sm"
+												name={comment.commentedUserId}
+												src={comment.commentedUserImg}
+											/>
+											<HStack alignItems="center">
+												<Text fontSize="md" as="b">
+													{comment.commentedUsername}
+												</Text>
+												<Text fontSize="sm">
+													{parseTimestampToDate(comment.createTime, "/")}
+												</Text>
+											</HStack>
+										</HStack>
+										<Text>{comment.comment}</Text>
+									</Box>
+								))}
 						</VStack>
 					</VStack>
 				</Container>
