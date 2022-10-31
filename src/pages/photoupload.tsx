@@ -84,7 +84,6 @@ const PhotoUpload = () => {
 			collection(db, "users", currentUser!.uid, "posts"),
 			{
 				userId: currentUser!.uid,
-				userRef: `users/${currentUser!.uid}/`,
 				caption: inputCaption,
 				createTime: serverTimestamp(),
 				updateTime: serverTimestamp(),

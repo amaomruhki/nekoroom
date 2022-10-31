@@ -8,9 +8,3 @@ export const userState = atom<UserState>({
 	default: null,
 	dangerouslyAllowMutability: true,
 });
-
-export const postState = atom({
-	key: "postState",
-	default: null,
-	dangerouslyAllowMutability: true,
-});
