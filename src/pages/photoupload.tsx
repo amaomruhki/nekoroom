@@ -87,6 +87,7 @@ const PhotoUpload = () => {
 				caption: inputCaption,
 				createTime: serverTimestamp(),
 				updateTime: serverTimestamp(),
+				likeCount: 0,
 			}
 		);
 		setInputCaption("");

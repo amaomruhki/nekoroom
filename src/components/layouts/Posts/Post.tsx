@@ -6,24 +6,37 @@ import {
 	HStack,
 	Avatar,
 	Spacer,
-	Icon,
 	Image,
+	IconButton,
+	VStack,
 } from "@chakra-ui/react";
 import { PadIcon } from "../../elements/Icon/Icon";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { convertSubstring } from "../../../utils/DataFormat";
 
-type Props = {
-	children?: ReactNode;
-	postId: string;
-	userId: string;
-	username: string;
-	userImg: string;
-	image: string;
-	caption: string;
-};
+// type Props = {
+// 	children?: ReactNode;
+// 	postId: string;
+// 	userId: string;
+// 	username: string;
+// 	userImg: string;
+// 	image: string;
+// 	caption: string;
+// 	handleLikeCount: () => void;
+// 	likeCount: number;
+// };
 
-const Post = ({ userId, postId, username, userImg, image, caption }: Props) => {
+const Post = ({
+	handleLikeCount,
+	postId,
+	userId,
+	username,
+	userImg,
+	image,
+	caption,
+	likeCount,
+}) => {
 	return (
 		<Link href={`${userId}/${postId}/postdetail`}>
 			<GridItem key={postId}>
@@ -45,20 +58,29 @@ const Post = ({ userId, postId, username, userImg, image, caption }: Props) => {
 
 						<HStack alignItems="center">
 							<Text fontSize="sm" as="b">
-								{username}
+								{convertSubstring(username, 10)}
 							</Text>
 						</HStack>
 
 						<Spacer />
-						<Icon
-							as={PadIcon}
-							color="#d6d6d6"
-							w={6}
-							h={6}
-							_hover={{ color: "#E4626E" }}
-						/>
+						<HStack spacing={0}>
+							<IconButton
+								p={0}
+								aria-label="like"
+								variant="ghost"
+								icon={<PadIcon />}
+								color="#d6d6d6"
+								fontSize="20px"
+								_hover={{ color: "#E4626E" }}
+								onClick={handleLikeCount}
+								sx={{ margin: "-4px" }}
+							/>
+							<Text as="b" fontSize="xs" color="#d6d6d6">
+								{likeCount}
+							</Text>
+						</HStack>
 					</HStack>
-					<Text fontSize="sm">{caption}</Text>
+					<Text fontSize="sm">{convertSubstring(caption, 17)}</Text>
 				</Box>
 			</GridItem>
 		</Link>

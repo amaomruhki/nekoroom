@@ -23,6 +23,7 @@ export const useGoogleLogin = async (): Promise<void> => {
 					.split(" ")
 					.join("")
 					.toLocaleLowerCase(),
+				likePostCount: 0,
 			});
 		}
 		router.push("/");
