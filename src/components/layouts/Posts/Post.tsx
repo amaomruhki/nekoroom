@@ -8,27 +8,25 @@ import {
 	Spacer,
 	Image,
 	IconButton,
-	VStack,
+	Icon,
 } from "@chakra-ui/react";
 import { PadIcon } from "../../elements/Icon/Icon";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { convertSubstring } from "../../../utils/DataFormat";
 
-// type Props = {
-// 	children?: ReactNode;
-// 	postId: string;
-// 	userId: string;
-// 	username: string;
-// 	userImg: string;
-// 	image: string;
-// 	caption: string;
-// 	handleLikeCount: () => void;
-// 	likeCount: number;
-// };
+type Props = {
+	children?: ReactNode;
+	postId: string;
+	userId: string;
+	username: string;
+	userImg: string;
+	image: string;
+	caption: string;
+	likeCount: number;
+};
 
 const Post = ({
-	handleLikeCount,
 	postId,
 	userId,
 	username,
@@ -36,10 +34,10 @@ const Post = ({
 	image,
 	caption,
 	likeCount,
-}) => {
+}: Props) => {
 	return (
 		<Link href={`${userId}/${postId}/postdetail`}>
-			<GridItem key={postId}>
+			<GridItem key={postId} cursor="pointer">
 				<Box bg="white" boxShadow="md" rounded="md" p={4} m="8px">
 					<Stack align="center">
 						<Image
@@ -63,18 +61,8 @@ const Post = ({
 						</HStack>
 
 						<Spacer />
-						<HStack spacing={0}>
-							<IconButton
-								p={0}
-								aria-label="like"
-								variant="ghost"
-								icon={<PadIcon />}
-								color="#d6d6d6"
-								fontSize="20px"
-								_hover={{ color: "#E4626E" }}
-								onClick={handleLikeCount}
-								sx={{ margin: "-4px" }}
-							/>
+						<HStack spacing={2}>
+							<Icon as={PadIcon} color="#d6d6d6" w={6} h={6} />
 							<Text as="b" fontSize="xs" color="#d6d6d6">
 								{likeCount}
 							</Text>

@@ -20,7 +20,6 @@ const Header = () => {
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
-				console.log(user);
 				const fetchUser = async () => {
 					const docRef = doc(db, "users", user.auth.currentUser.uid);
 					const docSnap = await getDoc(docRef);

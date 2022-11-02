@@ -26,13 +26,15 @@ import {
 	ModalOverlay,
 	useDisclosure,
 	Link,
+	IconButton,
 } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
 import { PadIcon } from "../../../components/elements/Icon/Icon";
 import {
 	addDoc,
 	collection,
-	collectionGroup,
+	writeBatch,
+	increment,
 	doc,
 	getDoc,
 	getDocs,
@@ -41,6 +43,7 @@ import {
 	query,
 	serverTimestamp,
 	Timestamp,
+	where,
 } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useRouter } from "next/router";
@@ -53,6 +56,7 @@ import PrimaryButton from "../../../components/elements/Button/PrimaryButton";
 import Loading from "../../../components/elements/Loading/Loading";
 import { userState } from "../../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
+import { uuid } from "uuidv4";
 
 type CommentUser = {
 	commentedUserId: string;
@@ -70,6 +74,7 @@ const Postdetail = () => {
 	const [comment, setComment] = useState("");
 	const [comments, setComments] = useState<CommentUser[] | null>(null);
 	const [currentUser] = useRecoilState(userState);
+	const [isLiked, setIsLiked] = useState(false);
 	const router = useRouter();
 
 	// 投稿内容取得
@@ -93,6 +98,7 @@ const Postdetail = () => {
 					image: postSnap.data().image,
 					caption: postSnap.data().caption,
 					createTime: postSnap.data().createTime,
+					likeCount: postSnap.data().likeCount,
 				};
 				setPostDetail(postInfo);
 
@@ -171,6 +177,88 @@ const Postdetail = () => {
 		});
 	}
 
+	//ユーザーのlike（いいにゃ）の判断
+	useEffect(() => {
+		setIsLoading(true);
+		const userId = currentUser?.uid;
+		const postId = router.query.postId;
+		const unsubscribe = () => {
+			if (router.isReady) {
+				const like = query(
+					collection(db, "users", userId, "likePosts"),
+					where("postId", "==", postId)
+				);
+				if (like) {
+					setIsLiked(true);
+				}
+			}
+		};
+		setIsLoading(false);
+		return () => unsubscribe();
+	}, []);
+
+	//like（いいにゃ）のカウントを増減処理(posts,likePosts,likeUsersをバッチ処理)
+	const handleLikeCount = async (postDetail) => {
+		const batch = writeBatch(db);
+		const postId = postDetail.postId;
+		const authorId = postDetail.userId;
+		const loginUserId = currentUser!.uid;
+		const postRef = doc(db, "users", authorId, "posts", postId);
+		// ユーザーがlikeした投稿を参照(ログイン時)
+		const likePostsDoc = doc(db, "users", loginUserId, "likePosts", postId);
+		const likePostsInfo = await getDoc(likePostsDoc);
+		// 投稿をlikeしたユーザーを参照
+		const likeUsersDoc = doc(postRef, "likeUsers", postId);
+		const likeUsersInfo = await getDoc(likeUsersDoc);
+		const { v4: uuidv4 } = require("uuid");
+
+		//likeがゼロの場合
+		if (postDetail.likeCount === 0) {
+			batch.set(likePostsDoc, {
+				likePostAuthorId: authorId,
+				postId,
+				createTime: serverTimestamp(),
+			});
+
+			batch.set(likeUsersDoc, {
+				likeUserId: loginUserId,
+				key: uuidv4(), //map用key
+				postId,
+				createTime: serverTimestamp(),
+			});
+			batch.update(postRef, { likeCount: increment(1) });
+		} else {
+			//ログインuserがlikeしている場合、likeを取り消す
+			if (
+				likePostsInfo &&
+				likePostsInfo.data().postId === likeUsersInfo.data().postId
+			) {
+				batch.delete(likePostsDoc);
+				batch.delete(likeUsersDoc);
+				batch.update(postRef, { likeCount: increment(-1) });
+				setIsLiked(false);
+			} else {
+				//ログインuserがlikeしていない場合、likeを追加
+				batch.set(likePostsDoc, {
+					likePostAuthorId: authorId,
+					postId,
+					createTime: serverTimestamp(),
+				});
+
+				batch.set(likeUsersDoc, {
+					likeUserId: loginUserId,
+					key: uuid(), //map用key
+					postId,
+					createTime: serverTimestamp(),
+				});
+
+				batch.update(postRef, { likeCount: increment(1) });
+				setIsLiked(true);
+			}
+		}
+		batch.commit();
+	};
+
 	return (
 		<>
 			<Header />
@@ -200,13 +288,55 @@ const Postdetail = () => {
 								</VStack>
 							</HStack>
 							<Spacer />
-							<Icon
-								as={PadIcon}
-								color="#d6d6d6"
-								w={8}
-								h={8}
-								_hover={{ color: "#E4626E" }}
-							/>
+							{/* like表示の条件分岐 */}
+							{currentUser ? (
+								<>
+									{isLiked ? (
+										<HStack spacing={2}>
+											<IconButton
+												p={0}
+												aria-label="like"
+												variant="ghost"
+												icon={<PadIcon />}
+												color="#E4626E"
+												fontSize="30px"
+												sx={{ margin: "-4px" }}
+												onClick={() => handleLikeCount(postDetail)}
+											/>
+											<Text as="b" fontSize="sm" color="#d6d6d6">
+												{postDetail.likeCount}
+											</Text>
+										</HStack>
+									) : (
+										<HStack spacing={2}>
+											<IconButton
+												p={0}
+												aria-label="like"
+												variant="ghost"
+												icon={<PadIcon />}
+												color="#d6d6d6"
+												fontSize="30px"
+												sx={{ margin: "-4px" }}
+												onClick={() => handleLikeCount(postDetail)}
+											/>
+											<Text as="b" fontSize="sm" color="#d6d6d6">
+												{postDetail.likeCount}
+											</Text>
+										</HStack>
+									)}
+								</>
+							) : (
+								<HStack spacing={2}>
+									<Icon
+										as={PadIcon}
+										color="#d6d6d6"
+										sx={{ width: "30px", height: "30px" }}
+									/>
+									<Text as="b" fontSize="xs" color="#d6d6d6">
+										{postDetail.likeCount}
+									</Text>
+								</HStack>
+							)}
 						</Flex>
 						<Text fontSize="md">{postDetail.caption}</Text>
 					</Box>
@@ -242,6 +372,7 @@ const Postdetail = () => {
 												justify="center"
 												key={item.itemName}
 												onClick={onOpen}
+												cursor="pointer"
 											>
 												<Image
 													alt={item.itemName}
@@ -331,34 +462,33 @@ const Postdetail = () => {
 							</>
 						)}
 						<VStack spacing={4}>
-							{comments &&
-								comments?.map((comment) => (
-									<Box
-										w="100%"
-										maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
-										bg="white"
-										p={4}
-										rounded="md"
-										key={comment.commentedUserId}
-									>
-										<HStack>
-											<Avatar
-												size="sm"
-												name={comment.commentedUserId}
-												src={comment.commentedUserImg}
-											/>
-											<HStack alignItems="center">
-												<Text fontSize="md" as="b">
-													{comment.commentedUsername}
-												</Text>
-												<Text fontSize="sm">
-													{parseTimestampToDate(comment.createTime, "/")}
-												</Text>
-											</HStack>
+							{comments?.map((comment) => (
+								<Box
+									w="100%"
+									maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
+									bg="white"
+									p={4}
+									rounded="md"
+									key={comment.commentedUserId}
+								>
+									<HStack>
+										<Avatar
+											size="sm"
+											name={comment.commentedUserId}
+											src={comment.commentedUserImg}
+										/>
+										<HStack alignItems="center">
+											<Text fontSize="md" as="b">
+												{comment.commentedUsername}
+											</Text>
+											<Text fontSize="sm">
+												{parseTimestampToDate(comment.createTime, "/")}
+											</Text>
 										</HStack>
-										<Text>{comment.comment}</Text>
-									</Box>
-								))}
+									</HStack>
+									<Text>{comment.comment}</Text>
+								</Box>
+							))}
 						</VStack>
 					</VStack>
 				</Container>
