@@ -301,7 +301,7 @@ const PhotoUpload = () => {
 								</ModalBody>
 								<ModalFooter>
 									<NextLink href="https://developers.rakuten.com/" passHref>
-										<Link>Supported by Rakuten Developers</Link>
+										<Link target="_blank">Supported by Rakuten Developers</Link>
 									</NextLink>
 								</ModalFooter>
 							</ModalContent>

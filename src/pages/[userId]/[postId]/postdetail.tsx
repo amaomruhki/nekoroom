@@ -118,38 +118,6 @@ const Postdetail = () => {
 		}
 	}, [router.isReady, router.query.userId]);
 
-	//投稿したユーザー情報と投稿内容を取得
-	// useEffect(() => {
-	// 	setIsLoading(true);
-	// 	if (router.isReady) {
-	// 		const authorId = router.query.userId;
-	// 		const postId = router.query.postId;
-	// 		const unsubscribe = onSnapshot(
-	// 			doc(db, "users", authorId, "posts", postId),
-	// 			(snapshot) => {
-	// 				Promise.all(
-	// 				// ユーザーデータ取得
-	// 				const userRef = doc(db, "users", authorId);
-	// 				const userInfo = await getDoc(userRef);
-	// 				return {
-	// 					...snapshot.data(),
-	// 					userId: authorId,
-	// 					postId: snapshot.data().id,
-	// 					username: userInfo.data().username,
-	// 					userImg: userInfo.data().userImg,
-	// 					image: snapshot.data().image,
-	// 					caption: snapshot.data().caption,
-	// 					likeCount: snapshot.data().likeCount,
-	// 				}
-	// 				).then((data) => {
-	// 					data;
-	// 					setPostDetail(data);
-	// 				})
-	// 			.finally(setIsLoading(false));
-	// 	}
-	// 			return () => unsubscribe()
-	// }, [router.isReady, router.query.userId]);
-
 	//アイテム取得
 	useEffect(() => {
 		setIsLoading(true);
@@ -463,7 +431,9 @@ const Postdetail = () => {
 															href="https://developers.rakuten.com/"
 															passHref
 														>
-															<Link>Supported by Rakuten Developers</Link>
+															<Link target="_blank">
+																Supported by Rakuten Developers
+															</Link>
 														</NextLink>
 													</ModalFooter>
 												</ModalContent>
@@ -476,6 +446,7 @@ const Postdetail = () => {
 						<Heading as="h3" fontSize="md">
 							コメント
 						</Heading>
+						{comments?.length === 0 && <Text>コメントはありません</Text>}
 						{currentUser && (
 							<>
 								<Textarea
