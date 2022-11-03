@@ -23,7 +23,7 @@ const Login = (): JSX.Element => {
 	const [password, setPassword] = useState("");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const guestEmail = "guest@dummy.com";
-	const guestPassword = "guestDummy";
+	const guestPassword = "guestdummy";
 	const router = useRouter();
 
 	const emailLogin = async () => {

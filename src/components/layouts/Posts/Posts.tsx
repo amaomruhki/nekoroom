@@ -57,7 +57,7 @@ const Posts = () => {
 						data;
 						setPosts(data);
 					})
-					.finally(() => setIsLoading(false));
+					.finally(setIsLoading(false));
 			}
 		);
 		return () => unsubscribe();

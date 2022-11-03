@@ -44,6 +44,7 @@ import {
 	serverTimestamp,
 	Timestamp,
 	where,
+	collectionGroup,
 } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useRouter } from "next/router";
@@ -73,8 +74,8 @@ const Postdetail = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [comment, setComment] = useState("");
 	const [comments, setComments] = useState<CommentUser[] | null>(null);
+	const [likeUsers, setLikeUsers] = useState([]);
 	const [currentUser] = useRecoilState(userState);
-	const [isLiked, setIsLiked] = useState(false);
 	const router = useRouter();
 
 	// 投稿内容取得
@@ -120,13 +121,36 @@ const Postdetail = () => {
 		docRef();
 	}, [router.isReady, router.query.userId]);
 
+	//投稿に対してlikeしたユーザーを絞り込んで取得
+	useEffect(() => {
+		if (router.isReady && currentUser) {
+			const postId = router.query.postId;
+			const loginUserId = currentUser!.uid;
+			const likeUsersRef = query(
+				collection(db, "users", loginUserId, "likeUsers"),
+				where("postId", "==", postId)
+			);
+			onSnapshot(likeUsersRef, (querySnapshot) => {
+				const likeUsersData = querySnapshot.docs.map((doc) => {
+					return {
+						...doc.data(),
+						id: doc.id,
+						likeUserId: doc.data().likeUserId,
+						postId: doc.data().postId,
+					};
+				});
+				setLikeUsers(likeUsersData);
+			});
+		}
+	}, [router.isReady, router.query.userId]);
+
 	// コメントの取得
 	useEffect(() => {
 		setIsLoading(true);
-		const userId = router.query.userId;
-		const postId = router.query.postId;
 		const unsubscribe = () => {
 			if (router.isReady) {
+				const userId = router.query.userId;
+				const postId = router.query.postId;
 				onSnapshot(
 					query(
 						collection(db, "users", userId, "posts", postId, "comments"),
@@ -177,26 +201,6 @@ const Postdetail = () => {
 		});
 	}
 
-	//ユーザーのlike（いいにゃ）の判断
-	useEffect(() => {
-		setIsLoading(true);
-		const userId = currentUser?.uid;
-		const postId = router.query.postId;
-		const unsubscribe = () => {
-			if (router.isReady) {
-				const like = query(
-					collection(db, "users", userId, "likePosts"),
-					where("postId", "==", postId)
-				);
-				if (like) {
-					setIsLiked(true);
-				}
-			}
-		};
-		setIsLoading(false);
-		return () => unsubscribe();
-	}, []);
-
 	//like（いいにゃ）のカウントを増減処理(posts,likePosts,likeUsersをバッチ処理)
 	const handleLikeCount = async (postDetail) => {
 		const batch = writeBatch(db);
@@ -204,12 +208,8 @@ const Postdetail = () => {
 		const authorId = postDetail.userId;
 		const loginUserId = currentUser!.uid;
 		const postRef = doc(db, "users", authorId, "posts", postId);
-		// ユーザーがlikeした投稿を参照(ログイン時)
 		const likePostsDoc = doc(db, "users", loginUserId, "likePosts", postId);
-		const likePostsInfo = await getDoc(likePostsDoc);
-		// 投稿をlikeしたユーザーを参照
-		const likeUsersDoc = doc(postRef, "likeUsers", postId);
-		const likeUsersInfo = await getDoc(likeUsersDoc);
+		const likeUsersDoc = doc(db, "users", loginUserId, "likeUsers", postId);
 		const { v4: uuidv4 } = require("uuid");
 
 		//likeがゼロの場合
@@ -228,15 +228,11 @@ const Postdetail = () => {
 			});
 			batch.update(postRef, { likeCount: increment(1) });
 		} else {
-			//ログインuserがlikeしている場合、likeを取り消す
-			if (
-				likePostsInfo &&
-				likePostsInfo.data().postId === likeUsersInfo.data().postId
-			) {
+			// ログインuserがlikeしている場合、likeを取り消す
+			if (likeUsers.length > 0) {
 				batch.delete(likePostsDoc);
 				batch.delete(likeUsersDoc);
 				batch.update(postRef, { likeCount: increment(-1) });
-				setIsLiked(false);
 			} else {
 				//ログインuserがlikeしていない場合、likeを追加
 				batch.set(likePostsDoc, {
@@ -247,13 +243,12 @@ const Postdetail = () => {
 
 				batch.set(likeUsersDoc, {
 					likeUserId: loginUserId,
-					key: uuid(), //map用key
+					key: uuidv4(), //map用key
 					postId,
 					createTime: serverTimestamp(),
 				});
 
 				batch.update(postRef, { likeCount: increment(1) });
-				setIsLiked(true);
 			}
 		}
 		batch.commit();
@@ -289,54 +284,42 @@ const Postdetail = () => {
 							</HStack>
 							<Spacer />
 							{/* like表示の条件分岐 */}
-							{currentUser ? (
-								<>
-									{isLiked ? (
-										<HStack spacing={2}>
-											<IconButton
-												p={0}
-												aria-label="like"
-												variant="ghost"
-												icon={<PadIcon />}
-												color="#E4626E"
-												fontSize="30px"
-												sx={{ margin: "-4px" }}
-												onClick={() => handleLikeCount(postDetail)}
-											/>
-											<Text as="b" fontSize="sm" color="#d6d6d6">
-												{postDetail.likeCount}
-											</Text>
-										</HStack>
+							<HStack spacing={2}>
+								{currentUser ? (
+									likeUsers.length > 0 ? (
+										<IconButton
+											p={0}
+											aria-label="like"
+											variant="ghost"
+											icon={<PadIcon />}
+											color="#E4626E"
+											fontSize="30px"
+											sx={{ margin: "-4px" }}
+											onClick={() => handleLikeCount(postDetail)}
+										/>
 									) : (
-										<HStack spacing={2}>
-											<IconButton
-												p={0}
-												aria-label="like"
-												variant="ghost"
-												icon={<PadIcon />}
-												color="#d6d6d6"
-												fontSize="30px"
-												sx={{ margin: "-4px" }}
-												onClick={() => handleLikeCount(postDetail)}
-											/>
-											<Text as="b" fontSize="sm" color="#d6d6d6">
-												{postDetail.likeCount}
-											</Text>
-										</HStack>
-									)}
-								</>
-							) : (
-								<HStack spacing={2}>
+										<IconButton
+											p={0}
+											aria-label="like"
+											variant="ghost"
+											icon={<PadIcon />}
+											color="#d6d6d6"
+											fontSize="30px"
+											sx={{ margin: "-4px" }}
+											onClick={() => handleLikeCount(postDetail)}
+										/>
+									)
+								) : (
 									<Icon
 										as={PadIcon}
 										color="#d6d6d6"
 										sx={{ width: "30px", height: "30px" }}
 									/>
-									<Text as="b" fontSize="xs" color="#d6d6d6">
-										{postDetail.likeCount}
-									</Text>
-								</HStack>
-							)}
+								)}
+								<Text as="b" fontSize="xs" color="#d6d6d6">
+									{postDetail.likeCount}
+								</Text>
+							</HStack>
 						</Flex>
 						<Text fontSize="md">{postDetail.caption}</Text>
 					</Box>
