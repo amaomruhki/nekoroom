@@ -68,8 +68,9 @@ type CommentUser = {
 };
 
 const Postdetail = () => {
-	const [postDetail, setPostDetail] = useState([]);
 	const [items, setItems] = useState();
+	const [post, setPost] = useState([]);
+	const [author, setAuthor] = useState([]);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [comment, setComment] = useState("");
@@ -78,47 +79,71 @@ const Postdetail = () => {
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
 
-	// 投稿内容取得
+	//投稿したユーザー情報を取得
 	useEffect(() => {
 		setIsLoading(true);
-		const docRef = async () => {
-			if (router.isReady) {
-				const userId = router.query.userId;
-				const userRef = doc(db, "users", userId);
-				const userSnap = await getDoc(userRef);
-
-				const postId = router.query.postId;
-				const postRef = doc(userRef, "posts", postId);
-				const postSnap = await getDoc(postRef);
-
-				const postInfo = {
-					userId: userId,
-					postId: postId,
-					username: userSnap.data().username,
-					userImg: userSnap.data().userImg,
-					image: postSnap.data().image,
-					caption: postSnap.data().caption,
-					createTime: postSnap.data().createTime,
-					likeCount: postSnap.data().likeCount,
+		if (router.isReady) {
+			const authorId = router.query.userId;
+			const unsubscribe = onSnapshot(doc(db, "users", authorId), (snapshot) => {
+				const userData = {
+					userId: authorId,
+					username: snapshot.data().username,
+					userImg: snapshot.data().userImg,
 				};
-				setPostDetail(postInfo);
+				setAuthor(userData);
+			});
+			return () => unsubscribe();
+		}
+	}, [router.isReady, router.query.userId]);
 
-				const itemsSnap = await getDocs(collection(postRef, "items"));
-				const itemsInfo = itemsSnap.docs.map((doc) => ({
-					...doc.data(),
-					itemId: doc.id,
-					postId: doc.data().postId,
-					itemImg: doc.data().itemImg,
-					itemName: doc.data().itemName,
-					price: doc.data().price,
-					shopName: doc.data().shopName,
-					itemUrl: doc.data().itemUrl,
-				}));
-				setItems(itemsInfo);
-			}
-		};
+	//投稿した記事情報を取得
+	useEffect(() => {
+		setIsLoading(true);
+		if (router.isReady) {
+			const authorId = router.query.userId;
+			const postId = router.query.postId;
+			const unsubscribe = onSnapshot(
+				doc(db, "users", authorId, "posts", postId),
+				(snapshot) => {
+					const postData = {
+						postId: snapshot.data().id,
+						image: snapshot.data().image,
+						caption: snapshot.data().caption,
+						likeCount: snapshot.data().likeCount,
+					};
+					setPost(postData);
+				}
+			);
+			return () => unsubscribe();
+		}
+	}, [router.isReady, router.query.userId]);
+
+	//アイテム取得
+	useEffect(() => {
+		setIsLoading(true);
+		if (router.isReady) {
+			const authorId = router.query.userId;
+			const postId = router.query.postId;
+			const itemsRef = query(
+				collection(db, "users", authorId, "posts", postId, "items"),
+				where("postId", "==", postId)
+			);
+			onSnapshot(itemsRef, (querySnapshot) => {
+				const itemsData = querySnapshot.docs.map((doc) => {
+					return {
+						itemId: doc.id,
+						postId: doc.data().postId,
+						itemImg: doc.data().itemImg,
+						itemName: doc.data().itemName,
+						price: doc.data().price,
+						shopName: doc.data().shopName,
+						itemUrl: doc.data().itemUrl,
+					};
+				});
+				setItems(itemsData);
+			});
+		}
 		setIsLoading(false);
-		docRef();
 	}, [router.isReady, router.query.userId]);
 
 	//投稿に対してlikeしたユーザーを絞り込んで取得
@@ -202,18 +227,19 @@ const Postdetail = () => {
 	}
 
 	//like（いいにゃ）のカウントを増減処理(posts,likePosts,likeUsersをバッチ処理)
-	const handleLikeCount = async (postDetail) => {
+	const handleLikeCount = async () => {
 		const batch = writeBatch(db);
-		const postId = postDetail.postId;
-		const authorId = postDetail.userId;
+		const postId = router.query.postId;
+		const authorId = router.query.userId;
 		const loginUserId = currentUser!.uid;
 		const postRef = doc(db, "users", authorId, "posts", postId);
+		const postInfo = await getDoc(postRef);
 		const likePostsDoc = doc(db, "users", loginUserId, "likePosts", postId);
 		const likeUsersDoc = doc(db, "users", loginUserId, "likeUsers", postId);
 		const { v4: uuidv4 } = require("uuid");
 
 		//likeがゼロの場合
-		if (postDetail.likeCount === 0) {
+		if (postInfo.data().likeCount === 0) {
 			batch.set(likePostsDoc, {
 				likePostAuthorId: authorId,
 				postId,
@@ -261,24 +287,20 @@ const Postdetail = () => {
 				<Container pt={8} pb={8} mt="50px">
 					<Box maxW="420px" bg="white" p={4} rounded="md" boxShadow="md">
 						<Image
-							src={postDetail.image}
+							src={post.image}
 							boxSize="400px"
-							alt={`${postDetail.username}'s photo`}
+							alt={`${author.username}'s photo`}
 							objectFit="cover"
 						/>
 						<Flex alignItems="center" gap="2">
 							<HStack p={2}>
-								<Avatar
-									size="md"
-									name={postDetail.username}
-									src={postDetail.userImg}
-								/>
+								<Avatar size="md" name={author.username} src={author.userImg} />
 								<VStack align="left">
 									<Text fontSize="md" as="b">
-										{postDetail.username}
+										{author.username}
 									</Text>
 									<Text fontSize="sm">
-										{parseTimestampToDate(postDetail.createTime, "/")}
+										{parseTimestampToDate(post.createTime, "/")}
 									</Text>
 								</VStack>
 							</HStack>
@@ -295,7 +317,7 @@ const Postdetail = () => {
 											color="#E4626E"
 											fontSize="30px"
 											sx={{ margin: "-4px" }}
-											onClick={() => handleLikeCount(postDetail)}
+											onClick={() => handleLikeCount()}
 										/>
 									) : (
 										<IconButton
@@ -306,7 +328,7 @@ const Postdetail = () => {
 											color="#d6d6d6"
 											fontSize="30px"
 											sx={{ margin: "-4px" }}
-											onClick={() => handleLikeCount(postDetail)}
+											onClick={() => handleLikeCount()}
 										/>
 									)
 								) : (
@@ -317,11 +339,11 @@ const Postdetail = () => {
 									/>
 								)}
 								<Text as="b" fontSize="xs" color="#d6d6d6">
-									{postDetail.likeCount}
+									{post.likeCount}
 								</Text>
 							</HStack>
 						</Flex>
-						<Text fontSize="md">{postDetail.caption}</Text>
+						<Text fontSize="md">{post.caption}</Text>
 					</Box>
 					<VStack
 						w="100%"
@@ -374,7 +396,7 @@ const Postdetail = () => {
 															<Stack align="center">
 																<Image
 																	alt={item.itemUrl}
-																	src={item.imageUrl}
+																	src={item.itemImg}
 																	boxSize="250px"
 																	objectFit="cover"
 																/>
@@ -409,7 +431,9 @@ const Postdetail = () => {
 															href="https://developers.rakuten.com/"
 															passHref
 														>
-															<Link>Supported by Rakuten Developers</Link>
+															<Link target="_blank">
+																Supported by Rakuten Developers
+															</Link>
 														</NextLink>
 													</ModalFooter>
 												</ModalContent>
@@ -422,6 +446,7 @@ const Postdetail = () => {
 						<Heading as="h3" fontSize="md">
 							コメント
 						</Heading>
+						{comments?.length === 0 && <Text>コメントはありません</Text>}
 						{currentUser && (
 							<>
 								<Textarea
