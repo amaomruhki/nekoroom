@@ -6,12 +6,14 @@ import {
 	HStack,
 	Avatar,
 	Spacer,
-	Icon,
 	Image,
+	IconButton,
+	Icon,
 } from "@chakra-ui/react";
 import { PadIcon } from "../../elements/Icon/Icon";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { convertSubstring } from "../../../utils/DataFormat";
 
 type Props = {
 	children?: ReactNode;
@@ -21,12 +23,21 @@ type Props = {
 	userImg: string;
 	image: string;
 	caption: string;
+	likeCount: number;
 };
 
-const Post = ({ userId, postId, username, userImg, image, caption }: Props) => {
+const Post = ({
+	postId,
+	userId,
+	username,
+	userImg,
+	image,
+	caption,
+	likeCount,
+}: Props) => {
 	return (
 		<Link href={`${userId}/${postId}/postdetail`}>
-			<GridItem key={postId}>
+			<GridItem key={postId} cursor="pointer">
 				<Box bg="white" boxShadow="md" rounded="md" p={4} m="8px">
 					<Stack align="center">
 						<Image
@@ -45,20 +56,19 @@ const Post = ({ userId, postId, username, userImg, image, caption }: Props) => {
 
 						<HStack alignItems="center">
 							<Text fontSize="sm" as="b">
-								{username}
+								{convertSubstring(username, 10)}
 							</Text>
 						</HStack>
 
 						<Spacer />
-						<Icon
-							as={PadIcon}
-							color="#d6d6d6"
-							w={6}
-							h={6}
-							_hover={{ color: "#E4626E" }}
-						/>
+						<HStack spacing={2}>
+							<Icon as={PadIcon} color="#d6d6d6" w={6} h={6} />
+							<Text as="b" fontSize="xs" color="#d6d6d6">
+								{likeCount}
+							</Text>
+						</HStack>
 					</HStack>
-					<Text fontSize="sm">{caption}</Text>
+					<Text fontSize="sm">{convertSubstring(caption, 17)}</Text>
 				</Box>
 			</GridItem>
 		</Link>

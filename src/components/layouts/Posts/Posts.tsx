@@ -1,9 +1,7 @@
 import { Grid } from "@chakra-ui/react";
 import {
-	collection,
 	collectionGroup,
 	getDoc,
-	getDocs,
 	onSnapshot,
 	orderBy,
 	query,
@@ -13,6 +11,8 @@ import { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
 import Post from "./Post";
 import Loading from "../../elements/Loading/Loading";
+import { useRecoilState } from "recoil";
+import { userState } from "../../../Atoms/userAtom";
 
 type Post = {
 	postId: string;
@@ -21,11 +21,13 @@ type Post = {
 	userImg: string;
 	image: string;
 	caption: string;
+	likeCount: number;
 };
 
 const Posts = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [currentUser] = useRecoilState(userState);
 
 	useEffect(() => {
 		setIsLoading(true);
@@ -47,6 +49,7 @@ const Posts = () => {
 							userImg: userInfo.data().userImg,
 							image: document.data().image,
 							caption: document.data().caption,
+							likeCount: document.data().likeCount,
 						};
 					})
 				)
@@ -54,32 +57,36 @@ const Posts = () => {
 						data;
 						setPosts(data);
 					})
-					.finally(() => setIsLoading(false));
+					.finally(setIsLoading(false));
 			}
 		);
 		return () => unsubscribe();
 	}, []);
+
+	// ローディング状態であればローディングUIを表示する
+	if (isLoading) {
+		return <Loading />;
+	}
 
 	return (
 		<Grid
 			templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }}
 			gap={1}
 		>
-			{posts && !isLoading ? (
-				posts.map((post) => (
-					<Post
-						key={post.postId}
-						userId={post.userId}
-						postId={post.postId}
-						username={post.username}
-						userImg={post.userImg}
-						image={post.image}
-						caption={post.caption}
-					/>
-				))
-			) : (
-				<Loading />
-			)}
+			{posts
+				? posts.map((post) => (
+						<Post
+							key={post.postId}
+							userId={post.userId}
+							postId={post.postId}
+							username={post.username}
+							userImg={post.userImg}
+							image={post.image}
+							caption={post.caption}
+							likeCount={post.likeCount}
+						/>
+				  ))
+				: null}
 		</Grid>
 	);
 };
