@@ -99,6 +99,7 @@ const PhotoUpload = () => {
 					doc(db, "users", currentUser!.uid, "posts", postsRef.id),
 					{
 						image: downloadURL,
+						postId: postsRef.id,
 					}
 				);
 			}
