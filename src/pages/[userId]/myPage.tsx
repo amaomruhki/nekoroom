@@ -55,8 +55,9 @@ import { uuid } from "uuidv4";
 import Loading from "../../components/elements/Loading/Loading";
 
 type Post = {
-	postId: string;
 	image: string;
+	postId: string;
+	userId: string;
 	caption: string;
 	likeCount: number;
 };
@@ -77,6 +78,7 @@ const MyPage = () => {
 				(snapshot) => {
 					const postData = snapshot.docs.map((doc) => {
 						return {
+							userId: userId,
 							postId: doc.data().id,
 							image: doc.data().image,
 							caption: doc.data().caption,
@@ -138,14 +140,22 @@ const MyPage = () => {
 					>
 						{posts
 							? posts.map((post) => (
-									<Stack align="center" key={post.postId}>
-										<Image
-											alt={`${currentUser.username}'s photo`}
-											src={post.image}
-											boxSize="100px"
-											objectFit="cover"
-										/>
-									</Stack>
+									<NextLink
+										key={post.postId}
+										href={{
+											pathname: "/[userId]/[postId]/postEdit",
+											query: { userId: post.userId, postId: post.postId },
+										}}
+									>
+										<Stack align="center">
+											<Image
+												alt={`${currentUser.username}'s photo`}
+												src={post.image}
+												boxSize="100px"
+												objectFit="cover"
+											/>
+										</Stack>
+									</NextLink>
 							  ))
 							: null}
 					</Grid>
