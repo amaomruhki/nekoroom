@@ -128,23 +128,8 @@ const PhotoUpload = () => {
 		}
 		setSelectedFile(null);
 		setIsLoading(false);
-		router.push(`${currentUser!.uid}/${postsRef.id}/postdetail`);
+		router.push(`${currentUser!.uid}/${postsRef.id}/postDetail`);
 	};
-
-	// const category = [
-	// 	{ text: "部屋全体", value: "1" },
-	// 	{ text: "猫専用スペース", value: "2" },
-	// 	{ text: "キャットタワー", value: "3" },
-	// 	{ text: "猫トイレ", value: "4" },
-	// 	{ text: "猫食器", value: "5" },
-	// 	{ text: "つめとぎ", value: "6" },
-	// 	{ text: "猫ベッド", value: "7" },
-	// 	{ text: "猫おもちゃ", value: "8" },
-	// 	{ text: "ごはん台", value: "9" },
-	// 	{ text: "猫グッズ収納", value: "10" },
-	// 	{ text: "ネコ飼いライフハック", value: "11" },
-	// 	{ text: "お掃除グッズ", value: "12" },
-	// ];
 
 	return (
 		<>
@@ -218,21 +203,6 @@ const PhotoUpload = () => {
 								setInputCaption(event.target.value);
 							}}
 						></Textarea>
-						{/* <HStack>
-							<Heading as="h3" size="md">
-								カテゴリを追加する
-							</Heading>
-							<Text color="#E4626E" as="b">
-								※必須
-							</Text>
-						</HStack> */}
-						{/* <Select bg="white" placeholder="カテゴリを選択してください">
-							{category.map(({ text, value }) => (
-								<option key={value} value={value}>
-									{text}
-								</option>
-							))}
-						</Select> */}
 						<Heading as="h3" size="md">
 							アイテムを追加する
 						</Heading>

@@ -10,6 +10,7 @@ import {
 	Image,
 	IconButton,
 	Icon,
+	AspectRatio,
 } from "@chakra-ui/react";
 import { PadIcon } from "../../elements/Icon/Icon";
 import type { ReactNode } from "react";
@@ -39,21 +40,20 @@ const Post = ({
 	return (
 		<NextLink
 			href={{
-				pathname: "/[userId]/[postId]/postdetail",
+				pathname: "/[userId]/[postId]/postDetail",
 				query: { userId: userId, postId: postId },
 			}}
-			passHref
 		>
 			<GridItem key={postId} cursor="pointer">
 				<Box bg="white" boxShadow="md" rounded="md" p={4} m="8px">
-					<Stack align="center">
+					<AspectRatio ratio={1 / 1}>
 						<Image
 							alt={`${username}'s photo`}
 							src={image}
 							boxSize="220px"
 							objectFit="cover"
 						/>
-					</Stack>
+					</AspectRatio>
 					<HStack p={2}>
 						{userImg ? (
 							<Avatar size="sm" name={username} src={userImg} />

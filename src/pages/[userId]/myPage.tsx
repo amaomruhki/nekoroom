@@ -28,6 +28,7 @@ import {
 	Link,
 	IconButton,
 	Grid,
+	AspectRatio,
 } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
 import {
@@ -79,7 +80,7 @@ const MyPage = () => {
 					const postData = snapshot.docs.map((doc) => {
 						return {
 							userId: userId,
-							postId: doc.data().id,
+							postId: doc.id,
 							image: doc.data().image,
 							caption: doc.data().caption,
 							likeCount: doc.data().likeCount,
@@ -131,31 +132,30 @@ const MyPage = () => {
 						</Heading>
 					</VStack>
 					<Grid
-						templateColumns={{
-							base: "repeat(5, 1fr)",
-							md: "repeat(4, 1fr)",
-							sm: "repeat(3, 1fr)",
-						}}
+						templateColumns="repeat(4, 1fr)"
+						gridTemplateRows="repeat(4, 1fr)"
 						gap={1}
 					>
 						{posts
 							? posts.map((post) => (
-									<NextLink
-										key={post.postId}
-										href={{
-											pathname: "/[userId]/[postId]/postEdit",
-											query: { userId: post.userId, postId: post.postId },
-										}}
-									>
-										<Stack align="center">
-											<Image
-												alt={`${currentUser.username}'s photo`}
-												src={post.image}
-												boxSize="100px"
-												objectFit="cover"
-											/>
-										</Stack>
-									</NextLink>
+									<>
+										<NextLink
+											key={post.postId}
+											href={{
+												pathname: "/[userId]/[postId]/postEdit",
+												query: { userId: post.userId, postId: post.postId },
+											}}
+											as={`/${post.userId}/${post.postId}/postEdit`}
+										>
+											<AspectRatio ratio={1 / 1}>
+												<Image
+													alt={`${currentUser.username}'s photo`}
+													src={post.image}
+													objectFit="cover"
+												/>
+											</AspectRatio>
+										</NextLink>
+									</>
 							  ))
 							: null}
 					</Grid>
