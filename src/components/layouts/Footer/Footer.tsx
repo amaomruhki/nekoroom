@@ -1,4 +1,5 @@
 import React from "react";
+import NextLink from "next/link";
 import {
 	Text,
 	Box,
@@ -24,7 +25,6 @@ const Footer = () => {
 	const userId = currentUser?.uid;
 	const username = currentUser?.username;
 	const userImg = currentUser?.userImg;
-	console.log(currentUser);
 
 	return (
 		<>
@@ -89,13 +89,29 @@ const Footer = () => {
 					/>
 					{currentUser ? (
 						userImg ? (
-							<Link href={`${userId}/myPage`}>
-								<Avatar size="sm" name={username} src={userImg} />
-							</Link>
+							<NextLink
+								href={{
+									pathname: "/[userId]/myPage",
+									query: { userId: userId },
+								}}
+								passHref
+							>
+								<Link>
+									<Avatar size="sm" name={username} src={userImg} />
+								</Link>
+							</NextLink>
 						) : (
-							<Link href={`${userId}/myPage`}>
-								<Avatar size="sm" name={username} />
-							</Link>
+							<NextLink
+								href={{
+									pathname: "/[userId]/myPage",
+									query: { userId: userId },
+								}}
+								passHref
+							>
+								<Link>
+									<Avatar size="sm" name={username} />
+								</Link>
+							</NextLink>
 						)
 					) : (
 						<Link href="/auth/login">

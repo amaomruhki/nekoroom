@@ -30,7 +30,7 @@ import Loading from "../../components/elements/Loading/Loading";
 const Register = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [username, setusername] = useState("");
+	const [username, setUsername] = useState("");
 	const filePickerRef = useRef<HTMLInputElement>(null);
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -145,7 +145,7 @@ const Register = () => {
 							type="text"
 							value={username}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								setusername(e.target.value);
+								setUsername(e.target.value);
 							}}
 						/>
 

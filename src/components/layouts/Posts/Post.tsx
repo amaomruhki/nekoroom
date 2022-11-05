@@ -1,3 +1,4 @@
+import NextLink from "next/link";
 import {
 	GridItem,
 	Stack,
@@ -36,7 +37,13 @@ const Post = ({
 	likeCount,
 }: Props) => {
 	return (
-		<Link href={`${userId}/${postId}/postdetail`}>
+		<NextLink
+			href={{
+				pathname: "/[userId]/[postId]/postdetail",
+				query: { userId: userId, postId: postId },
+			}}
+			passHref
+		>
 			<GridItem key={postId} cursor="pointer">
 				<Box bg="white" boxShadow="md" rounded="md" p={4} m="8px">
 					<Stack align="center">
@@ -53,7 +60,6 @@ const Post = ({
 						) : (
 							<Avatar size="sm" name={username} />
 						)}
-
 						<HStack alignItems="center">
 							<Text fontSize="sm" as="b">
 								{convertSubstring(username, 10)}
@@ -71,7 +77,7 @@ const Post = ({
 					<Text fontSize="sm">{convertSubstring(caption, 17)}</Text>
 				</Box>
 			</GridItem>
-		</Link>
+		</NextLink>
 	);
 };
 

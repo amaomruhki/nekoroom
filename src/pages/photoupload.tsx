@@ -194,7 +194,7 @@ const PhotoUpload = () => {
 									border="1px"
 									bg="#ffffff"
 									color="gray.900"
-									onClick={() => filePickerRef.current.click()}
+									onClick={() => filePickerRef.current!.click()}
 								>
 									写真を選択
 								</PrimaryButton>

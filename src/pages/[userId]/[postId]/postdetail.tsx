@@ -83,12 +83,12 @@ const Postdetail = () => {
 	useEffect(() => {
 		setIsLoading(true);
 		if (router.isReady) {
-			const authorId = router.query.userId;
+			const authorId = router.query.userId as string;
 			const unsubscribe = onSnapshot(doc(db, "users", authorId), (snapshot) => {
 				const userData = {
 					userId: authorId,
-					username: snapshot.data().username,
-					userImg: snapshot.data().userImg,
+					username: snapshot.data()?.username,
+					userImg: snapshot.data()?.userImg,
 				};
 				setAuthor(userData);
 			});
@@ -106,10 +106,10 @@ const Postdetail = () => {
 				doc(db, "users", authorId, "posts", postId),
 				(snapshot) => {
 					const postData = {
-						postId: snapshot.data().id,
-						image: snapshot.data().image,
-						caption: snapshot.data().caption,
-						likeCount: snapshot.data().likeCount,
+						postId: snapshot.data()?.id,
+						image: snapshot.data()?.image,
+						caption: snapshot.data()?.caption,
+						likeCount: snapshot.data()?.likeCount,
 					};
 					setPost(postData);
 				}
@@ -461,7 +461,7 @@ const Postdetail = () => {
 										color="gray.900"
 										borderColor="gray.300"
 										border="1px"
-										onClick={sendComment}
+										onClick={() => sendComment}
 										disabled={!comment.trim()}
 									>
 										コメントする

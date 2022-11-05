@@ -1,4 +1,5 @@
 import React from "react";
+import NextLink from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useWindowSize } from "react-use";
@@ -14,8 +15,8 @@ import {
 	Text,
 	HStack,
 	Avatar,
+	Link,
 } from "@chakra-ui/react";
-import Link from "next/link";
 
 // type Props = {
 // 	onClose: () => void;
@@ -37,7 +38,14 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 		},
 		{
 			title: "myPage",
-			text: <Link href={`${userId}/myPage`}>マイページ</Link>,
+			text: (
+				<NextLink
+					href={{ pathname: "/[userId]/myPage", query: { userId: userId } }}
+					passHref
+				>
+					<Link>マイページ</Link>
+				</NextLink>
+			),
 		},
 		{
 			title: "settings",
