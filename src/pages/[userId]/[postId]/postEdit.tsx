@@ -10,10 +10,8 @@ import {
 	VStack,
 	Text,
 	Textarea,
-	Select,
 	Stack,
 	Spacer,
-	Center,
 	Image,
 	HStack,
 	Modal,
@@ -23,24 +21,29 @@ import {
 	ModalFooter,
 	ModalHeader,
 	ModalOverlay,
-	useDisclosure,
 	Button,
 	Divider,
+	AlertDialog,
+	AlertDialogBody,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogContent,
+	AlertDialogOverlay,
 } from "@chakra-ui/react";
 import {
 	addDoc,
 	collection,
+	deleteDoc,
 	doc,
+	getDoc,
 	onSnapshot,
 	query,
 	serverTimestamp,
 	updateDoc,
 	where,
 } from "firebase/firestore";
-import { getDownloadURL, ref, uploadString } from "firebase/storage";
-
 import { userState } from "../../../Atoms/userAtom";
-import { db, storage } from "../../../../lib/firebase";
+import { db } from "../../../../lib/firebase";
 import useFetchData from "../../../Hooks/useFetchData";
 import Header from "../../../components/layouts/Header/Header";
 import PrimaryButton from "../../../components/elements/Button/PrimaryButton";
@@ -50,16 +53,23 @@ import Result from "../../../components/elements/Search/Result";
 import Footer from "../../../components/layouts/Footer/Footer";
 
 const PostEdit = () => {
-	const filePickerRef = useRef<HTMLInputElement>(null);
-	const [selectedFile, setSelectedFile] = useState(null);
-	const [inputCaption, setInputCaption] = useState("");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [selectedButton, setSelectedButton] = useState<string>("");
+	const cancelRef = useRef(null);
 	const [itemResult, setItemResult] = useState({});
-	const [items, setItems] = useState();
+	const [items, setItems] = useState({});
 	const [post, setPost] = useState([]);
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
+
+	//アイテム選択モーダルと投稿削除モーダルの出し分け
+	const onOpenDialog = (name: string) => {
+		setSelectedButton(name);
+	};
+
+	const onCloseDialog = () => {
+		setSelectedButton("");
+	};
 
 	//投稿した記事情報を取得
 	useEffect(() => {
@@ -75,12 +85,11 @@ const PostEdit = () => {
 						image: snapshot.data()?.image,
 						caption: snapshot.data()?.caption,
 						likeCount: snapshot.data()?.likeCount,
+						itemId: snapshot.data()?.itemId,
 					};
 					setPost(postData);
 				}
 			);
-			console.log(postId);
-			console.log(authorId);
 			return () => unsubscribe();
 		}
 	}, [router.isReady, router.query.userId]);
@@ -126,56 +135,58 @@ const PostEdit = () => {
 	//投稿内容をアップロード
 	const editPost = async () => {
 		if (isLoading) return;
-		setIsLoading(true);
-		const postsRef = await addDoc(
-			collection(db, "users", currentUser!.uid, "posts"),
-			{
-				userId: currentUser!.uid,
-				caption: inputCaption,
-				createTime: serverTimestamp(),
+		if (router.isReady) {
+			const authorId = router.query.userId as string;
+			const postId = router.query.postId as string;
+			setIsLoading(true);
+			await updateDoc(doc(db, "users", authorId, "posts", postId), {
+				caption: post.caption,
 				updateTime: serverTimestamp(),
-				likeCount: 0,
-			}
-		);
-		setInputCaption("");
-		const imageRef = ref(storage, `posts/${postsRef.id}/image`);
-		await uploadString(imageRef, selectedFile, "data_url").then(
-			async (snapshot) => {
-				const downloadURL = await getDownloadURL(imageRef);
-				await updateDoc(
-					doc(db, "users", currentUser!.uid, "posts", postsRef.id),
-					{
-						image: downloadURL,
-						postId: postsRef.id,
-					}
-				);
-			}
-		);
+			});
 
-		if (Object.keys(itemResult).length != 0) {
-			await addDoc(
-				collection(
-					db,
-					"users",
-					currentUser!.uid,
-					"posts",
-					postsRef.id,
-					"items"
-				),
-				{
-					...itemResult,
-					postId: postsRef.id,
-					itemImg: itemResult.imageUrl,
-					itemName: itemResult.itemName,
-					price: itemResult.price,
-					shopName: itemResult.shopName,
-					itemUrl: itemResult.itemUrl,
+			if (Object.keys(itemResult).length != 0) {
+				const postRef = await getDoc(
+					doc(db, "users", authorId, "posts", postId)
+				);
+				const itemId = await postRef.data()?.itemId;
+				if (itemId) {
+					const itemRef = doc(
+						db,
+						"users",
+						authorId,
+						"posts",
+						postId,
+						"items",
+						itemId
+					);
+					await updateDoc(itemRef, {
+						itemImg: itemResult.imageUrl,
+						itemName: itemResult.itemName,
+						price: itemResult.price,
+						shopName: itemResult.shopName,
+						itemUrl: itemResult.itemUrl,
+					});
+				} else {
+					await addDoc(
+						collection(db, "users", authorId, "posts", postId, "items"),
+						{
+							...itemResult,
+							postId: postId,
+							itemImg: itemResult.imageUrl,
+							itemName: itemResult.itemName,
+							price: itemResult.price,
+							shopName: itemResult.shopName,
+							itemUrl: itemResult.itemUrl,
+						}
+					);
 				}
-			);
+			}
+			setIsLoading(false);
+			router.push({
+				pathname: "/[userId]/[postId]/postDetail",
+				query: { userId: authorId, postId: postId },
+			});
 		}
-		setSelectedFile(null);
-		setIsLoading(false);
-		router.push(`${currentUser!.uid}/${postsRef.id}/postDetail`);
 	};
 
 	return (
@@ -201,19 +212,18 @@ const PostEdit = () => {
 						</Heading>
 						<Textarea
 							bg="white"
-							placeholder="テキストを入力してください"
-							value={inputCaption}
+							value={post.caption}
 							onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
-								setInputCaption(event.target.value);
+								setPost({ ...post, caption: event.target.value });
 							}}
 						></Textarea>
 						<Heading as="h3" size="md">
 							アイテムを編集する
 						</Heading>
-						{items?.length >= 1 &&
-							items?.map((item) => (
+						{items?.length >= 1 ? (
+							// アイテムが再選択された場合はアイテム表示を差し替える
+							Object.keys(itemResult).length ? (
 								<HStack
-									key={item.itemId}
 									bg="white"
 									boxShadow="md"
 									rounded="md"
@@ -222,35 +232,86 @@ const PostEdit = () => {
 									justify="center"
 								>
 									<Image
-										alt={item.itemName}
-										src={item.itemImg}
+										alt={itemResult.itemName}
+										src={itemResult.imageUrl}
 										boxSize="100px"
 										objectFit="cover"
 									/>
 								</HStack>
-							))}
-						{!Object.keys(itemResult).length ? (
+							) : (
+								items?.map((item) => (
+									<HStack
+										key={item.itemId}
+										bg="white"
+										boxShadow="md"
+										rounded="md"
+										w="140px"
+										h="140px"
+										justify="center"
+									>
+										<Image
+											alt={item.itemName}
+											src={item.itemImg}
+											boxSize="100px"
+											objectFit="cover"
+										/>
+									</HStack>
+								))
+							)
+						) : Object.keys(itemResult).length ? (
+							<HStack
+								bg="white"
+								boxShadow="md"
+								rounded="md"
+								w="140px"
+								h="140px"
+								justify="center"
+							>
+								<Image
+									alt={itemResult.itemName}
+									src={itemResult.imageUrl}
+									boxSize="100px"
+									objectFit="cover"
+								/>
+							</HStack>
+						) : null}
+						<HStack>
+							{!Object.keys(itemResult).length ? (
+								<PrimaryButton
+									bg="#ffffff"
+									color="gray.900"
+									borderColor="gray.300"
+									border="1px"
+									onClick={() => onOpenDialog("item")}
+								>
+									アイテムを選択
+								</PrimaryButton>
+							) : (
+								<PrimaryButton
+									bg="#ffffff"
+									color="gray.900"
+									borderColor="gray.300"
+									border="1px"
+									onClick={() => onOpenDialog("item")}
+								>
+									アイテムを変更
+								</PrimaryButton>
+							)}
 							<PrimaryButton
 								bg="#ffffff"
 								color="gray.900"
 								borderColor="gray.300"
 								border="1px"
-								onClick={onOpen}
+								onClick={() => {
+									setItems({});
+									setItemResult({});
+								}}
 							>
-								アイテムを再選択
+								アイテムをリセット
 							</PrimaryButton>
-						) : (
-							<PrimaryButton
-								bg="#ffffff"
-								color="gray.900"
-								borderColor="gray.300"
-								border="1px"
-								onClick={onOpen}
-							>
-								アイテムを変更
-							</PrimaryButton>
-						)}
-						<Modal isOpen={isOpen} onClose={onClose}>
+						</HStack>
+
+						<Modal isOpen={"item" === selectedButton} onClose={onCloseDialog}>
 							<ModalOverlay />
 							<ModalContent>
 								<ModalHeader mt={6}>
@@ -270,7 +331,7 @@ const PostEdit = () => {
 										<Result
 											result={result}
 											setItemResult={setItemResult}
-											onClose={onClose}
+											onClose={onCloseDialog}
 											setValue={setValue}
 										/>
 									)}
@@ -300,53 +361,60 @@ const PostEdit = () => {
 								color="gray.900"
 								border="1px"
 								borderColor="gray.300"
-								onClick={onOpen}
+								onClick={() => onOpenDialog("delete")}
 								disabled={isLoading}
 							>
 								ネコルームを削除する
 							</PrimaryButton>
-							<Modal isOpen={isOpen} onClose={onClose}>
-								<ModalOverlay />
-								<ModalContent>
-									<ModalHeader mt={6}>
-										<VStack>
-											<Text fontSize="md">
-												本当にこのネコルームを削除しますか？
+							<AlertDialog
+								isOpen={"delete" === selectedButton}
+								onClose={onCloseDialog}
+								leastDestructiveRef={cancelRef}
+							>
+								<AlertDialogOverlay>
+									<AlertDialogContent>
+										<AlertDialogHeader>
+											<Text fontSize="md" fontWeight="bold">
+												ネコルームの削除
 											</Text>
-											<Text fontSize="xs" color="#E4626E">
-												※この操作は取り消せません
-											</Text>
-										</VStack>
-									</ModalHeader>
-									<ModalCloseButton />
-									<ModalBody>
-										<HStack justify="space-between">
+										</AlertDialogHeader>
+										<AlertDialogBody>
+											<VStack>
+												<Text fontSize="md">
+													本当にこのネコルームを削除しますか？
+												</Text>
+												<Text fontSize="xs" color="#E4626E">
+													※この操作は取り消せません
+												</Text>
+											</VStack>
+										</AlertDialogBody>
+										<AlertDialogFooter>
 											<Button
 												borderColor="gray.300"
 												border="1px"
 												bg="white"
 												color="gray.900"
 												size="md"
-												onClick={() => onClose()}
+												onClick={onCloseDialog}
 												w="150px"
 											>
 												キャンセル
 											</Button>
 											<Button
+												ml={3}
 												bg="#E4626E"
 												color="white"
 												size="md"
 												_hover={{ bg: "#E4626E", color: "#ffffff" }}
-												onClick={() => onClose()}
+												onClick={onCloseDialog}
 												w="150px"
 											>
 												削除する
 											</Button>
-										</HStack>
-									</ModalBody>
-									<ModalFooter></ModalFooter>
-								</ModalContent>
-							</Modal>
+										</AlertDialogFooter>
+									</AlertDialogContent>
+								</AlertDialogOverlay>
+							</AlertDialog>
 						</VStack>
 					</VStack>
 				</Container>
@@ -358,5 +426,4 @@ const PostEdit = () => {
 		</>
 	);
 };
-
 export default PostEdit;

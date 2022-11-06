@@ -106,7 +106,7 @@ const PhotoUpload = () => {
 		);
 
 		if (Object.keys(itemResult).length != 0) {
-			await addDoc(
+			const itemsRef = await addDoc(
 				collection(
 					db,
 					"users",
@@ -123,6 +123,26 @@ const PhotoUpload = () => {
 					price: itemResult.price,
 					shopName: itemResult.shopName,
 					itemUrl: itemResult.itemUrl,
+				}
+			);
+			await updateDoc(
+				doc(db, "users", currentUser!.uid, "posts", postsRef.id),
+				{
+					itemId: itemsRef.id,
+				}
+			);
+			await updateDoc(
+				doc(
+					db,
+					"users",
+					currentUser!.uid,
+					"posts",
+					postsRef.id,
+					"items",
+					itemsRef.id
+				),
+				{
+					itemId: itemsRef.id,
 				}
 			);
 		}
@@ -223,27 +243,42 @@ const PhotoUpload = () => {
 								/>
 							</HStack>
 						) : null}
-						{!Object.keys(itemResult).length ? (
-							<PrimaryButton
-								bg="#ffffff"
-								color="gray.900"
-								borderColor="gray.300"
-								border="1px"
-								onClick={onOpen}
-							>
-								アイテムを選択
-							</PrimaryButton>
-						) : (
-							<PrimaryButton
-								bg="#ffffff"
-								color="gray.900"
-								borderColor="gray.300"
-								border="1px"
-								onClick={onOpen}
-							>
-								アイテムを変更
-							</PrimaryButton>
-						)}
+						<HStack>
+							{!Object.keys(itemResult).length ? (
+								<PrimaryButton
+									bg="#ffffff"
+									color="gray.900"
+									borderColor="gray.300"
+									border="1px"
+									onClick={onOpen}
+								>
+									アイテムを選択
+								</PrimaryButton>
+							) : (
+								<>
+									<PrimaryButton
+										bg="#ffffff"
+										color="gray.900"
+										borderColor="gray.300"
+										border="1px"
+										onClick={onOpen}
+									>
+										アイテムを変更
+									</PrimaryButton>
+									<PrimaryButton
+										bg="#ffffff"
+										color="gray.900"
+										borderColor="gray.300"
+										border="1px"
+										onClick={() => {
+											setItemResult({});
+										}}
+									>
+										アイテムをリセット
+									</PrimaryButton>
+								</>
+							)}
+						</HStack>
 						<Modal isOpen={isOpen} onClose={onClose}>
 							<ModalOverlay />
 							<ModalContent>

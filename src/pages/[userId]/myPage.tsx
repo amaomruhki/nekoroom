@@ -75,7 +75,10 @@ const MyPage = () => {
 		if (router.isReady) {
 			const userId = router.query.userId as string;
 			const unsubscribe = onSnapshot(
-				query(collection(db, "users", userId, "posts")),
+				query(
+					collection(db, "users", userId, "posts"),
+					orderBy("createTime", "desc")
+				),
 				(snapshot) => {
 					const postData = snapshot.docs.map((doc) => {
 						return {
@@ -131,6 +134,7 @@ const MyPage = () => {
 							投稿したネコルーム
 						</Heading>
 					</VStack>
+					{!posts && <Text>投稿はまだありません</Text>}
 					<Grid
 						templateColumns="repeat(4, 1fr)"
 						gridTemplateRows="repeat(4, 1fr)"

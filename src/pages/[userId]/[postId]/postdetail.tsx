@@ -112,6 +112,7 @@ const PostDetail = () => {
 						image: snapshot.data()?.image,
 						caption: snapshot.data()?.caption,
 						likeCount: snapshot.data()?.likeCount,
+						createTime: snapshot.data()?.createTime,
 					};
 					setPost(postData);
 				}
