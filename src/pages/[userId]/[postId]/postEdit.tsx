@@ -237,7 +237,7 @@ const PostEdit = () => {
 								border="1px"
 								onClick={onOpen}
 							>
-								アイテムを選択
+								アイテムを再選択
 							</PrimaryButton>
 						) : (
 							<PrimaryButton

@@ -357,14 +357,6 @@ const PostDetail = () => {
 						mt={4}
 						align="left"
 					>
-						{/* <HStack p={1}>
-						<Button variant="outline" bg="#ffffff" color="gray.900">
-							キャットタワー
-						</Button>
-						<Button variant="outline" bg="#ffffff" color="gray.900">
-							部屋全体
-						</Button>
-					</HStack> */}
 						{items?.length >= 1 && (
 							<>
 								<Heading as="h3" fontSize="md">
@@ -487,7 +479,7 @@ const PostDetail = () => {
 									<HStack>
 										<Avatar
 											size="sm"
-											name={comment.commentedUserId}
+											name={comment.commentedUsername}
 											src={comment.commentedUserImg}
 										/>
 										<HStack alignItems="center">
