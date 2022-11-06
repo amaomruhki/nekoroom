@@ -1,5 +1,7 @@
 import React from "react";
+import NextLink from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useWindowSize } from "react-use";
 import {
 	Stack,
@@ -11,8 +13,10 @@ import {
 	DrawerCloseButton,
 	DrawerBody,
 	Text,
+	HStack,
+	Avatar,
+	Link,
 } from "@chakra-ui/react";
-import Link from "next/link";
 
 // type Props = {
 // 	onClose: () => void;
@@ -23,6 +27,10 @@ import Link from "next/link";
 
 const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 	const { height } = useWindowSize();
+	const router = useRouter();
+	const userId = currentUser?.uid;
+	const username = currentUser?.username;
+	const userImg = currentUser?.userImg;
 	const Login_Menu_List = [
 		{
 			title: "photoUpload",
@@ -30,7 +38,14 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 		},
 		{
 			title: "myPage",
-			text: <Link href="/myPage">マイページ</Link>,
+			text: (
+				<NextLink
+					href={{ pathname: "/[userId]/myPage", query: { userId: userId } }}
+					passHref
+				>
+					<Link>マイページ</Link>
+				</NextLink>
+			),
 		},
 		{
 			title: "settings",
@@ -64,7 +79,16 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 				<DrawerContent maxH={`${height}px`}>
 					<DrawerCloseButton color="#d6d6d6" size="lg" />
 					<DrawerHeader>
-						<Image src="/logo.svg" alt="logo" width="158px" height="34px" />
+						{currentUser ? (
+							<HStack p={2}>
+								<Avatar size="md" name={username} src={userImg} />
+								<Text fontSize="md" as="b">
+									{username}
+								</Text>
+							</HStack>
+						) : (
+							<Image src="/logo.svg" alt="logo" width="158px" height="34px" />
+						)}
 					</DrawerHeader>
 					<DrawerBody>
 						<Stack spacing="24px">

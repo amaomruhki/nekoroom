@@ -1,3 +1,4 @@
+import NextLink from "next/link";
 import {
 	GridItem,
 	Stack,
@@ -9,6 +10,7 @@ import {
 	Image,
 	IconButton,
 	Icon,
+	AspectRatio,
 } from "@chakra-ui/react";
 import { PadIcon } from "../../elements/Icon/Icon";
 import type { ReactNode } from "react";
@@ -36,24 +38,28 @@ const Post = ({
 	likeCount,
 }: Props) => {
 	return (
-		<Link href={`${userId}/${postId}/postdetail`}>
+		<NextLink
+			href={{
+				pathname: "/[userId]/[postId]/postDetail",
+				query: { userId: userId, postId: postId },
+			}}
+		>
 			<GridItem key={postId} cursor="pointer">
 				<Box bg="white" boxShadow="md" rounded="md" p={4} m="8px">
-					<Stack align="center">
+					<AspectRatio ratio={1 / 1}>
 						<Image
 							alt={`${username}'s photo`}
 							src={image}
 							boxSize="220px"
 							objectFit="cover"
 						/>
-					</Stack>
+					</AspectRatio>
 					<HStack p={2}>
 						{userImg ? (
 							<Avatar size="sm" name={username} src={userImg} />
 						) : (
 							<Avatar size="sm" name={username} />
 						)}
-
 						<HStack alignItems="center">
 							<Text fontSize="sm" as="b">
 								{convertSubstring(username, 10)}
@@ -71,7 +77,7 @@ const Post = ({
 					<Text fontSize="sm">{convertSubstring(caption, 17)}</Text>
 				</Box>
 			</GridItem>
-		</Link>
+		</NextLink>
 	);
 };
 

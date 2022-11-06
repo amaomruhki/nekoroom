@@ -58,8 +58,10 @@ import Loading from "../../../components/elements/Loading/Loading";
 import { userState } from "../../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
 import { uuid } from "uuidv4";
+import { AspectRatio } from "@chakra-ui/react";
 
 type CommentUser = {
+	commentId: string;
 	commentedUserId: string;
 	comment: string;
 	commentedUsername: string;
@@ -67,7 +69,7 @@ type CommentUser = {
 	createTime: Timestamp;
 };
 
-const Postdetail = () => {
+const PostDetail = () => {
 	const [items, setItems] = useState();
 	const [post, setPost] = useState([]);
 	const [author, setAuthor] = useState([]);
@@ -83,12 +85,12 @@ const Postdetail = () => {
 	useEffect(() => {
 		setIsLoading(true);
 		if (router.isReady) {
-			const authorId = router.query.userId;
+			const authorId = router.query.userId as string;
 			const unsubscribe = onSnapshot(doc(db, "users", authorId), (snapshot) => {
 				const userData = {
 					userId: authorId,
-					username: snapshot.data().username,
-					userImg: snapshot.data().userImg,
+					username: snapshot.data()?.username,
+					userImg: snapshot.data()?.userImg,
 				};
 				setAuthor(userData);
 			});
@@ -106,10 +108,10 @@ const Postdetail = () => {
 				doc(db, "users", authorId, "posts", postId),
 				(snapshot) => {
 					const postData = {
-						postId: snapshot.data().id,
-						image: snapshot.data().image,
-						caption: snapshot.data().caption,
-						likeCount: snapshot.data().likeCount,
+						postId: snapshot.data()?.id,
+						image: snapshot.data()?.image,
+						caption: snapshot.data()?.caption,
+						likeCount: snapshot.data()?.likeCount,
 					};
 					setPost(postData);
 				}
@@ -191,6 +193,7 @@ const Postdetail = () => {
 									const commentedUserInfo = await getDoc(commentedUserRef);
 									return {
 										...document.data(),
+										commentId: document.id,
 										commentedUsername: commentedUserInfo.data().username,
 										commentedUserImg: commentedUserInfo.data().userImg,
 										comment: document.data().comment,
@@ -217,6 +220,7 @@ const Postdetail = () => {
 		const commentedUserUid = currentUser?.uid;
 		const userId = router.query.userId;
 		const postId = router.query.postId;
+		console.log("コメントテスト");
 
 		setComment("");
 		await addDoc(collection(db, "users", userId, "posts", postId, "comments"), {
@@ -284,14 +288,15 @@ const Postdetail = () => {
 		<>
 			<Header />
 			{!isLoading ? (
-				<Container pt={8} pb={8} mt="50px">
-					<Box maxW="420px" bg="white" p={4} rounded="md" boxShadow="md">
-						<Image
-							src={post.image}
-							boxSize="400px"
-							alt={`${author.username}'s photo`}
-							objectFit="cover"
-						/>
+				<Container pt={8} pb={8} mt="50px" maxW="420px">
+					<Box bg="white" p={4} rounded="md" boxShadow="md">
+						<AspectRatio maxW="400px" ratio={1 / 1}>
+							<Image
+								src={post.image}
+								alt={`${author.username}'s photo`}
+								objectFit="cover"
+							/>
+						</AspectRatio>
 						<Flex alignItems="center" gap="2">
 							<HStack p={2}>
 								<Avatar size="md" name={author.username} src={author.userImg} />
@@ -352,14 +357,6 @@ const Postdetail = () => {
 						mt={4}
 						align="left"
 					>
-						{/* <HStack p={1}>
-						<Button variant="outline" bg="#ffffff" color="gray.900">
-							キャットタワー
-						</Button>
-						<Button variant="outline" bg="#ffffff" color="gray.900">
-							部屋全体
-						</Button>
-					</HStack> */}
 						{items?.length >= 1 && (
 							<>
 								<Heading as="h3" fontSize="md">
@@ -477,12 +474,12 @@ const Postdetail = () => {
 									bg="white"
 									p={4}
 									rounded="md"
-									key={comment.commentedUserId}
+									key={comment.commentId}
 								>
 									<HStack>
 										<Avatar
 											size="sm"
-											name={comment.commentedUserId}
+											name={comment.commentedUsername}
 											src={comment.commentedUserImg}
 										/>
 										<HStack alignItems="center">
@@ -509,4 +506,4 @@ const Postdetail = () => {
 	);
 };
 
-export default Postdetail;
+export default PostDetail;

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import MenuDrawer from "../../elements/Drawer/MenuDrawer";
 import MenuIconButton from "../../elements/Button/MenuIconButton";
-import { Container, Flex, useDisclosure } from "@chakra-ui/react";
+import { Container, Flex, useDisclosure, Box, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { db } from "../../../../lib/firebase";
@@ -42,14 +42,18 @@ const Header = () => {
 	return (
 		<>
 			<Container
-				bg="white"
+				p={0}
 				borderBottom="1px"
 				borderColor="gray.200"
-				py={2}
 				maxW="100%"
 				sx={{ position: "fixed", zIndex: "99", top: 0 }}
 			>
-				<Container maxW="810px">
+				<Container bg="#E4626E" maxW="100%" p={1}>
+					<Text color="white" fontSize="sm" align="center">
+						ネコ飼いさんのお部屋写真とアイテムシェアサイト
+					</Text>
+				</Container>
+				<Container bg="white" py={2} px={4} maxW="100%">
 					<Flex as="nav" justify="space-between" align="center">
 						<Link href="/">
 							<Image src="/logo.svg" alt="logo" width="158px" height="34px" />

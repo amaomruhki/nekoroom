@@ -27,7 +27,6 @@ type Post = {
 const Posts = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [currentUser] = useRecoilState(userState);
 
 	useEffect(() => {
 		setIsLoading(true);

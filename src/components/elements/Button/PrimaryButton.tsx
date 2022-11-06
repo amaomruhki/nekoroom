@@ -8,7 +8,10 @@ type Props = {
 	color: "#ffffff" | "gray.900" | "#E4626E";
 	borderColor?: "gray.300" | "#E4626E";
 	border?: "1px";
-	onClick?: (() => void) | (() => Promise<string | void>);
+	onClick?:
+		| ((event: React.MouseEvent<HTMLButtonElement>) => void)
+		| (() => Promise<string | void>)
+		| (() => void);
 	disabled?: boolean;
 };
 
