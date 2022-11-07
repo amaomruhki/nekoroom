@@ -1,22 +1,11 @@
 import React from "react";
 import NextLink from "next/link";
-import {
-	Text,
-	Box,
-	Container,
-	Flex,
-	Icon,
-	Link,
-	HStack,
-	VStack,
-	Avatar,
-} from "@chakra-ui/react";
+import { Container, Flex, Icon, Link, Avatar } from "@chakra-ui/react";
 import { HiHome } from "react-icons/Hi";
 import { FaSearch, FaPlusCircle, FaUser } from "react-icons/Fa";
 import { PadIcon } from "../../elements/Icon/Icon";
 import { useRecoilState } from "recoil";
 import { userState } from "../../../Atoms/userAtom";
-import { Tooltip } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
 const Footer = () => {
@@ -60,35 +49,33 @@ const Footer = () => {
 						_hover={{ color: "#E4626E" }}
 					/> */}
 					{currentUser ? (
-						<Link href="/photoUpload">
-							<Icon
-								as={FaPlusCircle}
-								color="#d6d6d6"
-								w={6}
-								h={6}
-								_hover={{ color: "#E4626E" }}
-							/>
-						</Link>
-					) : (
-						<Link href="/auth/login">
-							<Icon
-								as={FaPlusCircle}
-								color="#d6d6d6"
-								w={6}
-								h={6}
-								_hover={{ color: "#E4626E" }}
-							/>
-						</Link>
-					)}
-					<Icon
-						as={PadIcon}
-						color="#d6d6d6"
-						w={6}
-						h={6}
-						_hover={{ color: "#E4626E" }}
-					/>
-					{currentUser ? (
-						userImg ? (
+						<>
+							<Link href="/photoUpload">
+								<Icon
+									as={FaPlusCircle}
+									color="#d6d6d6"
+									w={6}
+									h={6}
+									_hover={{ color: "#E4626E" }}
+								/>
+							</Link>
+							<NextLink
+								href={{
+									pathname: "/[userId]/myLike",
+									query: { userId: userId },
+								}}
+								passHref
+							>
+								<Link>
+									<Icon
+										as={PadIcon}
+										color="#d6d6d6"
+										w={6}
+										h={6}
+										_hover={{ color: "#E4626E" }}
+									/>
+								</Link>
+							</NextLink>
 							<NextLink
 								href={{
 									pathname: "/[userId]/myPage",
@@ -97,32 +84,44 @@ const Footer = () => {
 								passHref
 							>
 								<Link>
-									<Avatar size="sm" name={username} src={userImg} />
+									{userImg ? (
+										<Avatar size="sm" name={username} src={userImg} />
+									) : (
+										<Avatar size="sm" name={username} />
+									)}
 								</Link>
 							</NextLink>
-						) : (
-							<NextLink
-								href={{
-									pathname: "/[userId]/myPage",
-									query: { userId: userId },
-								}}
-								passHref
-							>
-								<Link>
-									<Avatar size="sm" name={username} />
-								</Link>
-							</NextLink>
-						)
+						</>
 					) : (
-						<Link href="/auth/login">
-							<Icon
-								as={FaUser}
-								color="#d6d6d6"
-								w={6}
-								h={6}
-								_hover={{ color: "#E4626E" }}
-							/>
-						</Link>
+						<>
+							<Link href="/auth/login">
+								<Icon
+									as={FaPlusCircle}
+									color="#d6d6d6"
+									w={6}
+									h={6}
+									_hover={{ color: "#E4626E" }}
+								/>
+							</Link>
+							<Link href="/auth/login">
+								<Icon
+									as={PadIcon}
+									color="#d6d6d6"
+									w={6}
+									h={6}
+									_hover={{ color: "#E4626E" }}
+								/>
+							</Link>
+							<Link href="/auth/login">
+								<Icon
+									as={FaUser}
+									color="#d6d6d6"
+									w={6}
+									h={6}
+									_hover={{ color: "#E4626E" }}
+								/>
+							</Link>
+						</>
 					)}
 				</Flex>
 			</Container>

@@ -48,6 +48,17 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 			),
 		},
 		{
+			title: "myLike",
+			text: (
+				<NextLink
+					href={{ pathname: "/[userId]/myLike", query: { userId: userId } }}
+					passHref
+				>
+					<Link>いいにゃした投稿</Link>
+				</NextLink>
+			),
+		},
+		{
 			title: "settings",
 			text: <Link href="/settings">設定</Link>,
 		},
