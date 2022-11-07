@@ -112,6 +112,7 @@ const PostDetail = () => {
 						image: snapshot.data()?.image,
 						caption: snapshot.data()?.caption,
 						likeCount: snapshot.data()?.likeCount,
+						createTime: snapshot.data()?.createTime,
 					};
 					setPost(postData);
 				}
@@ -289,6 +290,32 @@ const PostDetail = () => {
 			<Header />
 			{!isLoading ? (
 				<Container pt={8} pb={8} mt="50px" maxW="420px">
+					{currentUser && currentUser!.uid === router.query.userId ? (
+						<Stack m={4}>
+							<NextLink
+								href={{
+									pathname: "/[userId]/[postId]/postEdit",
+									query: {
+										userId: router.query.userId,
+										postId: router.query.postId,
+									},
+								}}
+								as={`/${router.query.userId}/${router.query.postId}/postEdit`}
+								passHref
+							>
+								<Button
+									as="a"
+									bg="#ffffff"
+									color="#E4626E"
+									borderColor="#E4626E"
+									border="1px"
+									_hover={{ color: "#ffffff", bg: "#E4626E" }}
+								>
+									投稿を編集する
+								</Button>
+							</NextLink>
+						</Stack>
+					) : null}
 					<Box bg="white" p={4} rounded="md" boxShadow="md">
 						<AspectRatio maxW="400px" ratio={1 / 1}>
 							<Image

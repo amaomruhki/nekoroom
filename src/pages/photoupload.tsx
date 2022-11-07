@@ -106,7 +106,7 @@ const PhotoUpload = () => {
 		);
 
 		if (Object.keys(itemResult).length != 0) {
-			await addDoc(
+			const itemsRef = await addDoc(
 				collection(
 					db,
 					"users",
@@ -125,6 +125,26 @@ const PhotoUpload = () => {
 					itemUrl: itemResult.itemUrl,
 				}
 			);
+			await updateDoc(
+				doc(db, "users", currentUser!.uid, "posts", postsRef.id),
+				{
+					itemId: itemsRef.id,
+				}
+			);
+			await updateDoc(
+				doc(
+					db,
+					"users",
+					currentUser!.uid,
+					"posts",
+					postsRef.id,
+					"items",
+					itemsRef.id
+				),
+				{
+					itemId: itemsRef.id,
+				}
+			);
 		}
 		setSelectedFile(null);
 		setIsLoading(false);
@@ -137,7 +157,7 @@ const PhotoUpload = () => {
 			{currentUser && !isLoading ? (
 				<Container maxW="800px" pt={8} pb={8} mt={20} mb={20}>
 					<VStack align="left" spacing={4}>
-						<Heading as="h2">ネコルームを投稿する</Heading>
+						<Heading as="h2">投稿を投稿する</Heading>
 						<Spacer />
 						<HStack>
 							<Heading as="h3" size="md">
@@ -223,27 +243,42 @@ const PhotoUpload = () => {
 								/>
 							</HStack>
 						) : null}
-						{!Object.keys(itemResult).length ? (
-							<PrimaryButton
-								bg="#ffffff"
-								color="gray.900"
-								borderColor="gray.300"
-								border="1px"
-								onClick={onOpen}
-							>
-								アイテムを選択
-							</PrimaryButton>
-						) : (
-							<PrimaryButton
-								bg="#ffffff"
-								color="gray.900"
-								borderColor="gray.300"
-								border="1px"
-								onClick={onOpen}
-							>
-								アイテムを変更
-							</PrimaryButton>
-						)}
+						<HStack>
+							{!Object.keys(itemResult).length ? (
+								<PrimaryButton
+									bg="#ffffff"
+									color="gray.900"
+									borderColor="gray.300"
+									border="1px"
+									onClick={onOpen}
+								>
+									アイテムを選択
+								</PrimaryButton>
+							) : (
+								<>
+									<PrimaryButton
+										bg="#ffffff"
+										color="gray.900"
+										borderColor="gray.300"
+										border="1px"
+										onClick={onOpen}
+									>
+										アイテムを変更
+									</PrimaryButton>
+									<PrimaryButton
+										bg="#ffffff"
+										color="gray.900"
+										borderColor="gray.300"
+										border="1px"
+										onClick={() => {
+											setItemResult({});
+										}}
+									>
+										アイテムをリセット
+									</PrimaryButton>
+								</>
+							)}
+						</HStack>
 						<Modal isOpen={isOpen} onClose={onClose}>
 							<ModalOverlay />
 							<ModalContent>
@@ -284,7 +319,7 @@ const PhotoUpload = () => {
 								onClick={uploadPost}
 								disabled={!selectedFile || isLoading}
 							>
-								ネコルームを投稿する
+								投稿を投稿する
 							</PrimaryButton>
 						</Center>
 					</VStack>

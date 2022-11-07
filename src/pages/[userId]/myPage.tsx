@@ -75,7 +75,10 @@ const MyPage = () => {
 		if (router.isReady) {
 			const userId = router.query.userId as string;
 			const unsubscribe = onSnapshot(
-				query(collection(db, "users", userId, "posts")),
+				query(
+					collection(db, "users", userId, "posts"),
+					orderBy("createTime", "desc")
+				),
 				(snapshot) => {
 					const postData = snapshot.docs.map((doc) => {
 						return {
@@ -128,7 +131,7 @@ const MyPage = () => {
 					</VStack>
 					<VStack align="left" spacing={4} my={4}>
 						<Heading as="h3" size="md">
-							投稿したネコルーム
+							あなたの投稿
 						</Heading>
 					</VStack>
 					<Grid
@@ -142,10 +145,10 @@ const MyPage = () => {
 										<NextLink
 											key={post.postId}
 											href={{
-												pathname: "/[userId]/[postId]/postEdit",
+												pathname: "/[userId]/[postId]/postDetail",
 												query: { userId: post.userId, postId: post.postId },
 											}}
-											as={`/${post.userId}/${post.postId}/postEdit`}
+											as={`/${post.userId}/${post.postId}/postDetail`}
 										>
 											<AspectRatio ratio={1 / 1}>
 												<Image

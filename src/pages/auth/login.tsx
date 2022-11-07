@@ -53,7 +53,7 @@ const Login = (): JSX.Element => {
 			{isLoading ? (
 				<Loading />
 			) : (
-				<Container maxW="800px" pt={8} pb={8} mt={20}>
+				<Container maxW="800px" pt={8} pb={8} mt={20} mb={40}>
 					<VStack align="center" spacing={4}>
 						<Heading as="h2" size="lg">
 							ログイン

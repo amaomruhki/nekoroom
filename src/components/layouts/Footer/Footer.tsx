@@ -52,13 +52,13 @@ const Footer = () => {
 							_hover={{ color: "#E4626E" }}
 						/>
 					</Link>
-					<Icon
+					{/* <Icon
 						as={FaSearch}
 						color="#d6d6d6"
 						w={6}
 						h={6}
 						_hover={{ color: "#E4626E" }}
-					/>
+					/> */}
 					{currentUser ? (
 						<Link href="/photoUpload">
 							<Icon
