@@ -79,7 +79,7 @@ const Login = (): JSX.Element => {
 								setPassword(e.target.value);
 							}}
 						/>
-						<Link href="/auth/resetPassword">
+						<Link href="/auth/passwordReset">
 							<Text as="u" cursor="pointer" _hover={{ opacity: 0.8 }}>
 								パスワードをお忘れですか？
 							</Text>

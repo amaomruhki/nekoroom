@@ -12,6 +12,7 @@ type Props = {
 		| ((event: React.MouseEvent<HTMLButtonElement>) => void)
 		| (() => Promise<string | void>)
 		| (() => void);
+	type?: "submit";
 	disabled?: boolean;
 };
 
