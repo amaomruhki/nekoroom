@@ -4,11 +4,13 @@ import {
 	signOut,
 	GoogleAuthProvider,
 	onAuthStateChanged,
+	sendPasswordResetEmail,
 } from "firebase/auth";
 import { app } from "../../../../lib/firebase";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { UserState, userState } from "../../../Atoms/userAtom";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export const googleLogin = (): Promise<void> => {
 	const provider = new GoogleAuthProvider();
@@ -38,4 +40,24 @@ export const useAuth = (): boolean => {
 
 export const useUser = (): UserState => {
 	return useRecoilValue(userState);
+};
+
+export const usePasswordReset = () => {
+	const router = useRouter();
+	const [success, setSuccess] = useState(false);
+	const [error, setError] = useState(null);
+	const auth = getAuth(app);
+
+	const passwordReset = (email: string) => {
+		sendPasswordResetEmail(auth, email)
+			.then(() => {
+				setSuccess(true);
+				router.push("/login");
+			})
+			.catch((err) => {
+				console.log(err.message);
+				setError(err.message);
+			});
+	};
+	return { success, error, passwordReset };
 };
