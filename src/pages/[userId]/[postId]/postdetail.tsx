@@ -44,7 +44,6 @@ import {
 	serverTimestamp,
 	Timestamp,
 	where,
-	collectionGroup,
 } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useRouter } from "next/router";
