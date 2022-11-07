@@ -131,10 +131,9 @@ const MyPage = () => {
 					</VStack>
 					<VStack align="left" spacing={4} my={4}>
 						<Heading as="h3" size="md">
-							投稿したネコルーム
+							あなたの投稿
 						</Heading>
 					</VStack>
-					{!posts && <Text>投稿はまだありません</Text>}
 					<Grid
 						templateColumns="repeat(4, 1fr)"
 						gridTemplateRows="repeat(4, 1fr)"
@@ -146,10 +145,10 @@ const MyPage = () => {
 										<NextLink
 											key={post.postId}
 											href={{
-												pathname: "/[userId]/[postId]/postEdit",
+												pathname: "/[userId]/[postId]/postDetail",
 												query: { userId: post.userId, postId: post.postId },
 											}}
-											as={`/${post.userId}/${post.postId}/postEdit`}
+											as={`/${post.userId}/${post.postId}/postDetail`}
 										>
 											<AspectRatio ratio={1 / 1}>
 												<Image

@@ -189,13 +189,26 @@ const PostEdit = () => {
 		}
 	};
 
+	//投稿削除
+	const handleDelete = () => {
+		if (isLoading) return;
+		if (router.isReady) {
+			const authorId = router.query.userId as string;
+			const postId = router.query.postId as string;
+			setIsLoading(true);
+			deleteDoc(doc(db, "users", authorId, "posts", postId));
+			setIsLoading(false);
+			router.push("/");
+		}
+	};
+
 	return (
 		<>
 			<Header />
 			{currentUser && !isLoading ? (
 				<Container maxW="800px" pt={8} pb={8} mt={20} mb={20}>
 					<VStack align="left" spacing={4}>
-						<Heading as="h2">ネコルームを編集する</Heading>
+						<Heading as="h2">投稿を編集する</Heading>
 						<Spacer />
 						<Box>
 							<Stack>
@@ -351,7 +364,7 @@ const PostEdit = () => {
 								onClick={editPost}
 								disabled={isLoading}
 							>
-								ネコルームを変更する
+								投稿を変更する
 							</PrimaryButton>
 							<Spacer />
 							<Divider />
@@ -364,7 +377,7 @@ const PostEdit = () => {
 								onClick={() => onOpenDialog("delete")}
 								disabled={isLoading}
 							>
-								ネコルームを削除する
+								投稿を削除する
 							</PrimaryButton>
 							<AlertDialog
 								isOpen={"delete" === selectedButton}
@@ -375,13 +388,13 @@ const PostEdit = () => {
 									<AlertDialogContent>
 										<AlertDialogHeader>
 											<Text fontSize="md" fontWeight="bold">
-												ネコルームの削除
+												投稿の削除
 											</Text>
 										</AlertDialogHeader>
 										<AlertDialogBody>
 											<VStack>
 												<Text fontSize="md">
-													本当にこのネコルームを削除しますか？
+													本当にこの投稿を削除しますか？
 												</Text>
 												<Text fontSize="xs" color="#E4626E">
 													※この操作は取り消せません
@@ -406,7 +419,7 @@ const PostEdit = () => {
 												color="white"
 												size="md"
 												_hover={{ bg: "#E4626E", color: "#ffffff" }}
-												onClick={onCloseDialog}
+												onClick={handleDelete}
 												w="150px"
 											>
 												削除する
