@@ -4,55 +4,21 @@ import Header from "../../components/layouts/Header/Header";
 import NextLink from "next/link";
 import {
 	Image,
-	Box,
 	Container,
 	Heading,
 	HStack,
 	VStack,
 	Text,
-	Textarea,
-	Button,
-	Stack,
-	Icon,
-	Flex,
-	Spacer,
-	Center,
-	Modal,
-	ModalBody,
-	ModalCloseButton,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalOverlay,
-	useDisclosure,
 	Link,
-	IconButton,
 	Grid,
 	AspectRatio,
 } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
-import {
-	addDoc,
-	collection,
-	writeBatch,
-	increment,
-	doc,
-	getDoc,
-	getDocs,
-	onSnapshot,
-	orderBy,
-	query,
-	serverTimestamp,
-	Timestamp,
-	where,
-	collectionGroup,
-} from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 import { useRouter } from "next/router";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { userState } from "../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
-import { uuid } from "uuidv4";
 import Loading from "../../components/elements/Loading/Loading";
 
 type Post = {
