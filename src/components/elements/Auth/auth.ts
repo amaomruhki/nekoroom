@@ -46,13 +46,15 @@ export const usePasswordReset = () => {
 	const router = useRouter();
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState(null);
-	const auth = getAuth(app);
+	const auth = getAuth();
 
 	const passwordReset = (email: string) => {
 		sendPasswordResetEmail(auth, email)
 			.then(() => {
 				setSuccess(true);
-				router.push("/login");
+				setTimeout(() => {
+					router.push("/auth/login");
+				}, 10000);
 			})
 			.catch((err) => {
 				console.log(err.message);
