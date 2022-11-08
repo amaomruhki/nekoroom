@@ -14,7 +14,13 @@ import {
 	AspectRatio,
 } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+	collection,
+	doc,
+	onSnapshot,
+	orderBy,
+	query,
+} from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 import { useRouter } from "next/router";
 import { userState } from "../../Atoms/userAtom";
@@ -31,9 +37,28 @@ type Post = {
 
 const MyPage = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
+	const [author, setAuthor] = useState([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
+
+	//投稿したユーザー情報を取得
+	useEffect(() => {
+		setIsLoading(true);
+		if (router.isReady) {
+			const authorId = router.query.userId as string;
+			const unsubscribe = onSnapshot(doc(db, "users", authorId), (snapshot) => {
+				const userData = {
+					userId: snapshot.data()?.uid,
+					username: snapshot.data()?.username,
+					userImg: snapshot.data()?.userImg,
+					userText: snapshot.data()?.text,
+				};
+				setAuthor(userData);
+			});
+			return () => unsubscribe();
+		}
+	}, [router.isReady, router.query.userId]);
 
 	//投稿した記事情報を取得
 	useEffect(() => {
@@ -66,38 +91,42 @@ const MyPage = () => {
 	return (
 		<>
 			<Header />
-			{!isLoading && currentUser ? (
+			{!isLoading ? (
 				<Container minH="100vh">
 					<VStack bg="white" p={4} mt="80px" rounded="md">
 						<HStack p={2}>
-							<Avatar
-								size="md"
-								name={currentUser.username}
-								src={currentUser.userImg}
-							/>
+							<Avatar size="md" name={author.username} src={author.userImg} />
 							<Text fontSize="md" as="b">
-								{currentUser.username}
+								{author.username}
 							</Text>
 						</HStack>
-						<Text fontSize="sm">
-							愛猫くろしろ（MIX/保護猫/♂）のQOL向上のために駆け出したいエンジニア。
-							シンプルでナチュラルなデザインの猫グッズでそろえています。
-							#猫飼いエンジニアとつながりたいにゃ
-						</Text>
-						<Link href="/auth/register">
-							<Text
-								as="u"
-								cursor="pointer"
-								color="#E4626E"
-								_hover={{ opacity: 0.8 }}
+						<Text fontSize="sm">{author.userText}</Text>
+						{currentUser && currentUser!.uid === author.userId ? (
+							<NextLink
+								href={{
+									pathname: "/[userId]/myProfileEdit",
+									query: {
+										userId: router.query.userId,
+										postId: router.query.postId,
+									},
+								}}
+								as={`/${router.query.userId}/myProfileEdit`}
+								passHref
 							>
-								プロフィールを編集する
-							</Text>
-						</Link>
+								<Text
+									as="u"
+									cursor="pointer"
+									color="#E4626E"
+									_hover={{ opacity: 0.8 }}
+								>
+									プロフィールを編集する
+								</Text>
+							</NextLink>
+						) : null}
 					</VStack>
 					<VStack align="left" spacing={4} my={4}>
 						<Heading as="h3" size="md">
-							あなたの投稿
+							{author.username}の投稿
 						</Heading>
 					</VStack>
 					<Grid
@@ -118,7 +147,7 @@ const MyPage = () => {
 										>
 											<AspectRatio ratio={1 / 1}>
 												<Image
-													alt={`${currentUser.username}'s photo`}
+													alt={`${author.username}'s photo`}
 													src={post.image}
 													objectFit="cover"
 												/>
