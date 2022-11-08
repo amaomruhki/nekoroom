@@ -94,7 +94,7 @@ const MyPage = () => {
 				<Container minH="100vh" pt="80px">
 					<VStack align="left" spacing={4} my={4}>
 						<Heading as="h3" size="md">
-							あなたのいいにゃ一覧
+							{currentUser.username}のいいにゃ一覧
 						</Heading>
 					</VStack>
 					<Grid

@@ -37,7 +37,6 @@ import {
 	increment,
 	doc,
 	getDoc,
-	getDocs,
 	onSnapshot,
 	orderBy,
 	query,
@@ -325,7 +324,22 @@ const PostDetail = () => {
 						</AspectRatio>
 						<Flex alignItems="center" gap="2">
 							<HStack p={2}>
-								<Avatar size="md" name={author.username} src={author.userImg} />
+								<NextLink
+									href={{
+										pathname: "/[userId]/myPage",
+										query: {
+											userId: router.query.userId,
+											postId: router.query.postId,
+										},
+									}}
+									as={`/${router.query.userId}/myPage`}
+								>
+									<Avatar
+										size="md"
+										name={author.username}
+										src={author.userImg}
+									/>
+								</NextLink>
 								<VStack align="left">
 									<Text fontSize="md" as="b">
 										{author.username}
