@@ -17,13 +17,13 @@ export const useGoogleLogin = async (): Promise<void> => {
 				email: user.providerData[0].email,
 				userImg: user.providerData[0].photoURL,
 				uid: user.uid,
+				text: "",
 				createTime: serverTimestamp(),
 				updateTime: serverTimestamp(),
 				username: user.providerData[0].displayName
 					.split(" ")
 					.join("")
 					.toLocaleLowerCase(),
-				likePostCount: 0,
 			});
 		}
 		router.push("/");

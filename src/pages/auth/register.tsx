@@ -53,6 +53,7 @@ const Register = () => {
 					updateTime: serverTimestamp(),
 					username: username,
 					userImg: "",
+					text: "",
 				});
 			}
 			const imageRef = ref(storage, `users/${docRef.id}/image`);

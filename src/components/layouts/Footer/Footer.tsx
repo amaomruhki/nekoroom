@@ -84,11 +84,7 @@ const Footer = () => {
 								passHref
 							>
 								<Link>
-									{userImg ? (
-										<Avatar size="sm" name={username} src={userImg} />
-									) : (
-										<Avatar size="sm" name={username} />
-									)}
+									<Avatar size="sm" name={username} src={userImg} />
 								</Link>
 							</NextLink>
 						</>

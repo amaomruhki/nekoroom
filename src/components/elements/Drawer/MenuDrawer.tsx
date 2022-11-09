@@ -59,10 +59,6 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 			),
 		},
 		{
-			title: "settings",
-			text: <Link href="/settings">設定</Link>,
-		},
-		{
 			title: "logout",
 			text: <Text onClick={onLogout}>ログアウト</Text>,
 		},

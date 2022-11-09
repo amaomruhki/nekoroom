@@ -10,7 +10,6 @@ import {
 	VStack,
 	Text,
 	Textarea,
-	Select,
 	Stack,
 	Spacer,
 	Center,
