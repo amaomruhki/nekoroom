@@ -1,9 +1,15 @@
 import { useEffect } from "react";
-import Image from "next/image";
+import NextLink from "next/link";
 import MenuDrawer from "../../elements/Drawer/MenuDrawer";
 import MenuIconButton from "../../elements/Button/MenuIconButton";
-import { Container, Flex, useDisclosure, Box, Text } from "@chakra-ui/react";
-import Link from "next/link";
+import {
+	Container,
+	Flex,
+	useDisclosure,
+	Image,
+	Text,
+	Link,
+} from "@chakra-ui/react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { db } from "../../../../lib/firebase";
 import { useRecoilState } from "recoil";
@@ -55,9 +61,11 @@ const Header = () => {
 				</Container>
 				<Container bg="white" py={2} px={4} maxW="100%">
 					<Flex as="nav" justify="space-between" align="center">
-						<Link href="/">
-							<Image src="/logo.svg" alt="logo" width="158px" height="34px" />
-						</Link>
+						<NextLink href="/" passHref>
+							<Link>
+								<Image src="/logo.svg" alt="logo" width="158px" height="34px" />
+							</Link>
+						</NextLink>
 						<MenuIconButton onOpen={onOpen} />
 						<MenuDrawer
 							onClose={onClose}

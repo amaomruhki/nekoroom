@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Footer from "../../../components/layouts/Footer/Footer";
-import Header from "../../../components/layouts/Header/Header";
 import NextLink from "next/link";
 import {
 	Image,
@@ -27,6 +25,7 @@ import {
 	useDisclosure,
 	Link,
 	IconButton,
+	AspectRatio,
 } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
 import { PadIcon } from "../../../components/elements/Icon/Icon";
@@ -55,8 +54,6 @@ import PrimaryButton from "../../../components/elements/Button/PrimaryButton";
 import Loading from "../../../components/elements/Loading/Loading";
 import { userState } from "../../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
-import { uuid } from "uuidv4";
-import { AspectRatio } from "@chakra-ui/react";
 
 type CommentUser = {
 	commentId: string;
@@ -285,9 +282,8 @@ const PostDetail = () => {
 
 	return (
 		<>
-			<Header />
 			{!isLoading ? (
-				<Container pt={8} pb={8} mt="50px" maxW="420px">
+				<Container pb={8} maxW="420px">
 					{currentUser && currentUser!.uid === router.query.userId ? (
 						<Stack m={4}>
 							<NextLink
@@ -540,8 +536,6 @@ const PostDetail = () => {
 			) : (
 				<Loading />
 			)}
-
-			<Footer />
 		</>
 	);
 };

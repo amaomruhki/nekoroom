@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Footer from "../../components/layouts/Footer/Footer";
-import Header from "../../components/layouts/Header/Header";
 import NextLink from "next/link";
 import {
 	Image,
@@ -90,10 +88,9 @@ const MyPage = () => {
 
 	return (
 		<>
-			<Header />
 			{!isLoading ? (
-				<Container minH="100vh">
-					<VStack bg="white" p={4} mt="80px" rounded="md">
+				<>
+					<VStack bg="white" p={4} rounded="md">
 						<HStack p={2}>
 							<Avatar size="md" name={author.username} src={author.userImg} />
 							<Text fontSize="md" as="b">
@@ -113,14 +110,16 @@ const MyPage = () => {
 								as={`/${router.query.userId}/myProfileEdit`}
 								passHref
 							>
-								<Text
-									as="u"
-									cursor="pointer"
-									color="#E4626E"
-									_hover={{ opacity: 0.8 }}
-								>
-									プロフィールを編集する
-								</Text>
+								<Link>
+									<Text
+										as="u"
+										cursor="pointer"
+										color="#E4626E"
+										_hover={{ opacity: 0.8 }}
+									>
+										プロフィールを編集する
+									</Text>
+								</Link>
 							</NextLink>
 						) : null}
 					</VStack>
@@ -155,12 +154,10 @@ const MyPage = () => {
 							  ))
 							: null}
 					</Grid>
-				</Container>
+				</>
 			) : (
 				<Loading />
 			)}
-
-			<Footer />
 		</>
 	);
 };

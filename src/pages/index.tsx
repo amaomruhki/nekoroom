@@ -1,8 +1,6 @@
-import { Box, VStack, Text } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Footer from "../components/layouts/Footer/Footer";
-import Header from "../components/layouts/Header/Header";
 import Posts from "../components/layouts/Posts/Posts";
 
 const Home: NextPage = () => {
@@ -17,8 +15,7 @@ const Home: NextPage = () => {
 					content="NekoRoomはネコを飼っている方のお部屋やネコちゃん用アイテムの写真を共有するサイトです。"
 				/>
 			</Head>
-			<Header />
-			<VStack minH="100vh" pt={8} pb={8} mt="50px">
+			<VStack minH="100vh">
 				<VStack
 					w="100%"
 					maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
@@ -27,7 +24,6 @@ const Home: NextPage = () => {
 					<Posts />
 				</VStack>
 			</VStack>
-			<Footer />
 		</>
 	);
 };

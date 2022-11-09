@@ -1,7 +1,6 @@
 import React from "react";
 import NextLink from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import { useWindowSize } from "react-use";
 import {
 	Stack,
@@ -27,14 +26,17 @@ import {
 
 const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 	const { height } = useWindowSize();
-	const router = useRouter();
 	const userId = currentUser?.uid;
 	const username = currentUser?.username;
 	const userImg = currentUser?.userImg;
 	const Login_Menu_List = [
 		{
 			title: "photoUpload",
-			text: <Link href="/photoUpload">投稿</Link>,
+			text: (
+				<NextLink href="/photoUpload" passHref>
+					<Link>投稿</Link>
+				</NextLink>
+			),
 		},
 		{
 			title: "myPage",
@@ -66,11 +68,19 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 	const Logout_Menu_List = [
 		{
 			title: "login",
-			text: <Link href="/auth/login">ログイン</Link>,
+			text: (
+				<NextLink href="/auth/login" passHref>
+					<Link>ログイン</Link>
+				</NextLink>
+			),
 		},
 		{
 			title: "register",
-			text: <Link href="/auth//register">新規登録</Link>,
+			text: (
+				<NextLink href="/auth//register" passHref>
+					<Link>新規登録</Link>
+				</NextLink>
+			),
 		},
 	];
 
@@ -101,12 +111,12 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 						<Stack spacing="24px">
 							{currentUser
 								? Login_Menu_List.map((list) => (
-										<Box key="title" cursor="pointer">
+										<Box key="title" cursor="pointer" onClick={onClose}>
 											{list.text}
 										</Box>
 								  ))
 								: Logout_Menu_List.map((list) => (
-										<Box key="title" cursor="pointer">
+										<Box key="title" cursor="pointer" onClick={onClose}>
 											{list.text}
 										</Box>
 								  ))}

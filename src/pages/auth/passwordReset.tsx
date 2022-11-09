@@ -1,14 +1,12 @@
-import React, { useState } from "react";
-import Link from "next/link";
-import Footer from "../../components/layouts/Footer/Footer";
-import Header from "../../components/layouts/Header/Header";
+import { useState } from "react";
+import NextLink from "next/link";
 import {
 	Input,
-	Container,
 	Heading,
 	VStack,
 	Text,
 	Spacer,
+	Link,
 	FormControl,
 	Alert,
 	AlertIcon,
@@ -29,79 +27,78 @@ const PasswordReset = (): JSX.Element => {
 
 	return (
 		<>
-			<Header />
-			<Container maxW="800px" pt={8} pb={8} mt={20} mb={40}>
-				<VStack align="center" spacing={4}>
-					<Heading as="h2" size="lg">
-						パスワード再設定
-					</Heading>
-					<Text>
-						登録しているメールアドレスをご入力ください。入力したアドレス宛にメールを送信します。
-					</Text>
-					<Spacer />
-					<form onSubmit={onSubmit}>
-						<FormControl>
-							<Input
-								id="email"
-								width="320px"
-								bg="white"
-								placeholder="メールアドレス"
-								type="email"
-								value={email}
-								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-									setEmail(event.target.value);
-								}}
-							/>
-							{error && (
-								<Alert
-									status="error"
-									mt={2}
-									flexDirection="column"
-									alignItems="center"
-									justifyContent="center"
-									textAlign="center"
-								>
-									<AlertIcon />
-									<AlertTitle mt={4} mb={1} fontSize="md">
-										メールが送信できませんでした
-									</AlertTitle>
-									<AlertDescription maxWidth="sm">
-										メールアドレスが間違っているか、アカウントの登録がない可能性があります
-									</AlertDescription>
-								</Alert>
-							)}
-							{success && (
-								<Alert
-									status="success"
-									mt={2}
-									flexDirection="column"
-									alignItems="center"
-									justifyContent="center"
-									textAlign="center"
-								>
-									<AlertIcon />
-									<AlertTitle mt={4} mb={1} fontSize="md">
-										メールが送信されました
-									</AlertTitle>
-									<AlertDescription maxWidth="sm">
-										メールが見つからない場合は、迷惑メールフォルダに振り分けられている可能性があります
-									</AlertDescription>
-								</Alert>
-							)}
-						</FormControl>
-						<VStack mt={4}>
-							<PrimaryButton
-								bg="#E4626E"
-								color="#ffffff"
-								type="submit"
-								disabled={!email}
+			<VStack align="center" spacing={4}>
+				<Heading as="h2" size="lg">
+					パスワード再設定
+				</Heading>
+				<Text>
+					登録しているメールアドレスをご入力ください。入力したアドレス宛にメールを送信します。
+				</Text>
+				<Spacer />
+				<form onSubmit={onSubmit}>
+					<FormControl>
+						<Input
+							id="email"
+							width="320px"
+							bg="white"
+							placeholder="メールアドレス"
+							type="email"
+							value={email}
+							onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+								setEmail(event.target.value);
+							}}
+						/>
+						{error && (
+							<Alert
+								status="error"
+								mt={2}
+								flexDirection="column"
+								alignItems="center"
+								justifyContent="center"
+								textAlign="center"
 							>
-								送信
-							</PrimaryButton>
-						</VStack>
-					</form>
-					<Spacer />
-					<Link href="/auth/login">
+								<AlertIcon />
+								<AlertTitle mt={4} mb={1} fontSize="md">
+									メールが送信できませんでした
+								</AlertTitle>
+								<AlertDescription maxWidth="sm">
+									メールアドレスが間違っているか、アカウントの登録がない可能性があります
+								</AlertDescription>
+							</Alert>
+						)}
+						{success && (
+							<Alert
+								status="success"
+								mt={2}
+								flexDirection="column"
+								alignItems="center"
+								justifyContent="center"
+								textAlign="center"
+							>
+								<AlertIcon />
+								<AlertTitle mt={4} mb={1} fontSize="md">
+									メールが送信されました
+								</AlertTitle>
+								<AlertDescription maxWidth="sm">
+									メールが見つからない場合は、迷惑メールフォルダに振り分けられている可能性があります
+								</AlertDescription>
+							</Alert>
+						)}
+					</FormControl>
+					<VStack mt={4}>
+						<PrimaryButton
+							bg="#E4626E"
+							color="#ffffff"
+							type="submit"
+							disabled={!email}
+						>
+							送信
+						</PrimaryButton>
+					</VStack>
+				</form>
+				<Spacer />
+				<NextLink href="/auth/login" passHref>
+					<Link>
 						<Text
 							as="u"
 							cursor="pointer"
@@ -111,10 +108,8 @@ const PasswordReset = (): JSX.Element => {
 							ログインに戻る
 						</Text>
 					</Link>
-				</VStack>
-			</Container>
-
-			<Footer />
+				</NextLink>
+			</VStack>
 		</>
 	);
 };
