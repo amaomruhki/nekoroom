@@ -1,16 +1,13 @@
-import React from "react";
 import NextLink from "next/link";
 import { Container, Flex, Icon, Link, Avatar } from "@chakra-ui/react";
 import { HiHome } from "react-icons/Hi";
-import { FaSearch, FaPlusCircle, FaUser } from "react-icons/Fa";
+import { FaPlusCircle, FaUser } from "react-icons/Fa";
 import { PadIcon } from "../../elements/Icon/Icon";
 import { useRecoilState } from "recoil";
 import { userState } from "../../../Atoms/userAtom";
-import { useRouter } from "next/router";
 
 const Footer = () => {
 	const [currentUser] = useRecoilState(userState);
-	const router = useRouter();
 	const userId = currentUser?.uid;
 	const username = currentUser?.username;
 	const userImg = currentUser?.userImg;
@@ -32,33 +29,33 @@ const Footer = () => {
 					height="100%"
 					px={6}
 				>
-					<Link href="/">
-						<Icon
-							as={HiHome}
-							color="#d6d6d6"
-							w={6}
-							h={6}
-							_hover={{ color: "#E4626E" }}
-						/>
-					</Link>
-					{/* <Icon
-						as={FaSearch}
-						color="#d6d6d6"
-						w={6}
-						h={6}
-						_hover={{ color: "#E4626E" }}
-					/> */}
+					<NextLink href="/" passHref>
+						<Link>
+							<Icon
+								as={HiHome}
+								color="#d6d6d6"
+								w={8}
+								h={8}
+								sx={{ margin: -2 }}
+								_hover={{ color: "#E4626E" }}
+							/>
+						</Link>
+					</NextLink>
+
 					{currentUser ? (
 						<>
-							<Link href="/photoUpload">
-								<Icon
-									as={FaPlusCircle}
-									color="#d6d6d6"
-									w={6}
-									h={6}
-									_hover={{ color: "#E4626E" }}
-								/>
-							</Link>
+							<NextLink href="/photoUpload" passHref>
+								<Link>
+									<Icon
+										as={FaPlusCircle}
+										color="#d6d6d6"
+										w={8}
+										h={8}
+										sx={{ margin: -2 }}
+										_hover={{ color: "#E4626E" }}
+									/>
+								</Link>
+							</NextLink>
 							<NextLink
 								href={{
 									pathname: "/[userId]/myLike",
@@ -70,8 +67,8 @@ const Footer = () => {
 									<Icon
 										as={PadIcon}
 										color="#d6d6d6"
-										w={6}
-										h={6}
+										w={8}
+										h={8}
 										_hover={{ color: "#E4626E" }}
 									/>
 								</Link>
@@ -90,33 +87,39 @@ const Footer = () => {
 						</>
 					) : (
 						<>
-							<Link href="/auth/login">
-								<Icon
-									as={FaPlusCircle}
-									color="#d6d6d6"
-									w={6}
-									h={6}
-									_hover={{ color: "#E4626E" }}
-								/>
-							</Link>
-							<Link href="/auth/login">
-								<Icon
-									as={PadIcon}
-									color="#d6d6d6"
-									w={6}
-									h={6}
-									_hover={{ color: "#E4626E" }}
-								/>
-							</Link>
-							<Link href="/auth/login">
-								<Icon
-									as={FaUser}
-									color="#d6d6d6"
-									w={6}
-									h={6}
-									_hover={{ color: "#E4626E" }}
-								/>
-							</Link>
+							<NextLink href="/auth/login" passHref>
+								<Link>
+									<Icon
+										as={FaPlusCircle}
+										color="#d6d6d6"
+										w={8}
+										h={8}
+										_hover={{ color: "#E4626E" }}
+									/>
+								</Link>
+							</NextLink>
+							<NextLink href="/auth/login" passHref>
+								<Link>
+									<Icon
+										as={PadIcon}
+										color="#d6d6d6"
+										w={8}
+										h={8}
+										_hover={{ color: "#E4626E" }}
+									/>
+								</Link>
+							</NextLink>
+							<NextLink href="/auth/login" passHref>
+								<Link href="/auth/login">
+									<Icon
+										as={FaUser}
+										color="#d6d6d6"
+										w={8}
+										h={8}
+										_hover={{ color: "#E4626E" }}
+									/>
+								</Link>
+							</NextLink>
 						</>
 					)}
 				</Flex>

@@ -25,6 +25,7 @@ import {
 	useDisclosure,
 	Link,
 	IconButton,
+	AspectRatio,
 } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
 import { PadIcon } from "../../../components/elements/Icon/Icon";
@@ -53,8 +54,6 @@ import PrimaryButton from "../../../components/elements/Button/PrimaryButton";
 import Loading from "../../../components/elements/Loading/Loading";
 import { userState } from "../../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
-import { uuid } from "uuidv4";
-import { AspectRatio } from "@chakra-ui/react";
 
 type CommentUser = {
 	commentId: string;

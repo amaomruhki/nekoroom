@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
+import NextLink from "next/link";
 import {
 	Input,
 	Container,
@@ -7,6 +7,7 @@ import {
 	VStack,
 	Text,
 	Spacer,
+	Link,
 	FormControl,
 	Alert,
 	AlertIcon,
@@ -98,16 +99,18 @@ const PasswordReset = (): JSX.Element => {
 						</VStack>
 					</form>
 					<Spacer />
-					<Link href="/auth/login">
-						<Text
-							as="u"
-							cursor="pointer"
-							color="#E4626E"
-							_hover={{ opacity: 0.8 }}
-						>
-							ログインに戻る
-						</Text>
-					</Link>
+					<NextLink href="/auth/login" passHref>
+						<Link>
+							<Text
+								as="u"
+								cursor="pointer"
+								color="#E4626E"
+								_hover={{ opacity: 0.8 }}
+							>
+								ログインに戻る
+							</Text>
+						</Link>
+					</NextLink>
 				</VStack>
 			</Container>
 		</>

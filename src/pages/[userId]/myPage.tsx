@@ -110,14 +110,16 @@ const MyPage = () => {
 								as={`/${router.query.userId}/myProfileEdit`}
 								passHref
 							>
-								<Text
-									as="u"
-									cursor="pointer"
-									color="#E4626E"
-									_hover={{ opacity: 0.8 }}
-								>
-									プロフィールを編集する
-								</Text>
+								<Link>
+									<Text
+										as="u"
+										cursor="pointer"
+										color="#E4626E"
+										_hover={{ opacity: 0.8 }}
+									>
+										プロフィールを編集する
+									</Text>
+								</Link>
 							</NextLink>
 						) : null}
 					</VStack>

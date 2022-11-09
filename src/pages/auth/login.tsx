@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import {
 	Input,
@@ -9,6 +9,7 @@ import {
 	Text,
 	Button,
 	Spacer,
+	Link,
 } from "@chakra-ui/react";
 import PrimaryButton from "../../components/elements/Button/PrimaryButton";
 import { FcGoogle } from "react-icons/Fc";
@@ -76,11 +77,13 @@ const Login = (): JSX.Element => {
 								setPassword(e.target.value);
 							}}
 						/>
-						<Link href="/auth/passwordReset">
-							<Text as="u" cursor="pointer" _hover={{ opacity: 0.8 }}>
-								パスワードをお忘れですか？
-							</Text>
-						</Link>
+						<NextLink href="/auth/passwordReset" passHref>
+							<Link>
+								<Text as="u" cursor="pointer" _hover={{ opacity: 0.8 }}>
+									パスワードをお忘れですか？
+								</Text>
+							</Link>
+						</NextLink>
 						<Spacer />
 						<VStack>
 							<PrimaryButton
