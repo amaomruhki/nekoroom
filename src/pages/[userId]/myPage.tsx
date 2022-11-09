@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Footer from "../../components/layouts/Footer/Footer";
-import Header from "../../components/layouts/Header/Header";
 import NextLink from "next/link";
 import {
 	Image,
@@ -90,7 +88,6 @@ const MyPage = () => {
 
 	return (
 		<>
-			<Header />
 			{!isLoading ? (
 				<Container minH="100vh">
 					<VStack bg="white" p={4} mt="80px" rounded="md">
@@ -159,8 +156,6 @@ const MyPage = () => {
 			) : (
 				<Loading />
 			)}
-
-			<Footer />
 		</>
 	);
 };

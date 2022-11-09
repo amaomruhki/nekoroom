@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import Footer from "../../components/layouts/Footer/Footer";
-import Header from "../../components/layouts/Header/Header";
 import {
 	Input,
 	Container,
@@ -29,7 +27,6 @@ const PasswordReset = (): JSX.Element => {
 
 	return (
 		<>
-			<Header />
 			<Container maxW="800px" pt={8} pb={8} mt={20} mb={40}>
 				<VStack align="center" spacing={4}>
 					<Heading as="h2" size="lg">
@@ -113,8 +110,6 @@ const PasswordReset = (): JSX.Element => {
 					</Link>
 				</VStack>
 			</Container>
-
-			<Footer />
 		</>
 	);
 };

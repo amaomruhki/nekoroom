@@ -1,7 +1,5 @@
 import React, { useRef, useState } from "react";
 import Link from "next/link";
-import Footer from "../../components/layouts/Footer/Footer";
-import Header from "../../components/layouts/Header/Header";
 import {
 	Input,
 	Container,
@@ -89,7 +87,6 @@ const Register = () => {
 
 	return (
 		<>
-			<Header />
 			{isLoading ? (
 				<Loading />
 			) : (
@@ -171,7 +168,12 @@ const Register = () => {
 							}}
 						/>
 						<Spacer />
-						<PrimaryButton bg="#E4626E" color="#ffffff" onClick={onSignIn}>
+						<PrimaryButton
+							bg="#E4626E"
+							color="#ffffff"
+							onClick={onSignIn}
+							disabled={!username || !email || !password}
+						>
 							新規登録
 						</PrimaryButton>
 						<Link href="/auth/login">
@@ -187,8 +189,6 @@ const Register = () => {
 					</VStack>
 				</Container>
 			)}
-
-			<Footer />
 		</>
 	);
 };

@@ -34,10 +34,8 @@ import {
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { db, storage } from "../../lib/firebase";
 import PrimaryButton from "../components/elements/Button/PrimaryButton";
-import Footer from "../components/layouts/Footer/Footer";
 import ItemSearch from "../components/elements/Search/ItemSearch";
 import Result from "../components/elements/Search/Result";
-import Header from "../components/layouts/Header/Header";
 import useFetchData from "../Hooks/useFetchData";
 import Loading from "../components/elements/Loading/Loading";
 import { userState } from "../Atoms/userAtom";
@@ -152,7 +150,6 @@ const PhotoUpload = () => {
 
 	return (
 		<>
-			<Header />
 			{currentUser && !isLoading ? (
 				<Container maxW="800px" pt={8} pb={8} mt={20} mb={20}>
 					<VStack align="left" spacing={4}>
@@ -326,8 +323,6 @@ const PhotoUpload = () => {
 			) : (
 				<Loading />
 			)}
-
-			<Footer />
 		</>
 	);
 };

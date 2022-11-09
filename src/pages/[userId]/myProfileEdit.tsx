@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Footer from "../../components/layouts/Footer/Footer";
-import Header from "../../components/layouts/Header/Header";
 import {
 	Input,
 	Container,
@@ -110,7 +108,6 @@ const MyProfileEdit = () => {
 
 	return (
 		<>
-			<Header />
 			{currentUser && !isLoading ? (
 				<Container maxW="800px" pt={8} pb={8} mt={20}>
 					<VStack align="center" spacing={4}>
@@ -226,8 +223,6 @@ const MyProfileEdit = () => {
 			) : (
 				<Loading />
 			)}
-
-			<Footer />
 		</>
 	);
 };

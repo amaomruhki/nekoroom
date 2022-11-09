@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Footer from "../../../components/layouts/Footer/Footer";
-import Header from "../../../components/layouts/Header/Header";
 import NextLink from "next/link";
 import {
 	Image,
@@ -285,7 +283,6 @@ const PostDetail = () => {
 
 	return (
 		<>
-			<Header />
 			{!isLoading ? (
 				<Container pt={8} pb={8} mt="50px" maxW="420px">
 					{currentUser && currentUser!.uid === router.query.userId ? (
@@ -540,8 +537,6 @@ const PostDetail = () => {
 			) : (
 				<Loading />
 			)}
-
-			<Footer />
 		</>
 	);
 };

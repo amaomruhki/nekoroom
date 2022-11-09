@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import Footer from "../../components/layouts/Footer/Footer";
-import Header from "../../components/layouts/Header/Header";
 import {
 	Input,
 	Container,
@@ -49,7 +47,6 @@ const Login = (): JSX.Element => {
 
 	return (
 		<>
-			<Header />
 			{isLoading ? (
 				<Loading />
 			) : (
@@ -132,8 +129,6 @@ const Login = (): JSX.Element => {
 					</VStack>
 				</Container>
 			)}
-
-			<Footer />
 		</>
 	);
 };

@@ -45,12 +45,10 @@ import {
 import { userState } from "../../../Atoms/userAtom";
 import { db } from "../../../../lib/firebase";
 import useFetchData from "../../../Hooks/useFetchData";
-import Header from "../../../components/layouts/Header/Header";
 import PrimaryButton from "../../../components/elements/Button/PrimaryButton";
 import ItemSearch from "../../../components/elements/Search/ItemSearch";
 import Loading from "../../../components/elements/Loading/Loading";
 import Result from "../../../components/elements/Search/Result";
-import Footer from "../../../components/layouts/Footer/Footer";
 
 const PostEdit = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -204,7 +202,6 @@ const PostEdit = () => {
 
 	return (
 		<>
-			<Header />
 			{currentUser && !isLoading ? (
 				<Container maxW="800px" pt={8} pb={8} mt={20} mb={20}>
 					<VStack align="left" spacing={4}>
@@ -434,8 +431,6 @@ const PostEdit = () => {
 			) : (
 				<Loading />
 			)}
-
-			<Footer />
 		</>
 	);
 };
