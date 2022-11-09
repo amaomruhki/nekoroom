@@ -69,8 +69,11 @@ const Posts = () => {
 
 	return (
 		<Grid
-			templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }}
-			gap={1}
+			templateColumns={{
+				sm: "repeat(1, 1fr)",
+				md: "repeat(3, 1fr)",
+			}}
+			gap={2}
 		>
 			{posts
 				? posts.map((post) => (

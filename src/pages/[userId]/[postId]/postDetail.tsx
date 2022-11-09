@@ -26,6 +26,8 @@ import {
 	Link,
 	IconButton,
 	AspectRatio,
+	GridItem,
+	Grid,
 } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
 import { PadIcon } from "../../../components/elements/Icon/Icon";
@@ -283,256 +285,265 @@ const PostDetail = () => {
 	return (
 		<>
 			{!isLoading ? (
-				<Container pb={8} maxW="420px">
-					{currentUser && currentUser!.uid === router.query.userId ? (
-						<Stack m={4}>
-							<NextLink
-								href={{
-									pathname: "/[userId]/[postId]/postEdit",
-									query: {
-										userId: router.query.userId,
-										postId: router.query.postId,
-									},
-								}}
-								as={`/${router.query.userId}/${router.query.postId}/postEdit`}
-								passHref
-							>
-								<Button
-									as="a"
-									bg="#ffffff"
-									color="#E4626E"
-									borderColor="#E4626E"
-									border="1px"
-									_hover={{ color: "#ffffff", bg: "#E4626E" }}
-								>
-									投稿を編集する
-								</Button>
-							</NextLink>
-						</Stack>
-					) : null}
-					<Box bg="white" p={4} rounded="md" boxShadow="md">
-						<AspectRatio maxW="400px" ratio={1 / 1}>
-							<Image
-								src={post.image}
-								alt={`${author.username}'s photo`}
-								objectFit="cover"
-							/>
-						</AspectRatio>
-						<Flex alignItems="center" gap="2">
-							<HStack p={2}>
+				<Grid
+					templateColumns={{
+						sm: "repeat(1, 1fr)",
+						md: "repeat(1, 1fr)",
+					}}
+					gap={2}
+					justify="center"
+				>
+					<GridItem maxW="420px">
+						{currentUser && currentUser!.uid === router.query.userId ? (
+							<Stack m={4}>
 								<NextLink
 									href={{
-										pathname: "/[userId]/myPage",
+										pathname: "/[userId]/[postId]/postEdit",
 										query: {
 											userId: router.query.userId,
 											postId: router.query.postId,
 										},
 									}}
-									as={`/${router.query.userId}/myPage`}
+									as={`/${router.query.userId}/${router.query.postId}/postEdit`}
+									passHref
 								>
-									<Avatar
-										size="md"
-										name={author.username}
-										src={author.userImg}
-									/>
-								</NextLink>
-								<VStack align="left">
-									<Text fontSize="md" as="b">
-										{author.username}
-									</Text>
-									<Text fontSize="sm">
-										{parseTimestampToDate(post.createTime, "/")}
-									</Text>
-								</VStack>
-							</HStack>
-							<Spacer />
-							{/* like表示の条件分岐 */}
-							<HStack spacing={2}>
-								{currentUser ? (
-									likeUsers.length > 0 ? (
-										<IconButton
-											p={0}
-											aria-label="like"
-											variant="ghost"
-											icon={<PadIcon />}
-											color="#E4626E"
-											fontSize="30px"
-											sx={{ margin: "-4px" }}
-											onClick={() => handleLikeCount()}
-										/>
-									) : (
-										<IconButton
-											p={0}
-											aria-label="like"
-											variant="ghost"
-											icon={<PadIcon />}
-											color="#d6d6d6"
-											fontSize="30px"
-											sx={{ margin: "-4px" }}
-											onClick={() => handleLikeCount()}
-										/>
-									)
-								) : (
-									<Icon
-										as={PadIcon}
-										color="#d6d6d6"
-										sx={{ width: "30px", height: "30px" }}
-									/>
-								)}
-								<Text as="b" fontSize="xs" color="#d6d6d6">
-									{post.likeCount}
-								</Text>
-							</HStack>
-						</Flex>
-						<Text fontSize="md">{post.caption}</Text>
-					</Box>
-					<VStack
-						w="100%"
-						maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
-						pb={100}
-						mt={4}
-						align="left"
-					>
-						{items?.length >= 1 && (
-							<>
-								<Heading as="h3" fontSize="md">
-									使用アイテム
-								</Heading>
-								<Flex gap={2}>
-									{items?.map((item) => (
-										<>
-											<HStack
-												bg="white"
-												boxShadow="md"
-												rounded="md"
-												w="140px"
-												h="140px"
-												justify="center"
-												key={item.itemName}
-												onClick={onOpen}
-												cursor="pointer"
-											>
-												<Image
-													alt={item.itemName}
-													src={item.itemImg}
-													boxSize="100px"
-													objectFit="cover"
-												/>
-											</HStack>
-											<Modal isOpen={isOpen} onClose={onClose}>
-												<ModalOverlay />
-												<ModalContent>
-													<ModalHeader mt={6}></ModalHeader>
-													<ModalCloseButton />
-													<ModalBody>
-														<Stack p={2} m="4px">
-															<Stack align="center">
-																<Image
-																	alt={item.itemUrl}
-																	src={item.itemImg}
-																	boxSize="250px"
-																	objectFit="cover"
-																/>
-															</Stack>
-															<Text fontSize="md" color="gray.500">
-																{convertSubstring(item.shopName, 50)}
-															</Text>
-															<Text fontSize="md" as="b">
-																￥{item.price.toLocaleString()}
-															</Text>
-															<Text fontSize="md">
-																{convertSubstring(item.itemName, 100)}
-															</Text>
-															<Button
-																as="a"
-																href={item.itemUrl}
-																target="_blank"
-																borderColor="#E4626E"
-																border="1px"
-																bg="#ffffff"
-																color="#E4626E"
-																size="md"
-																_hover={{ bg: "#E4626E", color: "#ffffff" }}
-																leftIcon={<ExternalLinkIcon />}
-															>
-																楽天市場で見る
-															</Button>
-														</Stack>
-													</ModalBody>
-													<ModalFooter>
-														<NextLink
-															href="https://developers.rakuten.com/"
-															passHref
-														>
-															<Link target="_blank">
-																Supported by Rakuten Developers
-															</Link>
-														</NextLink>
-													</ModalFooter>
-												</ModalContent>
-											</Modal>
-										</>
-									))}
-								</Flex>
-							</>
-						)}
-						<Heading as="h3" fontSize="md">
-							コメント
-						</Heading>
-						{comments?.length === 0 && <Text>コメントはありません</Text>}
-						{currentUser && (
-							<>
-								<Textarea
-									bg="white"
-									placeholder="コメントを入力してください"
-									value={comment}
-									onChange={(event) => setComment(event.target.value)}
-								/>
-								<Center>
-									<PrimaryButton
+									<Button
+										as="a"
 										bg="#ffffff"
-										color="gray.900"
-										borderColor="gray.300"
+										color="#E4626E"
+										borderColor="#E4626E"
 										border="1px"
-										onClick={sendComment}
-										disabled={!comment.trim()}
+										_hover={{ color: "#ffffff", bg: "#E4626E" }}
 									>
-										コメントする
-									</PrimaryButton>
-								</Center>
-							</>
-						)}
-						<VStack spacing={4}>
-							{comments?.map((comment) => (
-								<Box
-									w="100%"
-									maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
-									bg="white"
-									p={4}
-									rounded="md"
-									key={comment.commentId}
-								>
-									<HStack>
+										投稿を編集する
+									</Button>
+								</NextLink>
+							</Stack>
+						) : null}
+						<Box bg="white" p={4} rounded="md" boxShadow="md">
+							<AspectRatio ratio={1 / 1}>
+								<Image
+									src={post.image}
+									alt={`${author.username}'s photo`}
+									objectFit="cover"
+								/>
+							</AspectRatio>
+							<Flex alignItems="center" gap="2">
+								<HStack p={2}>
+									<NextLink
+										href={{
+											pathname: "/[userId]/myPage",
+											query: {
+												userId: router.query.userId,
+												postId: router.query.postId,
+											},
+										}}
+										as={`/${router.query.userId}/myPage`}
+									>
 										<Avatar
-											size="sm"
-											name={comment.commentedUsername}
-											src={comment.commentedUserImg}
+											size="md"
+											name={author.username}
+											src={author.userImg}
 										/>
-										<HStack alignItems="center">
-											<Text fontSize="md" as="b">
-												{comment.commentedUsername}
-											</Text>
-											<Text fontSize="sm">
-												{parseTimestampToDate(comment.createTime, "/")}
-											</Text>
+									</NextLink>
+									<VStack align="left">
+										<Text fontSize="md" as="b">
+											{author.username}
+										</Text>
+										<Text fontSize="sm">
+											{parseTimestampToDate(post.createTime, "/")}
+										</Text>
+									</VStack>
+								</HStack>
+								<Spacer />
+								{/* like表示の条件分岐 */}
+								<HStack spacing={2}>
+									{currentUser ? (
+										likeUsers.length > 0 ? (
+											<IconButton
+												p={0}
+												aria-label="like"
+												variant="ghost"
+												icon={<PadIcon />}
+												color="#E4626E"
+												fontSize="30px"
+												sx={{ margin: "-4px" }}
+												onClick={() => handleLikeCount()}
+											/>
+										) : (
+											<IconButton
+												p={0}
+												aria-label="like"
+												variant="ghost"
+												icon={<PadIcon />}
+												color="#d6d6d6"
+												fontSize="30px"
+												sx={{ margin: "-4px" }}
+												onClick={() => handleLikeCount()}
+											/>
+										)
+									) : (
+										<Icon
+											as={PadIcon}
+											color="#d6d6d6"
+											sx={{ width: "30px", height: "30px" }}
+										/>
+									)}
+									<Text as="b" fontSize="xs" color="#d6d6d6">
+										{post.likeCount}
+									</Text>
+								</HStack>
+							</Flex>
+							<Text fontSize="md">{post.caption}</Text>
+						</Box>
+						<VStack
+							w="100%"
+							maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
+							pb={100}
+							mt={4}
+							align="left"
+						>
+							{items?.length >= 1 && (
+								<>
+									<Heading as="h3" fontSize="md">
+										使用アイテム
+									</Heading>
+									<Flex gap={2}>
+										{items?.map((item) => (
+											<>
+												<HStack
+													bg="white"
+													boxShadow="md"
+													rounded="md"
+													w="140px"
+													h="140px"
+													justify="center"
+													key={item.itemName}
+													onClick={onOpen}
+													cursor="pointer"
+												>
+													<Image
+														alt={item.itemName}
+														src={item.itemImg}
+														boxSize="100px"
+														objectFit="cover"
+													/>
+												</HStack>
+												<Modal isOpen={isOpen} onClose={onClose}>
+													<ModalOverlay />
+													<ModalContent>
+														<ModalHeader mt={6}></ModalHeader>
+														<ModalCloseButton />
+														<ModalBody>
+															<Stack p={2} m="4px">
+																<Stack align="center">
+																	<Image
+																		alt={item.itemUrl}
+																		src={item.itemImg}
+																		boxSize="250px"
+																		objectFit="cover"
+																	/>
+																</Stack>
+																<Text fontSize="md" color="gray.500">
+																	{convertSubstring(item.shopName, 50)}
+																</Text>
+																<Text fontSize="md" as="b">
+																	￥{item.price.toLocaleString()}
+																</Text>
+																<Text fontSize="md">
+																	{convertSubstring(item.itemName, 100)}
+																</Text>
+																<Button
+																	as="a"
+																	href={item.itemUrl}
+																	target="_blank"
+																	borderColor="#E4626E"
+																	border="1px"
+																	bg="#ffffff"
+																	color="#E4626E"
+																	size="md"
+																	_hover={{ bg: "#E4626E", color: "#ffffff" }}
+																	leftIcon={<ExternalLinkIcon />}
+																>
+																	楽天市場で見る
+																</Button>
+															</Stack>
+														</ModalBody>
+														<ModalFooter>
+															<NextLink
+																href="https://developers.rakuten.com/"
+																passHref
+															>
+																<Link target="_blank">
+																	Supported by Rakuten Developers
+																</Link>
+															</NextLink>
+														</ModalFooter>
+													</ModalContent>
+												</Modal>
+											</>
+										))}
+									</Flex>
+								</>
+							)}
+							<Heading as="h3" fontSize="md">
+								コメント
+							</Heading>
+							{comments?.length === 0 && <Text>コメントはありません</Text>}
+							{currentUser && (
+								<>
+									<Textarea
+										bg="white"
+										placeholder="コメントを入力してください"
+										value={comment}
+										onChange={(event) => setComment(event.target.value)}
+									/>
+									<Center>
+										<PrimaryButton
+											bg="#ffffff"
+											color="gray.900"
+											borderColor="gray.300"
+											border="1px"
+											onClick={sendComment}
+											disabled={!comment.trim()}
+										>
+											コメントする
+										</PrimaryButton>
+									</Center>
+								</>
+							)}
+							<VStack spacing={4}>
+								{comments?.map((comment) => (
+									<Box
+										w="100%"
+										maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
+										bg="white"
+										p={4}
+										rounded="md"
+										key={comment.commentId}
+									>
+										<HStack>
+											<Avatar
+												size="sm"
+												name={comment.commentedUsername}
+												src={comment.commentedUserImg}
+											/>
+											<HStack alignItems="center">
+												<Text fontSize="md" as="b">
+													{comment.commentedUsername}
+												</Text>
+												<Text fontSize="sm">
+													{parseTimestampToDate(comment.createTime, "/")}
+												</Text>
+											</HStack>
 										</HStack>
-									</HStack>
-									<Text>{comment.comment}</Text>
-								</Box>
-							))}
+										<Text>{comment.comment}</Text>
+									</Box>
+								))}
+							</VStack>
 						</VStack>
-					</VStack>
-				</Container>
+					</GridItem>
+				</Grid>
 			) : (
 				<Loading />
 			)}
