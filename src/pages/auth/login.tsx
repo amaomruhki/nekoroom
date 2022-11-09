@@ -119,16 +119,18 @@ const Login = (): JSX.Element => {
 							</Button>
 						</VStack>
 						<Spacer />
-						<Link href="/auth/register">
-							<Text
-								as="u"
-								cursor="pointer"
-								color="#E4626E"
-								_hover={{ opacity: 0.8 }}
-							>
-								新規登録
-							</Text>
-						</Link>
+						<NextLink href="/auth/register" passHref>
+							<Link>
+								<Text
+									as="u"
+									cursor="pointer"
+									color="#E4626E"
+									_hover={{ opacity: 0.8 }}
+								>
+									新規登録
+								</Text>
+							</Link>
+						</NextLink>
 					</VStack>
 				</Container>
 			)}

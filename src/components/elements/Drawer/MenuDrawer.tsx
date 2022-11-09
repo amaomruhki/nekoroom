@@ -111,12 +111,12 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
 						<Stack spacing="24px">
 							{currentUser
 								? Login_Menu_List.map((list) => (
-										<Box key="title" cursor="pointer">
+										<Box key="title" cursor="pointer" onClick={onClose}>
 											{list.text}
 										</Box>
 								  ))
 								: Logout_Menu_List.map((list) => (
-										<Box key="title" cursor="pointer">
+										<Box key="title" cursor="pointer" onClick={onClose}>
 											{list.text}
 										</Box>
 								  ))}
