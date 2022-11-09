@@ -52,7 +52,7 @@ const MyPage = () => {
 					userId: snapshot.data()?.uid,
 					username: snapshot.data()?.username,
 					userImg: snapshot.data()?.userImg,
-					userText: snapshot.data()?.text,
+					text: snapshot.data()?.text,
 				};
 				setAuthor(userData);
 			});
@@ -100,7 +100,7 @@ const MyPage = () => {
 								{author.username}
 							</Text>
 						</HStack>
-						<Text fontSize="sm">{author.userText}</Text>
+						<Text fontSize="sm">{author.text}</Text>
 						{currentUser && currentUser!.uid === author.userId ? (
 							<NextLink
 								href={{
@@ -136,24 +136,22 @@ const MyPage = () => {
 					>
 						{posts
 							? posts.map((post) => (
-									<>
-										<NextLink
-											key={post.postId}
-											href={{
-												pathname: "/[userId]/[postId]/postDetail",
-												query: { userId: post.userId, postId: post.postId },
-											}}
-											as={`/${post.userId}/${post.postId}/postDetail`}
-										>
-											<AspectRatio ratio={1 / 1}>
-												<Image
-													alt={`${author.username}'s photo`}
-													src={post.image}
-													objectFit="cover"
-												/>
-											</AspectRatio>
-										</NextLink>
-									</>
+									<NextLink
+										key={post.postId}
+										href={{
+											pathname: "/[userId]/[postId]/postDetail",
+											query: { userId: post.userId, postId: post.postId },
+										}}
+										as={`/${post.userId}/${post.postId}/postDetail`}
+									>
+										<AspectRatio ratio={1 / 1}>
+											<Image
+												alt={`${author.username}'s photo`}
+												src={post.image}
+												objectFit="cover"
+											/>
+										</AspectRatio>
+									</NextLink>
 							  ))
 							: null}
 					</Grid>
