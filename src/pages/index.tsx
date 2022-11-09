@@ -15,7 +15,7 @@ const Home: NextPage = () => {
 					content="NekoRoomはネコを飼っている方のお部屋やネコちゃん用アイテムの写真を共有するサイトです。"
 				/>
 			</Head>
-			<VStack minH="100vh" pt={8} pb={8} mt="50px">
+			<VStack minH="100vh">
 				<VStack
 					w="100%"
 					maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}

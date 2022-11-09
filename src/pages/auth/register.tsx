@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import Link from "next/link";
 import {
 	Input,
-	Container,
 	Heading,
 	VStack,
 	Text,
@@ -90,104 +89,102 @@ const Register = () => {
 			{isLoading ? (
 				<Loading />
 			) : (
-				<Container maxW="800px" pt={8} pb={8} mt={20}>
-					<VStack align="center" spacing={4}>
-						<Heading as="h2" size="lg">
-							新規登録
-						</Heading>
-						<Spacer />
-						<Stack width="320px">
-							<VStack>
-								{selectedFile ? (
-									<HStack>
-										<Avatar size="md" name={username} src={selectedFile} />
-										<PrimaryButton
-											borderColor="gray.300"
-											border="1px"
-											bg="#ffffff"
-											color="gray.900"
-											onClick={() => setSelectedFile(null)}
-										>
-											アイコン画像を変更
-										</PrimaryButton>
-									</HStack>
-								) : (
-									<HStack>
-										<Avatar size="md" name={username} />
-										<PrimaryButton
-											borderColor="gray.300"
-											border="1px"
-											bg="#ffffff"
-											color="gray.900"
-											onClick={() => filePickerRef.current.click()}
-										>
-											アイコン画像を選択
-										</PrimaryButton>
-									</HStack>
-								)}
-								<Text fontSize="xs">
-									画像を設定しない場合は、ニックネームの頭文字がアイコンになります。
-								</Text>
-								<input
-									type="file"
-									hidden
-									ref={filePickerRef}
-									onChange={addImageToProfile}
-								/>
-							</VStack>
-						</Stack>
-						<Input
-							width="320px"
-							bg="white"
-							placeholder="ニックネーム"
-							type="text"
-							value={username}
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								setUsername(e.target.value);
-							}}
-						/>
-
-						<Input
-							width="320px"
-							bg="white"
-							placeholder="メールアドレス"
-							type="email"
-							value={email}
-							onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-								setEmail(event.target.value);
-							}}
-						/>
-						<Input
-							width="320px"
-							bg="white"
-							placeholder="パスワード"
-							type="password"
-							value={password}
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								setPassword(e.target.value);
-							}}
-						/>
-						<Spacer />
-						<PrimaryButton
-							bg="#E4626E"
-							color="#ffffff"
-							onClick={onSignIn}
-							disabled={!username || !email || !password}
-						>
-							新規登録
-						</PrimaryButton>
-						<Link href="/auth/login">
-							<Text
-								as="u"
-								cursor="pointer"
-								color="#E4626E"
-								_hover={{ opacity: 0.8 }}
-							>
-								ログイン
+				<VStack align="center" spacing={4}>
+					<Heading as="h2" size="lg">
+						新規登録
+					</Heading>
+					<Spacer />
+					<Stack width="320px">
+						<VStack>
+							{selectedFile ? (
+								<HStack>
+									<Avatar size="md" name={username} src={selectedFile} />
+									<PrimaryButton
+										borderColor="gray.300"
+										border="1px"
+										bg="#ffffff"
+										color="gray.900"
+										onClick={() => setSelectedFile(null)}
+									>
+										アイコン画像を変更
+									</PrimaryButton>
+								</HStack>
+							) : (
+								<HStack>
+									<Avatar size="md" name={username} />
+									<PrimaryButton
+										borderColor="gray.300"
+										border="1px"
+										bg="#ffffff"
+										color="gray.900"
+										onClick={() => filePickerRef.current.click()}
+									>
+										アイコン画像を選択
+									</PrimaryButton>
+								</HStack>
+							)}
+							<Text fontSize="xs">
+								画像を設定しない場合は、ニックネームの頭文字がアイコンになります。
 							</Text>
-						</Link>
-					</VStack>
-				</Container>
+							<input
+								type="file"
+								hidden
+								ref={filePickerRef}
+								onChange={addImageToProfile}
+							/>
+						</VStack>
+					</Stack>
+					<Input
+						width="320px"
+						bg="white"
+						placeholder="ニックネーム"
+						type="text"
+						value={username}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+							setUsername(e.target.value);
+						}}
+					/>
+
+					<Input
+						width="320px"
+						bg="white"
+						placeholder="メールアドレス"
+						type="email"
+						value={email}
+						onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+							setEmail(event.target.value);
+						}}
+					/>
+					<Input
+						width="320px"
+						bg="white"
+						placeholder="パスワード"
+						type="password"
+						value={password}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+							setPassword(e.target.value);
+						}}
+					/>
+					<Spacer />
+					<PrimaryButton
+						bg="#E4626E"
+						color="#ffffff"
+						onClick={onSignIn}
+						disabled={!username || !email || !password}
+					>
+						新規登録
+					</PrimaryButton>
+					<Link href="/auth/login">
+						<Text
+							as="u"
+							cursor="pointer"
+							color="#E4626E"
+							_hover={{ opacity: 0.8 }}
+						>
+							ログイン
+						</Text>
+					</Link>
+				</VStack>
 			)}
 		</>
 	);

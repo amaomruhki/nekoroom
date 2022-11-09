@@ -109,117 +109,111 @@ const MyProfileEdit = () => {
 	return (
 		<>
 			{currentUser && !isLoading ? (
-				<Container maxW="800px" pt={8} pb={8} mt={20}>
-					<VStack align="center" spacing={4}>
-						<Heading as="h2" size="lg">
-							プロフィール編集
-						</Heading>
-						<Spacer />
-						<VStack>
-							{selectedFile ? (
-								<>
-									<Avatar
-										size="md"
-										name={userItem.username}
-										src={selectedFile}
-									/>
-									<PrimaryButton
-										borderColor="gray.300"
-										border="1px"
-										bg="#ffffff"
-										color="gray.900"
-										onClick={() => setSelectedFile(null)}
-									>
-										アイコン画像を変更
-									</PrimaryButton>
-								</>
-							) : (
-								<>
-									<Avatar
-										size="md"
-										name={userItem.username}
-										src={userItem.userImg}
-									/>
-									{/* <Avatar size="md" name={username} /> */}
-									<PrimaryButton
-										borderColor="gray.300"
-										border="1px"
-										bg="#ffffff"
-										color="gray.900"
-										onClick={() => filePickerRef.current.click()}
-									>
-										アイコン画像を選択
-									</PrimaryButton>
-								</>
-							)}
-							<PrimaryButton
-								bg="#ffffff"
-								color="gray.900"
-								borderColor="gray.300"
-								border="1px"
-								onClick={() => {
-									setUserItem({ ...userItem, userImg: "" });
-									setSelectedFile(null);
-								}}
-							>
-								アイコン画像をリセット
-							</PrimaryButton>
-							<Text fontSize="xs">
-								画像を設定しない場合は、ニックネームの頭文字がアイコンになります。
-							</Text>
-							<input
-								type="file"
-								hidden
-								ref={filePickerRef}
-								onChange={addImageToProfile}
-							/>
-						</VStack>
-						<Spacer />
-
-						<VStack
-							w={{
-								base: "320px",
-								md: "500px",
-								lg: "700px",
-							}}
-							spacing={2}
-						>
-							<FormControl>
-								<FormLabel fontSize="sm">ニックネーム</FormLabel>
-								<Input
-									bg="white"
-									placeholder="ニックネーム"
-									type="text"
-									value={userItem.username}
-									onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-										setUserItem({ ...userItem, username: event.target.value });
-									}}
+				<VStack align="center" spacing={4}>
+					<Heading as="h2" size="lg">
+						プロフィール編集
+					</Heading>
+					<Spacer />
+					<VStack>
+						{selectedFile ? (
+							<>
+								<Avatar size="md" name={userItem.username} src={selectedFile} />
+								<PrimaryButton
+									borderColor="gray.300"
+									border="1px"
+									bg="#ffffff"
+									color="gray.900"
+									onClick={() => setSelectedFile(null)}
+								>
+									アイコン画像を変更
+								</PrimaryButton>
+							</>
+						) : (
+							<>
+								<Avatar
+									size="md"
+									name={userItem.username}
+									src={userItem.userImg}
 								/>
-								<FormLabel fontSize="sm" mt={2}>
-									自己紹介
-								</FormLabel>
-								<Textarea
-									bg="white"
-									placeholder="自己紹介"
-									value={userItem.text}
-									onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
-										setUserItem({ ...userItem, text: event.target.value });
-									}}
-								></Textarea>
-							</FormControl>
-						</VStack>
-
-						<Spacer />
+								{/* <Avatar size="md" name={username} /> */}
+								<PrimaryButton
+									borderColor="gray.300"
+									border="1px"
+									bg="#ffffff"
+									color="gray.900"
+									onClick={() => filePickerRef.current.click()}
+								>
+									アイコン画像を選択
+								</PrimaryButton>
+							</>
+						)}
 						<PrimaryButton
-							bg="#E4626E"
-							color="#ffffff"
-							onClick={editProfile}
-							disabled={!userItem.username}
+							bg="#ffffff"
+							color="gray.900"
+							borderColor="gray.300"
+							border="1px"
+							onClick={() => {
+								setUserItem({ ...userItem, userImg: "" });
+								setSelectedFile(null);
+							}}
 						>
-							保存
+							アイコン画像をリセット
 						</PrimaryButton>
+						<Text fontSize="xs">
+							画像を設定しない場合は、ニックネームの頭文字がアイコンになります。
+						</Text>
+						<input
+							type="file"
+							hidden
+							ref={filePickerRef}
+							onChange={addImageToProfile}
+						/>
 					</VStack>
-				</Container>
+					<Spacer />
+
+					<VStack
+						w={{
+							base: "320px",
+							md: "500px",
+							lg: "700px",
+						}}
+						spacing={2}
+					>
+						<FormControl>
+							<FormLabel fontSize="sm">ニックネーム</FormLabel>
+							<Input
+								bg="white"
+								placeholder="ニックネーム"
+								type="text"
+								value={userItem.username}
+								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+									setUserItem({ ...userItem, username: event.target.value });
+								}}
+							/>
+							<FormLabel fontSize="sm" mt={2}>
+								自己紹介
+							</FormLabel>
+							<Textarea
+								bg="white"
+								placeholder="自己紹介"
+								value={userItem.text}
+								onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+									setUserItem({ ...userItem, text: event.target.value });
+								}}
+							></Textarea>
+						</FormControl>
+					</VStack>
+
+					<Spacer />
+					<PrimaryButton
+						bg="#E4626E"
+						color="#ffffff"
+						onClick={editProfile}
+						disabled={!userItem.username}
+					>
+						保存
+					</PrimaryButton>
+				</VStack>
 			) : (
 				<Loading />
 			)}

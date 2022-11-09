@@ -283,7 +283,7 @@ const PostDetail = () => {
 	return (
 		<>
 			{!isLoading ? (
-				<Container pt={8} pb={8} mt="50px" maxW="420px">
+				<Container pb={8} maxW="420px">
 					{currentUser && currentUser!.uid === router.query.userId ? (
 						<Stack m={4}>
 							<NextLink

@@ -1,16 +1,19 @@
 import { ReactNode } from "react";
 import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
+import { Container } from "@chakra-ui/react";
 
 type Props = { children: ReactNode };
 
 const Layout = ({ children }: Props) => {
 	return (
-		<div>
+		<>
 			<Header />
-			<main>{children}</main>
+			<Container maxW="800px" pt={8} pb={8} mt={20} mb={30}>
+				{children}
+			</Container>
 			<Footer />
-		</div>
+		</>
 	);
 };
 

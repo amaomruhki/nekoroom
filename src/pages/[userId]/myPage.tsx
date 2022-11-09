@@ -89,8 +89,8 @@ const MyPage = () => {
 	return (
 		<>
 			{!isLoading ? (
-				<Container minH="100vh">
-					<VStack bg="white" p={4} mt="80px" rounded="md">
+				<>
+					<VStack bg="white" p={4} rounded="md">
 						<HStack p={2}>
 							<Avatar size="md" name={author.username} src={author.userImg} />
 							<Text fontSize="md" as="b">
@@ -154,7 +154,7 @@ const MyPage = () => {
 							  ))
 							: null}
 					</Grid>
-				</Container>
+				</>
 			) : (
 				<Loading />
 			)}

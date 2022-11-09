@@ -20,15 +20,10 @@ const Footer = () => {
 				borderTop="1px"
 				borderColor="gray.200"
 				maxW="100%"
+				p={2}
 				sx={{ position: "fixed", bottom: "0px", height: "55px" }}
 			>
-				<Flex
-					as="nav"
-					justify="space-between"
-					align="center"
-					height="100%"
-					px={6}
-				>
+				<Flex as="nav" justify="space-between" align="top" height="100%" px={6}>
 					<NextLink href="/" passHref>
 						<Link>
 							<Icon
@@ -36,7 +31,7 @@ const Footer = () => {
 								color="#d6d6d6"
 								w={8}
 								h={8}
-								sx={{ margin: -2 }}
+								// sx={{ margin: -2 }}
 								_hover={{ color: "#E4626E" }}
 							/>
 						</Link>
@@ -51,7 +46,7 @@ const Footer = () => {
 										color="#d6d6d6"
 										w={8}
 										h={8}
-										sx={{ margin: -2 }}
+										// sx={{ margin: -2 }}
 										_hover={{ color: "#E4626E" }}
 									/>
 								</Link>

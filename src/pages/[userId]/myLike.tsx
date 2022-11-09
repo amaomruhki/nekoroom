@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
-import {
-	Image,
-	Container,
-	Heading,
-	HStack,
-	VStack,
-	Grid,
-	AspectRatio,
-} from "@chakra-ui/react";
+import { Image, Heading, VStack, Grid, AspectRatio } from "@chakra-ui/react";
 import {
 	collection,
 	doc,
@@ -88,8 +80,8 @@ const MyPage = () => {
 	return (
 		<>
 			{!isLoading && currentUser ? (
-				<Container minH="100vh" pt="80px">
-					<VStack align="left" spacing={4} my={4}>
+				<>
+					<VStack align="left" spacing={4} mb={2}>
 						<Heading as="h3" size="md">
 							{currentUser.username}のいいにゃ一覧
 						</Heading>
@@ -122,7 +114,7 @@ const MyPage = () => {
 							  )
 							: null}
 					</Grid>
-				</Container>
+				</>
 			) : (
 				<Loading />
 			)}
