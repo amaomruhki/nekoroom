@@ -26,7 +26,7 @@ export const useGoogleLogin = async (): Promise<void> => {
 					.toLocaleLowerCase(),
 			});
 		}
-		router.push("/");
+		window.location.href = "/";
 	} catch (error) {
 		alert(error);
 	}
