@@ -63,7 +63,7 @@ const Post = ({
 							</Text>
 						</HStack>
 					</HStack>
-					<Text fontSize="sm">{convertSubstring(caption, 17)}</Text>
+					<Text fontSize="sm">{convertSubstring(caption, 48)}</Text>
 				</Box>
 			</GridItem>
 		</NextLink>

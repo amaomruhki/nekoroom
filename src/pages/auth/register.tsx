@@ -64,7 +64,7 @@ const Register = () => {
 					}
 				);
 			}
-			router.push("/");
+			window.location.href = "/";
 		} catch (error) {
 			alert(error);
 			setIsLoading(false);

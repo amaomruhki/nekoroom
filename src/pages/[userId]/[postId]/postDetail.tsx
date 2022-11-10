@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import NextLink from "next/link";
 import {
 	Image,
 	Box,
-	Container,
 	Heading,
 	HStack,
 	VStack,
@@ -291,7 +290,6 @@ const PostDetail = () => {
 						md: "repeat(1, 1fr)",
 					}}
 					gap={2}
-					justify="center"
 				>
 					<GridItem maxW="420px">
 						{currentUser && currentUser!.uid === router.query.userId ? (
@@ -320,7 +318,7 @@ const PostDetail = () => {
 								</NextLink>
 							</Stack>
 						) : null}
-						<Box bg="white" p={4} rounded="md" boxShadow="md">
+						<Box bg="white" p={2} rounded="md" boxShadow="md">
 							<AspectRatio ratio={1 / 1}>
 								<Image
 									src={post.image}
@@ -410,7 +408,7 @@ const PostDetail = () => {
 									</Heading>
 									<Flex gap={2}>
 										{items?.map((item) => (
-											<>
+											<React.Fragment key={item.itemId}>
 												<HStack
 													bg="white"
 													boxShadow="md"
@@ -418,7 +416,6 @@ const PostDetail = () => {
 													w="140px"
 													h="140px"
 													justify="center"
-													key={item.itemName}
 													onClick={onOpen}
 													cursor="pointer"
 												>
@@ -481,7 +478,7 @@ const PostDetail = () => {
 														</ModalFooter>
 													</ModalContent>
 												</Modal>
-											</>
+											</React.Fragment>
 										))}
 									</Flex>
 								</>
