@@ -50,13 +50,31 @@ import ItemSearch from "../../../components/elements/Search/ItemSearch";
 import Loading from "../../../components/elements/Loading/Loading";
 import Result from "../../../components/elements/Search/Result";
 
+type ItemResult = {
+	postId: string;
+	itemImg: string;
+	imageUrl: string;
+	itemName: string;
+	price: string;
+	shopName: string;
+	itemUrl: string;
+};
+
+type Post = {
+	postId: string;
+	image: string;
+	caption: string;
+	likeCount: string;
+	itemId: string;
+};
+
 const PostEdit = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [selectedButton, setSelectedButton] = useState<string>("");
 	const cancelRef = useRef(null);
-	const [itemResult, setItemResult] = useState({});
+	const [itemResult, setItemResult] = useState<ItemResult>({});
 	const [items, setItems] = useState({});
-	const [post, setPost] = useState([]);
+	const [post, setPost] = useState<Post[]>([]);
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
 
@@ -126,7 +144,7 @@ const PostEdit = () => {
 	const [value, setValue] = useState({ freeWord: "" });
 
 	//検索フィールド監視
-	const handleFreeWord = (event) => {
+	const handleFreeWord = (event: any) => {
 		setValue({ freeWord: event.target.value });
 	};
 
@@ -248,7 +266,7 @@ const PostEdit = () => {
 								/>
 							</HStack>
 						) : (
-							items?.map((item) => (
+							items?.map((item: any) => (
 								<HStack
 									key={item.itemId}
 									bg="white"

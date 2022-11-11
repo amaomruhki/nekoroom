@@ -1,8 +1,21 @@
 import { Button, Grid, GridItem, Image, Stack, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { convertSubstring } from "../../../utils/DataFormat";
+import { Dispatch, SetStateAction } from "react";
 
-const Result = ({ result, setItemResult, onClose, setValue }) => {
+type Props = {
+	result: any;
+	setItemResult: Dispatch<SetStateAction<{}>>;
+	onClose: () => void;
+	setValue: Dispatch<
+		SetStateAction<{
+			freeWord: string;
+		}>
+	>;
+};
+
+// 検索結果表示
+const Result = ({ result, setItemResult, onClose, setValue }: Props) => {
 	return (
 		<>
 			<Grid
@@ -10,7 +23,7 @@ const Result = ({ result, setItemResult, onClose, setValue }) => {
 				gap={1}
 			>
 				{result?.Items?.length >= 1
-					? result.Items.map((item, index) => (
+					? result.Items.map((item: any, index: number) => (
 							<GridItem key={index}>
 								<Stack bg="white" boxShadow="md" rounded="md" p={2} m="4px">
 									<Stack align="center">

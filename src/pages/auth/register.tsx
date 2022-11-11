@@ -39,13 +39,13 @@ const Register = () => {
 			const auth = getAuth();
 			await createUserWithEmailAndPassword(auth, email, password);
 			const user = auth.currentUser;
-			const docRef = doc(db, "users", user.uid);
+			const docRef = doc(db, "users", user!.uid);
 			const docSnap = await getDoc(docRef);
 			if (!docSnap.exists()) {
 				await setDoc(docRef, {
 					name: username,
 					email: email,
-					uid: user.uid,
+					uid: user!.uid,
 					createTime: serverTimestamp(),
 					updateTime: serverTimestamp(),
 					username: username,
@@ -71,13 +71,13 @@ const Register = () => {
 		}
 	};
 
-	const addImageToProfile = (event) => {
+	const addImageToProfile = (event: any) => {
 		const reader = new FileReader();
 		if (event.target.files[0]) {
 			reader.readAsDataURL(event.target.files[0]);
 		}
 
-		reader.onload = (readerEvent) => {
+		reader.onload = (readerEvent: any) => {
 			setSelectedFile(readerEvent.target.result);
 		};
 		//stateで管理している場合、onChangeは同じファイルを選択すると発火しないのでここで初期化
@@ -117,7 +117,7 @@ const Register = () => {
 										border="1px"
 										bg="#ffffff"
 										color="gray.900"
-										onClick={() => filePickerRef.current.click()}
+										onClick={() => filePickerRef.current?.click()}
 									>
 										アイコン画像を選択
 									</PrimaryButton>

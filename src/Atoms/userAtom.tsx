@@ -1,5 +1,5 @@
-import { atom } from "recoil";
 import { User } from "firebase/auth";
+import { atom } from "recoil";
 
 export type UserState = User | null;
 

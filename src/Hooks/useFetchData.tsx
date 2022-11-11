@@ -11,7 +11,7 @@ const useFetchData = () => {
 	//レスポンス格納用
 	const [result, setResult] = useState({});
 
-	const handleSubmit = (value) => {
+	const handleSubmit = (value: any) => {
 		const params = value.freeWord;
 
 		if (params) {
@@ -39,7 +39,7 @@ const useFetchData = () => {
 	};
 
 	//日本語入力をエンコード
-	const encodeFreeWord = (params) => {
+	const encodeFreeWord = (params: string) => {
 		let urlEncode = require("urlencode");
 		return urlEncode(params);
 	};

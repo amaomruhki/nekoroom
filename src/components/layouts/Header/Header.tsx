@@ -10,7 +10,7 @@ import {
 	Text,
 	Link,
 } from "@chakra-ui/react";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut, User } from "firebase/auth";
 import { db } from "../../../../lib/firebase";
 import { useRecoilState } from "recoil";
 import { userState } from "../../../Atoms/userAtom";
@@ -30,7 +30,8 @@ const Header = () => {
 					const docRef = doc(db, "users", user.auth.currentUser.uid);
 					const docSnap = await getDoc(docRef);
 					if (docSnap.exists()) {
-						setCurrentUser(docSnap.data());
+						const data = docSnap.data() as User;
+						setCurrentUser(data);
 					}
 				};
 				fetchUser();

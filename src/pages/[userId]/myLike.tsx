@@ -37,7 +37,7 @@ const MyPage = () => {
 				const userId = router.query.userId;
 				onSnapshot(
 					query(
-						collection(db, "users", userId, "likePosts"),
+						collection(db, "users", userId as string, "likePosts"),
 						orderBy("createTime", "desc")
 					),
 					(snapshot) => {

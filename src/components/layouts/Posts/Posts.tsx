@@ -38,7 +38,7 @@ const Posts = () => {
 						// ユーザーデータ取得
 						const userId = document.data().userId;
 						const userRef = doc(db, "users", userId);
-						const userInfo = await getDoc(userRef);
+						const userInfo: any = await getDoc(userRef);
 
 						return {
 							...document.data(),
@@ -56,7 +56,7 @@ const Posts = () => {
 						data;
 						setPosts(data);
 					})
-					.finally(setIsLoading(false));
+					.finally(() => setIsLoading(false));
 			}
 		);
 		return () => unsubscribe();

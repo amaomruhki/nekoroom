@@ -41,11 +41,11 @@ import { userState } from "../Atoms/userAtom";
 
 const PhotoUpload = () => {
 	const filePickerRef = useRef<HTMLInputElement>(null);
-	const [selectedFile, setSelectedFile] = useState(null);
+	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const [inputCaption, setInputCaption] = useState("");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [itemResult, setItemResult] = useState({});
+	const [itemResult, setItemResult] = useState<any>({});
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
 
@@ -55,18 +55,18 @@ const PhotoUpload = () => {
 	const [value, setValue] = useState({ freeWord: "" });
 
 	//検索フィールド監視
-	const handleFreeWord = (event) => {
+	const handleFreeWord = (event: any) => {
 		setValue({ freeWord: event.target.value });
 	};
 
-	const addImageToPost = (event) => {
+	const addImageToPost = (event: any) => {
 		const reader = new FileReader();
 		if (event.target.files[0]) {
 			reader.readAsDataURL(event.target.files[0]);
 		}
 
-		reader.onload = (readerEvent) => {
-			setSelectedFile(readerEvent.target.result);
+		reader.onload = (readerEvent: any) => {
+			setSelectedFile(readerEvent?.target.result);
 		};
 		//stateで管理している場合、onChangeは同じファイルを選択すると発火しないのでここで初期化
 		event.target.value = "";
@@ -88,7 +88,7 @@ const PhotoUpload = () => {
 		);
 		setInputCaption("");
 		const imageRef = ref(storage, `posts/${postsRef.id}/image`);
-		await uploadString(imageRef, selectedFile, "data_url").then(
+		await uploadString(imageRef, selectedFile as string, "data_url").then(
 			async (snapshot) => {
 				const downloadURL = await getDownloadURL(imageRef);
 				await updateDoc(

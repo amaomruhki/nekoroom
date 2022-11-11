@@ -16,15 +16,16 @@ import {
 	Avatar,
 	Link,
 } from "@chakra-ui/react";
+import { User } from "firebase/auth";
 
-// type Props = {
-// 	onClose: () => void;
-// 	isOpen: boolean;
-// 	onLogout:() => void;
-// 	currentUser: User | null;
-// };
+type Props = {
+	onClose: () => void;
+	isOpen: boolean;
+	onLogout: () => void;
+	currentUser: User | null;
+};
 
-const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }) => {
+const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 	const { height } = useWindowSize();
 	const userId = currentUser?.uid;
 	const username = currentUser?.username;

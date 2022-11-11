@@ -1,47 +1,47 @@
+import { useState } from "react";
+import { useRouter } from "next/router";
 import {
 	getAuth,
-	signInWithRedirect,
-	signOut,
 	GoogleAuthProvider,
-	onAuthStateChanged,
 	sendPasswordResetEmail,
+	signInWithPopup,
 } from "firebase/auth";
-import { app } from "../../../../lib/firebase";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { UserState, userState } from "../../../Atoms/userAtom";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { db } from "../../../../lib/firebase";
 
-export const googleLogin = (): Promise<void> => {
-	const provider = new GoogleAuthProvider();
-	const auth = getAuth(app);
-	return signInWithRedirect(auth, provider);
+//googleアカウントでログイン、新規の場合はユーザーデータをuserコレクションへ追加
+export const useGoogleLogin = async (): Promise<void> => {
+	try {
+		const auth = getAuth();
+		const provider = new GoogleAuthProvider();
+		await signInWithPopup(auth, provider);
+		const user = auth.currentUser;
+		if (user) {
+			const docRef = doc(db, "users", user.uid);
+			const docSnap = await getDoc(docRef);
+			if (!docSnap.exists()) {
+				await setDoc(docRef, {
+					name: user.providerData[0].displayName,
+					email: user.providerData[0].email,
+					userImg: user.providerData[0].photoURL,
+					uid: user.uid,
+					text: "",
+					createTime: serverTimestamp(),
+					updateTime: serverTimestamp(),
+					username: user.providerData[0]
+						.displayName!.split(" ")
+						.join("")
+						.toLocaleLowerCase(),
+				});
+			}
+			window.location.href = "/";
+		}
+	} catch (error) {
+		alert(error);
+	}
 };
 
-export const googleLogout = (): Promise<void> => {
-	const auth = getAuth(app);
-	return signOut(auth);
-};
-
-export const useAuth = (): boolean => {
-	const [isLoading, setIsLoading] = useState(true);
-	const setUser = useSetRecoilState(userState);
-
-	useEffect(() => {
-		const auth = getAuth(app);
-		return onAuthStateChanged(auth, (user) => {
-			setUser(user);
-			setIsLoading(false);
-		});
-	}, [setUser]);
-
-	return isLoading;
-};
-
-export const useUser = (): UserState => {
-	return useRecoilValue(userState);
-};
-
+// パスワードリセットメールをfirebaseから送信
 export const usePasswordReset = () => {
 	const router = useRouter();
 	const [success, setSuccess] = useState(false);

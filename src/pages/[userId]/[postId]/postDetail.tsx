@@ -65,10 +65,26 @@ type CommentUser = {
 	createTime: Timestamp;
 };
 
+type Author = {
+	userId: string;
+	username: any;
+	userImg: any;
+};
+
+type Item = {
+	itemId: string;
+	postId: string;
+	itemImg: string;
+	itemName: string;
+	price: string;
+	shopName: string;
+	itemUrl: string;
+};
+
 const PostDetail = () => {
-	const [items, setItems] = useState();
+	const [items, setItems] = useState<Item[] | null>(null);
 	const [post, setPost] = useState([]);
-	const [author, setAuthor] = useState([]);
+	const [author, setAuthor] = useState<Author | null>(null);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [comment, setComment] = useState("");
@@ -101,7 +117,7 @@ const PostDetail = () => {
 			const authorId = router.query.userId;
 			const postId = router.query.postId;
 			const unsubscribe = onSnapshot(
-				doc(db, "users", authorId, "posts", postId),
+				doc(db, "users", authorId as string, "posts", postId as string),
 				(snapshot) => {
 					const postData = {
 						postId: snapshot.data()?.id,
@@ -124,7 +140,14 @@ const PostDetail = () => {
 			const authorId = router.query.userId;
 			const postId = router.query.postId;
 			const itemsRef = query(
-				collection(db, "users", authorId, "posts", postId, "items"),
+				collection(
+					db,
+					"users",
+					authorId as string,
+					"posts",
+					postId as string,
+					"items"
+				),
 				where("postId", "==", postId)
 			);
 			onSnapshot(itemsRef, (querySnapshot) => {
@@ -177,7 +200,14 @@ const PostDetail = () => {
 				const postId = router.query.postId;
 				onSnapshot(
 					query(
-						collection(db, "users", userId, "posts", postId, "comments"),
+						collection(
+							db,
+							"users",
+							userId as string,
+							"posts",
+							postId as string,
+							"comments"
+						),
 						orderBy("createTime", "desc")
 					),
 					(snapshot) => {
@@ -191,8 +221,8 @@ const PostDetail = () => {
 									return {
 										...document.data(),
 										commentId: document.id,
-										commentedUsername: commentedUserInfo.data().username,
-										commentedUserImg: commentedUserInfo.data().userImg,
+										commentedUsername: commentedUserInfo.data()!.username,
+										commentedUserImg: commentedUserInfo.data()!.userImg,
 										comment: document.data().comment,
 										createTime: document.data().createTime,
 									};
@@ -220,11 +250,21 @@ const PostDetail = () => {
 		console.log("コメントテスト");
 
 		setComment("");
-		await addDoc(collection(db, "users", userId, "posts", postId, "comments"), {
-			comment: commentToSend,
-			commentedUserId: commentedUserUid,
-			createTime: serverTimestamp(),
-		});
+		await addDoc(
+			collection(
+				db,
+				"users",
+				userId as string,
+				"posts",
+				postId as string,
+				"comments"
+			),
+			{
+				comment: commentToSend,
+				commentedUserId: commentedUserUid,
+				createTime: serverTimestamp(),
+			}
+		);
 	}
 
 	//like（いいにゃ）のカウントを増減処理(posts,likePosts,likeUsersをバッチ処理)
@@ -233,14 +273,32 @@ const PostDetail = () => {
 		const postId = router.query.postId;
 		const authorId = router.query.userId;
 		const loginUserId = currentUser!.uid;
-		const postRef = doc(db, "users", authorId, "posts", postId);
+		const postRef = doc(
+			db,
+			"users",
+			authorId as string,
+			"posts",
+			postId as string
+		);
 		const postInfo = await getDoc(postRef);
-		const likePostsDoc = doc(db, "users", loginUserId, "likePosts", postId);
-		const likeUsersDoc = doc(db, "users", loginUserId, "likeUsers", postId);
+		const likePostsDoc = doc(
+			db,
+			"users",
+			loginUserId as string,
+			"likePosts",
+			postId as string
+		);
+		const likeUsersDoc = doc(
+			db,
+			"users",
+			loginUserId as string,
+			"likeUsers",
+			postId as string
+		);
 		const { v4: uuidv4 } = require("uuid");
 
 		//likeがゼロの場合
-		if (postInfo.data().likeCount === 0) {
+		if (postInfo.data()!.likeCount === 0) {
 			batch.set(likePostsDoc, {
 				likePostAuthorId: authorId,
 				postId,
@@ -322,7 +380,7 @@ const PostDetail = () => {
 							<AspectRatio ratio={1 / 1}>
 								<Image
 									src={post.image}
-									alt={`${author.username}'s photo`}
+									alt={`${author?.username}'s photo`}
 									objectFit="cover"
 								/>
 							</AspectRatio>
@@ -340,13 +398,13 @@ const PostDetail = () => {
 									>
 										<Avatar
 											size="md"
-											name={author.username}
-											src={author.userImg}
+											name={author?.username}
+											src={author?.userImg}
 										/>
 									</NextLink>
 									<VStack align="left">
 										<Text fontSize="md" as="b">
-											{author.username}
+											{author?.username}
 										</Text>
 										<Text fontSize="sm">
 											{parseTimestampToDate(post.createTime, "/")}
@@ -401,85 +459,86 @@ const PostDetail = () => {
 							mt={4}
 							align="left"
 						>
-							{items?.length >= 1 && (
+							{items && items.length >= 1 && (
 								<>
 									<Heading as="h3" fontSize="md">
 										使用アイテム
 									</Heading>
 									<Flex gap={2}>
-										{items?.map((item) => (
-											<React.Fragment key={item.itemId}>
-												<HStack
-													bg="white"
-													boxShadow="md"
-													rounded="md"
-													w="140px"
-													h="140px"
-													justify="center"
-													onClick={onOpen}
-													cursor="pointer"
-												>
-													<Image
-														alt={item.itemName}
-														src={item.itemImg}
-														boxSize="100px"
-														objectFit="cover"
-													/>
-												</HStack>
-												<Modal isOpen={isOpen} onClose={onClose}>
-													<ModalOverlay />
-													<ModalContent>
-														<ModalHeader mt={6}></ModalHeader>
-														<ModalCloseButton />
-														<ModalBody>
-															<Stack p={2} m="4px">
-																<Stack align="center">
-																	<Image
-																		alt={item.itemUrl}
-																		src={item.itemImg}
-																		boxSize="250px"
-																		objectFit="cover"
-																	/>
+										{items &&
+											items.map((item) => (
+												<React.Fragment key={item.itemId}>
+													<HStack
+														bg="white"
+														boxShadow="md"
+														rounded="md"
+														w="140px"
+														h="140px"
+														justify="center"
+														onClick={onOpen}
+														cursor="pointer"
+													>
+														<Image
+															alt={item.itemName}
+															src={item.itemImg}
+															boxSize="100px"
+															objectFit="cover"
+														/>
+													</HStack>
+													<Modal isOpen={isOpen} onClose={onClose}>
+														<ModalOverlay />
+														<ModalContent>
+															<ModalHeader mt={6}></ModalHeader>
+															<ModalCloseButton />
+															<ModalBody>
+																<Stack p={2} m="4px">
+																	<Stack align="center">
+																		<Image
+																			alt={item.itemUrl}
+																			src={item.itemImg}
+																			boxSize="250px"
+																			objectFit="cover"
+																		/>
+																	</Stack>
+																	<Text fontSize="md" color="gray.500">
+																		{convertSubstring(item.shopName, 50)}
+																	</Text>
+																	<Text fontSize="md" as="b">
+																		￥{item.price.toLocaleString()}
+																	</Text>
+																	<Text fontSize="md">
+																		{convertSubstring(item.itemName, 100)}
+																	</Text>
+																	<Button
+																		as="a"
+																		href={item.itemUrl}
+																		target="_blank"
+																		borderColor="#E4626E"
+																		border="1px"
+																		bg="#ffffff"
+																		color="#E4626E"
+																		size="md"
+																		_hover={{ bg: "#E4626E", color: "#ffffff" }}
+																		leftIcon={<ExternalLinkIcon />}
+																	>
+																		楽天市場で見る
+																	</Button>
 																</Stack>
-																<Text fontSize="md" color="gray.500">
-																	{convertSubstring(item.shopName, 50)}
-																</Text>
-																<Text fontSize="md" as="b">
-																	￥{item.price.toLocaleString()}
-																</Text>
-																<Text fontSize="md">
-																	{convertSubstring(item.itemName, 100)}
-																</Text>
-																<Button
-																	as="a"
-																	href={item.itemUrl}
-																	target="_blank"
-																	borderColor="#E4626E"
-																	border="1px"
-																	bg="#ffffff"
-																	color="#E4626E"
-																	size="md"
-																	_hover={{ bg: "#E4626E", color: "#ffffff" }}
-																	leftIcon={<ExternalLinkIcon />}
+															</ModalBody>
+															<ModalFooter>
+																<NextLink
+																	href="https://developers.rakuten.com/"
+																	passHref
 																>
-																	楽天市場で見る
-																</Button>
-															</Stack>
-														</ModalBody>
-														<ModalFooter>
-															<NextLink
-																href="https://developers.rakuten.com/"
-																passHref
-															>
-																<Link target="_blank">
-																	Supported by Rakuten Developers
-																</Link>
-															</NextLink>
-														</ModalFooter>
-													</ModalContent>
-												</Modal>
-											</React.Fragment>
-										))}
+																	<Link target="_blank">
+																		Supported by Rakuten Developers
+																	</Link>
+																</NextLink>
+															</ModalFooter>
+														</ModalContent>
+													</Modal>
+												</React.Fragment>
+											))}
 									</Flex>
 								</>
 							)}
