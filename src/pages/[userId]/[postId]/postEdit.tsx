@@ -108,6 +108,7 @@ const PostEdit = () => {
 			);
 			return () => unsubscribe();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	//アイテム取得

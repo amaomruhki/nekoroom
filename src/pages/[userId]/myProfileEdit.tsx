@@ -1,11 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import {
 	Input,
-	Container,
 	Heading,
 	VStack,
-	HStack,
 	Text,
 	Spacer,
 	Avatar,
@@ -14,14 +11,12 @@ import {
 	FormControl,
 } from "@chakra-ui/react";
 import PrimaryButton from "../../components/elements/Button/PrimaryButton";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { useRouter } from "next/router";
 import {
 	doc,
-	getDoc,
+	DocumentData,
 	onSnapshot,
 	serverTimestamp,
-	setDoc,
 	updateDoc,
 } from "firebase/firestore";
 import { db, storage } from "../../../lib/firebase";
@@ -30,9 +25,16 @@ import Loading from "../../components/elements/Loading/Loading";
 import { userState } from "../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
 
+type UserItem = {
+	userId: string;
+	username?: string;
+	userImg?: string;
+	text?: string;
+};
+
 const MyProfileEdit = () => {
-	const [userItem, setUserItem] = useState([]);
-	const filePickerRef = useRef<HTMLInputElement>(null);
+	const [userItem, setUserItem] = useState<DocumentData | null>(null);
+	const filePickerRef = useRef<HTMLInputElement>(null!);
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const router = useRouter();
@@ -58,6 +60,7 @@ const MyProfileEdit = () => {
 			setIsLoading(false);
 			return () => unsubscribe();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// プロフィールの更新
@@ -67,11 +70,13 @@ const MyProfileEdit = () => {
 				setIsLoading(true);
 				const userId = currentUser.uid;
 				const docRef = doc(db, "users", userId);
-				await updateDoc(docRef, {
-					updateTime: serverTimestamp(),
-					username: userItem.username,
-					text: userItem.text,
-				});
+				if (userItem !== null) {
+					await updateDoc(docRef, {
+						updateTime: serverTimestamp(),
+						username: userItem.username,
+						text: userItem.text,
+					});
+				}
 
 				const imageRef = ref(storage, `users/${docRef.id}/image`);
 				if (selectedFile) {
@@ -93,13 +98,13 @@ const MyProfileEdit = () => {
 	};
 
 	// アイコン画像の追加
-	const addImageToProfile = (event) => {
+	const addImageToProfile = (event: any) => {
 		const reader = new FileReader();
 		if (event.target.files[0]) {
 			reader.readAsDataURL(event.target.files[0]);
 		}
 
-		reader.onload = (readerEvent) => {
+		reader.onload = (readerEvent: any) => {
 			setSelectedFile(readerEvent.target.result);
 		};
 		//stateで管理している場合、onChangeは同じファイルを選択すると発火しないのでここで初期化
@@ -115,38 +120,43 @@ const MyProfileEdit = () => {
 					</Heading>
 					<Spacer />
 					<VStack>
-						{selectedFile ? (
-							<>
-								<Avatar size="md" name={userItem.username} src={selectedFile} />
-								<PrimaryButton
-									borderColor="gray.300"
-									border="1px"
-									bg="#ffffff"
-									color="gray.900"
-									onClick={() => setSelectedFile(null)}
-								>
-									アイコン画像を変更
-								</PrimaryButton>
-							</>
-						) : (
-							<>
-								<Avatar
-									size="md"
-									name={userItem.username}
-									src={userItem.userImg}
-								/>
-								{/* <Avatar size="md" name={username} /> */}
-								<PrimaryButton
-									borderColor="gray.300"
-									border="1px"
-									bg="#ffffff"
-									color="gray.900"
-									onClick={() => filePickerRef.current.click()}
-								>
-									アイコン画像を選択
-								</PrimaryButton>
-							</>
-						)}
+						{selectedFile
+							? userItem !== null && (
+									<React.Fragment>
+										<Avatar
+											size="md"
+											name={userItem.username}
+											src={selectedFile}
+										/>
+										<PrimaryButton
+											borderColor="gray.300"
+											border="1px"
+											bg="#ffffff"
+											color="gray.900"
+											onClick={() => setSelectedFile(null)}
+										>
+											アイコン画像を変更
+										</PrimaryButton>
+									</React.Fragment>
+							  )
+							: userItem !== null && (
+									<React.Fragment>
+										<Avatar
+											size="md"
+											name={userItem.username}
+											src={userItem.userImg}
+										/>
+										<PrimaryButton
+											borderColor="gray.300"
+											border="1px"
+											bg="#ffffff"
+											color="gray.900"
+											onClick={() => filePickerRef.current.click()}
+										>
+											アイコン画像を選択
+										</PrimaryButton>
+									</React.Fragment>
+							  )}
 						<PrimaryButton
 							bg="#ffffff"
 							color="gray.900"
@@ -185,7 +195,7 @@ const MyProfileEdit = () => {
 								bg="white"
 								placeholder="ニックネーム"
 								type="text"
-								value={userItem.username}
+								value={userItem?.username}
 								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
 									setUserItem({ ...userItem, username: event.target.value });
 								}}
@@ -196,7 +206,7 @@ const MyProfileEdit = () => {
 							<Textarea
 								bg="white"
 								placeholder="自己紹介"
-								value={userItem.text}
+								value={userItem?.text}
 								onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
 									setUserItem({ ...userItem, text: event.target.value });
 								}}
@@ -209,7 +219,7 @@ const MyProfileEdit = () => {
 						bg="#E4626E"
 						color="#ffffff"
 						onClick={editProfile}
-						disabled={!userItem.username}
+						disabled={!userItem?.username}
 					>
 						保存
 					</PrimaryButton>

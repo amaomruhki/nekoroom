@@ -8,6 +8,7 @@ import {
 	onSnapshot,
 	orderBy,
 	query,
+	Timestamp,
 } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 import { useRouter } from "next/router";
@@ -15,13 +16,16 @@ import { userState } from "../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
 import Loading from "../../components/elements/Loading/Loading";
 
-type Post = {
-	image: string;
-	postId: string;
-	userId: string;
-	caption: string;
-	likeCount: number;
-};
+type Post =
+	| {
+			image: string;
+			postId: string;
+			userId: string;
+			caption: string;
+			likeCount: number;
+			createTime: Timestamp;
+	  }
+	| undefined;
 
 const MyPage = () => {
 	const [myLikes, setMyLikes] = useState<Post[] | null>(null);
@@ -75,6 +79,7 @@ const MyPage = () => {
 		};
 		setIsLoading(false);
 		return () => unsubscribe();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
@@ -94,7 +99,7 @@ const MyPage = () => {
 						{myLikes
 							? myLikes.map(
 									(myLike) =>
-										myLike.image && (
+										myLike?.image && (
 											<NextLink
 												key={myLike.postId}
 												href={{

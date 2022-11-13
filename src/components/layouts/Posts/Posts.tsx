@@ -11,8 +11,6 @@ import { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
 import Post from "./Post";
 import Loading from "../../elements/Loading/Loading";
-import { useRecoilState } from "recoil";
-import { userState } from "../../../Atoms/userAtom";
 
 type Post = {
 	postId: string;

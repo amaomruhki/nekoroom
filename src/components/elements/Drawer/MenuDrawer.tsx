@@ -35,7 +35,7 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 			title: "photoUpload",
 			text: (
 				<NextLink href="/photoUpload" passHref>
-					<Link>投稿</Link>
+					<Link sx={{ display: "block" }}>投稿</Link>
 				</NextLink>
 			),
 		},
@@ -46,7 +46,7 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 					href={{ pathname: "/[userId]/myPage", query: { userId: userId } }}
 					passHref
 				>
-					<Link>マイページ</Link>
+					<Link sx={{ display: "block" }}>マイページ</Link>
 				</NextLink>
 			),
 		},
@@ -57,7 +57,7 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 					href={{ pathname: "/[userId]/myLike", query: { userId: userId } }}
 					passHref
 				>
-					<Link>いいにゃした投稿</Link>
+					<Link sx={{ display: "block" }}>いいにゃした投稿</Link>
 				</NextLink>
 			),
 		},
@@ -71,15 +71,15 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 			title: "login",
 			text: (
 				<NextLink href="/auth/login" passHref>
-					<Link>ログイン</Link>
+					<Link sx={{ display: "block" }}>ログイン</Link>
 				</NextLink>
 			),
 		},
 		{
 			title: "register",
 			text: (
-				<NextLink href="/auth//register" passHref>
-					<Link>新規登録</Link>
+				<NextLink href="/auth/register" passHref>
+					<Link sx={{ display: "block" }}>新規登録</Link>
 				</NextLink>
 			),
 		},
@@ -89,7 +89,7 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 		<>
 			<Drawer
 				isOpen={isOpen}
-				size={{ base: "full", md: "xs" }}
+				size=base: "xs"
 				placement="right"
 				onClose={onClose}
 			>
@@ -109,15 +109,33 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 						)}
 					</DrawerHeader>
 					<DrawerBody>
-						<Stack spacing="24px">
+						<Stack>
 							{currentUser
 								? Login_Menu_List.map((list) => (
-										<Box key="title" cursor="pointer" onClick={onClose}>
+										<Box
+											key="title"
+											cursor="pointer"
+											onClick={onClose}
+											borderBottom="1px"
+											borderColor="gray.100"
+											py={6}
+											fontSize="md"
+											as="b"
+										>
 											{list.text}
 										</Box>
 								  ))
 								: Logout_Menu_List.map((list) => (
-										<Box key="title" cursor="pointer" onClick={onClose}>
+										<Box
+											key="title"
+											cursor="pointer"
+											onClick={onClose}
+											borderBottom="1px"
+											borderColor="gray.100"
+											py={6}
+											fontSize="md"
+											as="b"
+										>
 											{list.text}
 										</Box>
 								  ))}

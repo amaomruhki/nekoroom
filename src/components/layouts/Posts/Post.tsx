@@ -42,8 +42,8 @@ const Post = ({
 			}}
 		>
 			<GridItem key={postId} cursor="pointer">
-				<Box bg="white" boxShadow="md" rounded="md" p={2}>
-					<AspectRatio ratio={1 / 1} w="310px">
+				<Box bg="white" boxShadow="md" rounded="md" p={4}>
+					<AspectRatio ratio={1 / 1}>
 						<Image alt={`${username}'s photo`} src={image} objectFit="cover" />
 					</AspectRatio>
 					<HStack p={2}>
@@ -63,7 +63,7 @@ const Post = ({
 							</Text>
 						</HStack>
 					</HStack>
-					<Text fontSize="sm">{convertSubstring(caption, 48)}</Text>
+					<Text fontSize="sm">{convertSubstring(caption, 46)}</Text>
 				</Box>
 			</GridItem>
 		</NextLink>

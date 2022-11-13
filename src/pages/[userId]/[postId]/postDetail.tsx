@@ -56,12 +56,22 @@ import Loading from "../../../components/elements/Loading/Loading";
 import { userState } from "../../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
 
-type CommentUser = {
-	commentId: string;
-	commentedUserId: string;
-	comment: string;
-	commentedUsername: string;
-	commentedUserImg: string;
+type CommentUser =
+	| {
+			commentId: string;
+			commentedUserId?: string;
+			comment: string;
+			commentedUsername: string;
+			commentedUserImg: string;
+			createTime: Timestamp;
+	  }
+	| undefined;
+
+type Post = {
+	postId: string;
+	image: string;
+	caption: string;
+	likeCount: number;
 	createTime: Timestamp;
 };
 
@@ -81,15 +91,21 @@ type Item = {
 	itemUrl: string;
 };
 
+type LikeUsers = {
+	id: string;
+	likeUserId: any;
+	postId: any;
+};
+
 const PostDetail = () => {
 	const [items, setItems] = useState<Item[] | null>(null);
-	const [post, setPost] = useState([]);
+	const [post, setPost] = useState<Post | null>(null);
 	const [author, setAuthor] = useState<Author | null>(null);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [comment, setComment] = useState("");
+	const [comment, setComment] = useState<string>("");
 	const [comments, setComments] = useState<CommentUser[] | null>(null);
-	const [likeUsers, setLikeUsers] = useState([]);
+	const [likeUsers, setLikeUsers] = useState<LikeUsers[] | null>(null);
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
 
@@ -131,6 +147,7 @@ const PostDetail = () => {
 			);
 			return () => unsubscribe();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	//アイテム取得
@@ -166,6 +183,7 @@ const PostDetail = () => {
 			});
 		}
 		setIsLoading(false);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	//投稿に対してlikeしたユーザーを絞り込んで取得
@@ -189,6 +207,7 @@ const PostDetail = () => {
 				setLikeUsers(likeUsersData);
 			});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	// コメントの取得
@@ -238,6 +257,7 @@ const PostDetail = () => {
 		};
 		setIsLoading(false);
 		return () => unsubscribe();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// コメント投稿
@@ -314,7 +334,7 @@ const PostDetail = () => {
 			batch.update(postRef, { likeCount: increment(1) });
 		} else {
 			// ログインuserがlikeしている場合、likeを取り消す
-			if (likeUsers.length > 0) {
+			if (likeUsers && likeUsers.length > 0) {
 				batch.delete(likePostsDoc);
 				batch.delete(likeUsersDoc);
 				batch.update(postRef, { likeCount: increment(-1) });
@@ -341,7 +361,7 @@ const PostDetail = () => {
 
 	return (
 		<>
-			{!isLoading ? (
+			{!isLoading && post && author ? (
 				<Grid
 					templateColumns={{
 						sm: "repeat(1, 1fr)",
@@ -376,7 +396,7 @@ const PostDetail = () => {
 								</NextLink>
 							</Stack>
 						) : null}
-						<Box bg="white" p={2} rounded="md" boxShadow="md">
+						<Box bg="white" p={4} rounded="md" boxShadow="md">
 							<AspectRatio ratio={1 / 1}>
 								<Image
 									src={post.image}
@@ -398,8 +418,8 @@ const PostDetail = () => {
 									>
 										<Avatar
 											size="md"
-											name={author?.username}
-											src={author?.userImg}
+											name={author.username}
+											src={author.userImg}
 										/>
 									</NextLink>
 									<VStack align="left">
@@ -414,7 +434,7 @@ const PostDetail = () => {
 								<Spacer />
 								{/* like表示の条件分岐 */}
 								<HStack spacing={2}>
-									{currentUser ? (
+									{currentUser && likeUsers ? (
 										likeUsers.length > 0 ? (
 											<IconButton
 												p={0}
@@ -465,87 +485,88 @@ const PostDetail = () => {
 										使用アイテム
 									</Heading>
 									<Flex gap={2}>
-										{items &&
-											items.map((item) => (
-												<React.Fragment key={item.itemId}>
-													<HStack
-														bg="white"
-														boxShadow="md"
-														rounded="md"
-														w="140px"
-														h="140px"
-														justify="center"
-														onClick={onOpen}
-														cursor="pointer"
-													>
-														<Image
-															alt={item.itemName}
-															src={item.itemImg}
-															boxSize="100px"
-															objectFit="cover"
-														/>
-													</HStack>
-													<Modal isOpen={isOpen} onClose={onClose}>
-														<ModalOverlay />
-														<ModalContent>
-															<ModalHeader mt={6}></ModalHeader>
-															<ModalCloseButton />
-															<ModalBody>
-																<Stack p={2} m="4px">
-																	<Stack align="center">
-																		<Image
-																			alt={item.itemUrl}
-																			src={item.itemImg}
-																			boxSize="250px"
-																			objectFit="cover"
-																		/>
-																	</Stack>
-																	<Text fontSize="md" color="gray.500">
-																		{convertSubstring(item.shopName, 50)}
-																	</Text>
-																	<Text fontSize="md" as="b">
-																		￥{item.price.toLocaleString()}
-																	</Text>
-																	<Text fontSize="md">
-																		{convertSubstring(item.itemName, 100)}
-																	</Text>
-																	<Button
-																		as="a"
-																		href={item.itemUrl}
-																		target="_blank"
-																		borderColor="#E4626E"
-																		border="1px"
-																		bg="#ffffff"
-																		color="#E4626E"
-																		size="md"
-																		_hover={{ bg: "#E4626E", color: "#ffffff" }}
-																		leftIcon={<ExternalLinkIcon />}
-																	>
-																		楽天市場で見る
-																	</Button>
+										{items.map((item) => (
+											<React.Fragment key={item.itemId}>
+												<HStack
+													bg="white"
+													boxShadow="md"
+													rounded="md"
+													w="140px"
+													h="140px"
+													justify="center"
+													onClick={onOpen}
+													cursor="pointer"
+												>
+													<Image
+														alt={item.itemName}
+														src={item.itemImg}
+														boxSize="100px"
+														objectFit="cover"
+													/>
+												</HStack>
+												<Modal isOpen={isOpen} onClose={onClose}>
+													<ModalOverlay />
+													<ModalContent>
+														<ModalHeader mt={6}></ModalHeader>
+														<ModalCloseButton />
+														<ModalBody>
+															<Stack p={2} m="4px">
+																<Stack align="center">
+																	<Image
+																		alt={item.itemUrl}
+																		src={item.itemImg}
+																		boxSize="250px"
+																		objectFit="cover"
+																	/>
 																</Stack>
-															</ModalBody>
-															<ModalFooter>
-																<NextLink
-																	href="https://developers.rakuten.com/"
-																	passHref
+																<Text fontSize="md" color="gray.500">
+																	{convertSubstring(item.shopName, 50)}
+																</Text>
+																<Text fontSize="md" as="b">
+																	￥{item.price.toLocaleString()}
+																</Text>
+																<Text fontSize="md">
+																	{convertSubstring(item.itemName, 100)}
+																</Text>
+																<Button
+																	as="a"
+																	href={item.itemUrl}
+																	target="_blank"
+																	borderColor="#E4626E"
+																	border="1px"
+																	bg="#ffffff"
+																	color="#E4626E"
+																	size="md"
+																	_hover={{ bg: "#E4626E", color: "#ffffff" }}
+																	leftIcon={<ExternalLinkIcon />}
 																>
-																	<Link target="_blank">
-																		Supported by Rakuten Developers
-																	</Link>
-																</NextLink>
-															</ModalFooter>
-														</ModalContent>
-													</Modal>
-												</React.Fragment>
-											))}
+																	楽天市場で見る
+																</Button>
+															</Stack>
+														</ModalBody>
+														<ModalFooter>
+															<NextLink
+																href="https://developers.rakuten.com/"
+																passHref
+															>
+																<Link target="_blank">
+																	Supported by Rakuten Developers
+																</Link>
+															</NextLink>
+														</ModalFooter>
+													</ModalContent>
+												</Modal>
+											</React.Fragment>
+										))}
 									</Flex>
 								</>
 							)}
 							<Heading as="h3" fontSize="md">
 								コメント
 							</Heading>
-							{comments?.length === 0 && <Text>コメントはありません</Text>}
+							{comments && comments.length === 0 && (
+								<Text>コメントはありません</Text>
+							)}
 							{currentUser && (
 								<>
 									<Textarea
@@ -569,33 +590,40 @@ const PostDetail = () => {
 								</>
 							)}
 							<VStack spacing={4}>
-								{comments?.map((comment) => (
-									<Box
-										w="100%"
-										maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
-										bg="white"
-										p={4}
-										rounded="md"
-										key={comment.commentId}
-									>
-										<HStack>
-											<Avatar
-												size="sm"
-												name={comment.commentedUsername}
-												src={comment.commentedUserImg}
-											/>
-											<HStack alignItems="center">
-												<Text fontSize="md" as="b">
-													{comment.commentedUsername}
-												</Text>
-												<Text fontSize="sm">
-													{parseTimestampToDate(comment.createTime, "/")}
-												</Text>
+								{comments &&
+									comments.map((comment) => (
+										<Box
+											w="100%"
+											maxW={{
+												base: "90vw",
+												sm: "80vw",
+												lg: "50vw",
+												xl: "30vw",
+											}}
+											bg="white"
+											p={4}
+											rounded="md"
+											key={comment?.commentId}
+										>
+											<HStack>
+												<Avatar
+													size="sm"
+													name={comment?.commentedUsername}
+													src={comment?.commentedUserImg}
+												/>
+												<HStack alignItems="center">
+													<Text fontSize="md" as="b">
+														{comment?.commentedUsername}
+													</Text>
+													<Text fontSize="sm">
+														{comment &&
+															parseTimestampToDate(comment.createTime, "/")}
+													</Text>
+												</HStack>
 											</HStack>
-										</HStack>
-										<Text>{comment.comment}</Text>
-									</Box>
-								))}
+											<Text>{comment?.comment}</Text>
+										</Box>
+									))}
 							</VStack>
 						</VStack>
 					</GridItem>

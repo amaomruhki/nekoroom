@@ -27,7 +27,7 @@ const Header = () => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
 				const fetchUser = async () => {
-					const docRef = doc(db, "users", user.auth.currentUser.uid);
+					const docRef = doc(db, "users", user.uid);
 					const docSnap = await getDoc(docRef);
 					if (docSnap.exists()) {
 						const data = docSnap.data() as User;
@@ -43,6 +43,7 @@ const Header = () => {
 	const onLogout = () => {
 		signOut(auth);
 		setCurrentUser(null);
+		alert("ログアウトしました");
 		router.push("/");
 	};
 

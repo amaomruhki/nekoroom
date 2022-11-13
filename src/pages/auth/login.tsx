@@ -42,6 +42,7 @@ const Login = () => {
 			router.push("/");
 		} catch (error) {
 			alert("エラーが発生しました");
+			router.push("/auth/login");
 		}
 	};
 
