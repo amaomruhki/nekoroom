@@ -72,9 +72,9 @@ const PostEdit = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [selectedButton, setSelectedButton] = useState<string>("");
 	const cancelRef = useRef(null);
-	const [itemResult, setItemResult] = useState<ItemResult>({});
-	const [items, setItems] = useState({});
-	const [post, setPost] = useState<Post[]>([]);
+	const [itemResult, setItemResult] = useState<ItemResult | any>({});
+	const [items, setItems] = useState<ItemResult | any>({});
+	const [post, setPost] = useState<Post | null>(null);
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
 
@@ -137,6 +137,7 @@ const PostEdit = () => {
 			});
 		}
 		setIsLoading(false);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	//useFetchDataでreturnされたobjectのvalue
@@ -157,7 +158,7 @@ const PostEdit = () => {
 			const postId = router.query.postId as string;
 			setIsLoading(true);
 			await updateDoc(doc(db, "users", authorId, "posts", postId), {
-				caption: post.caption,
+				caption: post?.caption,
 				updateTime: serverTimestamp(),
 			});
 
@@ -221,7 +222,7 @@ const PostEdit = () => {
 
 	return (
 		<>
-			{currentUser && !isLoading ? (
+			{currentUser && !isLoading && post ? (
 				<VStack align="left" spacing={4}>
 					<Heading as="h2">投稿を編集する</Heading>
 					<Spacer />
@@ -248,7 +249,7 @@ const PostEdit = () => {
 					<Heading as="h3" size="md">
 						アイテムを編集する
 					</Heading>
-					{items?.length >= 1 ? (
+					{items && items?.length >= 1 ? (
 						// アイテムが再選択された場合はアイテム表示を差し替える
 						Object.keys(itemResult).length ? (
 							<HStack

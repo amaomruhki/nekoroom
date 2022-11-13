@@ -16,13 +16,24 @@ import {
 	Avatar,
 	Link,
 } from "@chakra-ui/react";
-import { User } from "firebase/auth";
+import { Timestamp } from "firebase/firestore";
 
 type Props = {
 	onClose: () => void;
 	isOpen: boolean;
 	onLogout: () => void;
 	currentUser: User | null;
+};
+
+type User = {
+	name: string;
+	email: string;
+	uid: string;
+	createTime: Timestamp;
+	updateTime: Timestamp;
+	username: string;
+	userImg: string;
+	text: string;
 };
 
 const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {

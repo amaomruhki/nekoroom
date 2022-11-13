@@ -1,5 +1,16 @@
-import { User } from "firebase/auth";
+import { Timestamp } from "firebase/firestore";
 import { atom } from "recoil";
+
+type User = {
+	name: string;
+	email: string;
+	uid: string;
+	createTime: Timestamp;
+	updateTime: Timestamp;
+	username: string;
+	userImg: string;
+	text: string;
+};
 
 export type UserState = User | null;
 
