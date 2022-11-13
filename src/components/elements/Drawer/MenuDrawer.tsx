@@ -119,7 +119,7 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 							{currentUser
 								? Login_Menu_List.map((list) => (
 										<Box
-											key="title"
+											key={list.title}
 											cursor="pointer"
 											onClick={onClose}
 											borderBottom="1px"
@@ -133,7 +133,7 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 								  ))
 								: Logout_Menu_List.map((list) => (
 										<Box
-											key="title"
+											key={list.title}
 											cursor="pointer"
 											onClick={onClose}
 											borderBottom="1px"
