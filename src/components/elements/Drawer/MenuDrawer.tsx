@@ -87,12 +87,7 @@ const MenuDrawer = ({ isOpen, onClose, onLogout, currentUser }: Props) => {
 
 	return (
 		<>
-			<Drawer
-				isOpen={isOpen}
-				size=base: "xs"
-				placement="right"
-				onClose={onClose}
-			>
+			<Drawer isOpen={isOpen} size="xs" placement="right" onClose={onClose}>
 				<DrawerOverlay />
 				<DrawerContent maxH={`${height}px`}>
 					<DrawerCloseButton color="#d6d6d6" size="lg" />
