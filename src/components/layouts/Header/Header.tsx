@@ -14,8 +14,19 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { db } from "../../../../lib/firebase";
 import { useRecoilState } from "recoil";
 import { userState } from "../../../Atoms/userAtom";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, Timestamp } from "firebase/firestore";
 import { useRouter } from "next/router";
+
+type User = {
+	name: string;
+	email: string;
+	uid: string;
+	createTime: Timestamp;
+	updateTime: Timestamp;
+	username: string;
+	userImg: string;
+	text: string;
+};
 
 const Header = () => {
 	const [currentUser, setCurrentUser] = useRecoilState(userState);
@@ -27,10 +38,11 @@ const Header = () => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
 				const fetchUser = async () => {
-					const docRef = doc(db, "users", user.auth.currentUser.uid);
+					const docRef = doc(db, "users", user.uid);
 					const docSnap = await getDoc(docRef);
 					if (docSnap.exists()) {
-						setCurrentUser(docSnap.data());
+						const data = docSnap.data() as User;
+						setCurrentUser(data);
 					}
 				};
 				fetchUser();
@@ -39,9 +51,12 @@ const Header = () => {
 		return () => unsubscribe();
 	}, [auth, setCurrentUser]);
 
+	console.log(currentUser);
+
 	const onLogout = () => {
 		signOut(auth);
 		setCurrentUser(null);
+		alert("ログアウトしました");
 		router.push("/");
 	};
 

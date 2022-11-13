@@ -56,24 +56,56 @@ import Loading from "../../../components/elements/Loading/Loading";
 import { userState } from "../../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
 
-type CommentUser = {
-	commentId: string;
-	commentedUserId: string;
-	comment: string;
-	commentedUsername: string;
-	commentedUserImg: string;
+type CommentUser =
+	| {
+			commentId: string;
+			commentedUserId?: string;
+			comment: string;
+			commentedUsername: string;
+			commentedUserImg: string;
+			createTime: Timestamp;
+	  }
+	| undefined;
+
+type Post = {
+	postId: string;
+	image: string;
+	caption: string;
+	likeCount: number;
 	createTime: Timestamp;
 };
 
+type Author = {
+	userId: string;
+	username: any;
+	userImg: any;
+};
+
+type Item = {
+	itemId: string;
+	postId: string;
+	itemImg: string;
+	itemName: string;
+	price: string;
+	shopName: string;
+	itemUrl: string;
+};
+
+type LikeUsers = {
+	id: string;
+	likeUserId: any;
+	postId: any;
+};
+
 const PostDetail = () => {
-	const [items, setItems] = useState();
-	const [post, setPost] = useState([]);
-	const [author, setAuthor] = useState([]);
+	const [items, setItems] = useState<Item[] | null>(null);
+	const [post, setPost] = useState<Post | null>(null);
+	const [author, setAuthor] = useState<Author | null>(null);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [comment, setComment] = useState("");
+	const [comment, setComment] = useState<string>("");
 	const [comments, setComments] = useState<CommentUser[] | null>(null);
-	const [likeUsers, setLikeUsers] = useState([]);
+	const [likeUsers, setLikeUsers] = useState<LikeUsers[] | null>(null);
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
 
@@ -101,7 +133,7 @@ const PostDetail = () => {
 			const authorId = router.query.userId;
 			const postId = router.query.postId;
 			const unsubscribe = onSnapshot(
-				doc(db, "users", authorId, "posts", postId),
+				doc(db, "users", authorId as string, "posts", postId as string),
 				(snapshot) => {
 					const postData = {
 						postId: snapshot.data()?.id,
@@ -115,6 +147,7 @@ const PostDetail = () => {
 			);
 			return () => unsubscribe();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	//アイテム取得
@@ -124,7 +157,14 @@ const PostDetail = () => {
 			const authorId = router.query.userId;
 			const postId = router.query.postId;
 			const itemsRef = query(
-				collection(db, "users", authorId, "posts", postId, "items"),
+				collection(
+					db,
+					"users",
+					authorId as string,
+					"posts",
+					postId as string,
+					"items"
+				),
 				where("postId", "==", postId)
 			);
 			onSnapshot(itemsRef, (querySnapshot) => {
@@ -143,6 +183,7 @@ const PostDetail = () => {
 			});
 		}
 		setIsLoading(false);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	//投稿に対してlikeしたユーザーを絞り込んで取得
@@ -166,6 +207,7 @@ const PostDetail = () => {
 				setLikeUsers(likeUsersData);
 			});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	// コメントの取得
@@ -177,7 +219,14 @@ const PostDetail = () => {
 				const postId = router.query.postId;
 				onSnapshot(
 					query(
-						collection(db, "users", userId, "posts", postId, "comments"),
+						collection(
+							db,
+							"users",
+							userId as string,
+							"posts",
+							postId as string,
+							"comments"
+						),
 						orderBy("createTime", "desc")
 					),
 					(snapshot) => {
@@ -191,8 +240,8 @@ const PostDetail = () => {
 									return {
 										...document.data(),
 										commentId: document.id,
-										commentedUsername: commentedUserInfo.data().username,
-										commentedUserImg: commentedUserInfo.data().userImg,
+										commentedUsername: commentedUserInfo.data()!.username,
+										commentedUserImg: commentedUserInfo.data()!.userImg,
 										comment: document.data().comment,
 										createTime: document.data().createTime,
 									};
@@ -208,6 +257,7 @@ const PostDetail = () => {
 		};
 		setIsLoading(false);
 		return () => unsubscribe();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// コメント投稿
@@ -220,11 +270,21 @@ const PostDetail = () => {
 		console.log("コメントテスト");
 
 		setComment("");
-		await addDoc(collection(db, "users", userId, "posts", postId, "comments"), {
-			comment: commentToSend,
-			commentedUserId: commentedUserUid,
-			createTime: serverTimestamp(),
-		});
+		await addDoc(
+			collection(
+				db,
+				"users",
+				userId as string,
+				"posts",
+				postId as string,
+				"comments"
+			),
+			{
+				comment: commentToSend,
+				commentedUserId: commentedUserUid,
+				createTime: serverTimestamp(),
+			}
+		);
 	}
 
 	//like（いいにゃ）のカウントを増減処理(posts,likePosts,likeUsersをバッチ処理)
@@ -233,14 +293,32 @@ const PostDetail = () => {
 		const postId = router.query.postId;
 		const authorId = router.query.userId;
 		const loginUserId = currentUser!.uid;
-		const postRef = doc(db, "users", authorId, "posts", postId);
+		const postRef = doc(
+			db,
+			"users",
+			authorId as string,
+			"posts",
+			postId as string
+		);
 		const postInfo = await getDoc(postRef);
-		const likePostsDoc = doc(db, "users", loginUserId, "likePosts", postId);
-		const likeUsersDoc = doc(db, "users", loginUserId, "likeUsers", postId);
+		const likePostsDoc = doc(
+			db,
+			"users",
+			loginUserId as string,
+			"likePosts",
+			postId as string
+		);
+		const likeUsersDoc = doc(
+			db,
+			"users",
+			loginUserId as string,
+			"likeUsers",
+			postId as string
+		);
 		const { v4: uuidv4 } = require("uuid");
 
 		//likeがゼロの場合
-		if (postInfo.data().likeCount === 0) {
+		if (postInfo.data()!.likeCount === 0) {
 			batch.set(likePostsDoc, {
 				likePostAuthorId: authorId,
 				postId,
@@ -256,7 +334,7 @@ const PostDetail = () => {
 			batch.update(postRef, { likeCount: increment(1) });
 		} else {
 			// ログインuserがlikeしている場合、likeを取り消す
-			if (likeUsers.length > 0) {
+			if (likeUsers && likeUsers.length > 0) {
 				batch.delete(likePostsDoc);
 				batch.delete(likeUsersDoc);
 				batch.update(postRef, { likeCount: increment(-1) });
@@ -283,7 +361,7 @@ const PostDetail = () => {
 
 	return (
 		<>
-			{!isLoading ? (
+			{!isLoading && post && author ? (
 				<Grid
 					templateColumns={{
 						sm: "repeat(1, 1fr)",
@@ -318,11 +396,11 @@ const PostDetail = () => {
 								</NextLink>
 							</Stack>
 						) : null}
-						<Box bg="white" p={2} rounded="md" boxShadow="md">
+						<Box bg="white" p={4} rounded="md" boxShadow="md">
 							<AspectRatio ratio={1 / 1}>
 								<Image
 									src={post.image}
-									alt={`${author.username}'s photo`}
+									alt={`${author?.username}'s photo`}
 									objectFit="cover"
 								/>
 							</AspectRatio>
@@ -346,7 +424,7 @@ const PostDetail = () => {
 									</NextLink>
 									<VStack align="left">
 										<Text fontSize="md" as="b">
-											{author.username}
+											{author?.username}
 										</Text>
 										<Text fontSize="sm">
 											{parseTimestampToDate(post.createTime, "/")}
@@ -356,7 +434,7 @@ const PostDetail = () => {
 								<Spacer />
 								{/* like表示の条件分岐 */}
 								<HStack spacing={2}>
-									{currentUser ? (
+									{currentUser && likeUsers ? (
 										likeUsers.length > 0 ? (
 											<IconButton
 												p={0}
@@ -401,13 +479,13 @@ const PostDetail = () => {
 							mt={4}
 							align="left"
 						>
-							{items?.length >= 1 && (
+							{items && items.length >= 1 && (
 								<>
 									<Heading as="h3" fontSize="md">
 										使用アイテム
 									</Heading>
 									<Flex gap={2}>
-										{items?.map((item) => (
+										{items.map((item) => (
 											<React.Fragment key={item.itemId}>
 												<HStack
 													bg="white"
@@ -486,7 +564,9 @@ const PostDetail = () => {
 							<Heading as="h3" fontSize="md">
 								コメント
 							</Heading>
-							{comments?.length === 0 && <Text>コメントはありません</Text>}
+							{comments && comments.length === 0 && (
+								<Text>コメントはありません</Text>
+							)}
 							{currentUser && (
 								<>
 									<Textarea
@@ -510,33 +590,40 @@ const PostDetail = () => {
 								</>
 							)}
 							<VStack spacing={4}>
-								{comments?.map((comment) => (
-									<Box
-										w="100%"
-										maxW={{ base: "90vw", sm: "80vw", lg: "50vw", xl: "30vw" }}
-										bg="white"
-										p={4}
-										rounded="md"
-										key={comment.commentId}
-									>
-										<HStack>
-											<Avatar
-												size="sm"
-												name={comment.commentedUsername}
-												src={comment.commentedUserImg}
-											/>
-											<HStack alignItems="center">
-												<Text fontSize="md" as="b">
-													{comment.commentedUsername}
-												</Text>
-												<Text fontSize="sm">
-													{parseTimestampToDate(comment.createTime, "/")}
-												</Text>
+								{comments &&
+									comments.map((comment) => (
+										<Box
+											w="100%"
+											maxW={{
+												base: "90vw",
+												sm: "80vw",
+												lg: "50vw",
+												xl: "30vw",
+											}}
+											bg="white"
+											p={4}
+											rounded="md"
+											key={comment?.commentId}
+										>
+											<HStack>
+												<Avatar
+													size="sm"
+													name={comment?.commentedUsername}
+													src={comment?.commentedUserImg}
+												/>
+												<HStack alignItems="center">
+													<Text fontSize="md" as="b">
+														{comment?.commentedUsername}
+													</Text>
+													<Text fontSize="sm">
+														{comment &&
+															parseTimestampToDate(comment.createTime, "/")}
+													</Text>
+												</HStack>
 											</HStack>
-										</HStack>
-										<Text>{comment.comment}</Text>
-									</Box>
-								))}
+											<Text>{comment?.comment}</Text>
+										</Box>
+									))}
 							</VStack>
 						</VStack>
 					</GridItem>

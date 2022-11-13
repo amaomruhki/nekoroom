@@ -11,8 +11,6 @@ import { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
 import Post from "./Post";
 import Loading from "../../elements/Loading/Loading";
-import { useRecoilState } from "recoil";
-import { userState } from "../../../Atoms/userAtom";
 
 type Post = {
 	postId: string;
@@ -38,7 +36,7 @@ const Posts = () => {
 						// ユーザーデータ取得
 						const userId = document.data().userId;
 						const userRef = doc(db, "users", userId);
-						const userInfo = await getDoc(userRef);
+						const userInfo: any = await getDoc(userRef);
 
 						return {
 							...document.data(),
@@ -56,7 +54,7 @@ const Posts = () => {
 						data;
 						setPosts(data);
 					})
-					.finally(setIsLoading(false));
+					.finally(() => setIsLoading(false));
 			}
 		);
 		return () => unsubscribe();

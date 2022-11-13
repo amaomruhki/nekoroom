@@ -50,13 +50,31 @@ import ItemSearch from "../../../components/elements/Search/ItemSearch";
 import Loading from "../../../components/elements/Loading/Loading";
 import Result from "../../../components/elements/Search/Result";
 
+type ItemResult = {
+	postId: string;
+	itemImg: string;
+	imageUrl: string;
+	itemName: string;
+	price: string;
+	shopName: string;
+	itemUrl: string;
+};
+
+type Post = {
+	postId: string;
+	image: string;
+	caption: string;
+	likeCount: string;
+	itemId: string;
+};
+
 const PostEdit = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [selectedButton, setSelectedButton] = useState<string>("");
 	const cancelRef = useRef(null);
-	const [itemResult, setItemResult] = useState({});
-	const [items, setItems] = useState({});
-	const [post, setPost] = useState([]);
+	const [itemResult, setItemResult] = useState<ItemResult | any>({});
+	const [items, setItems] = useState<ItemResult | any>({});
+	const [post, setPost] = useState<Post | null>(null);
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
 
@@ -90,6 +108,7 @@ const PostEdit = () => {
 			);
 			return () => unsubscribe();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	//アイテム取得
@@ -118,6 +137,7 @@ const PostEdit = () => {
 			});
 		}
 		setIsLoading(false);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router.isReady, router.query.userId]);
 
 	//useFetchDataでreturnされたobjectのvalue
@@ -126,7 +146,7 @@ const PostEdit = () => {
 	const [value, setValue] = useState({ freeWord: "" });
 
 	//検索フィールド監視
-	const handleFreeWord = (event) => {
+	const handleFreeWord = (event: any) => {
 		setValue({ freeWord: event.target.value });
 	};
 
@@ -138,7 +158,7 @@ const PostEdit = () => {
 			const postId = router.query.postId as string;
 			setIsLoading(true);
 			await updateDoc(doc(db, "users", authorId, "posts", postId), {
-				caption: post.caption,
+				caption: post?.caption,
 				updateTime: serverTimestamp(),
 			});
 
@@ -202,7 +222,7 @@ const PostEdit = () => {
 
 	return (
 		<>
-			{currentUser && !isLoading ? (
+			{currentUser && !isLoading && post ? (
 				<VStack align="left" spacing={4}>
 					<Heading as="h2">投稿を編集する</Heading>
 					<Spacer />
@@ -229,7 +249,7 @@ const PostEdit = () => {
 					<Heading as="h3" size="md">
 						アイテムを編集する
 					</Heading>
-					{items?.length >= 1 ? (
+					{items && items?.length >= 1 ? (
 						// アイテムが再選択された場合はアイテム表示を差し替える
 						Object.keys(itemResult).length ? (
 							<HStack
@@ -248,7 +268,7 @@ const PostEdit = () => {
 								/>
 							</HStack>
 						) : (
-							items?.map((item) => (
+							items?.map((item: any) => (
 								<HStack
 									key={item.itemId}
 									bg="white"

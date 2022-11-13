@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import type { ReactNode } from "react";
 import { Box } from "@chakra-ui/react";
 
@@ -8,10 +8,7 @@ type Props = {
 	color: "#ffffff" | "gray.900" | "#E4626E";
 	borderColor?: "gray.300" | "#E4626E";
 	border?: "1px";
-	onClick?:
-		| ((event: React.MouseEvent<HTMLButtonElement>) => void)
-		| (() => Promise<string | void>)
-		| (() => void);
+	onClick?: any;
 	type?: "submit";
 	disabled?: boolean;
 };

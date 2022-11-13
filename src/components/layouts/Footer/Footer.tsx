@@ -5,6 +5,7 @@ import { FaPlusCircle, FaUser } from "react-icons/Fa";
 import { PadIcon } from "../../elements/Icon/Icon";
 import { useRecoilState } from "recoil";
 import { userState } from "../../../Atoms/userAtom";
+import { User } from "firebase/auth";
 
 const Footer = () => {
 	const [currentUser] = useRecoilState(userState);

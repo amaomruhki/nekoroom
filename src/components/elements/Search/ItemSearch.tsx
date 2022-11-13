@@ -8,7 +8,20 @@ import {
 } from "@chakra-ui/react";
 import { Search2Icon } from "@chakra-ui/icons";
 
-const ItemSearch = ({ value, handleFreeWord, handleSubmit, placeholder }) => {
+type Props = {
+	handleFreeWord: (event: any) => void;
+	handleSubmit: (value: any) => void;
+	value: { freeWord: string };
+	placeholder: string;
+};
+
+// 検索エリア
+const ItemSearch = ({
+	value,
+	handleFreeWord,
+	handleSubmit,
+	placeholder,
+}: Props) => {
 	return (
 		<FormControl>
 			<HStack>

@@ -33,9 +33,16 @@ type Post = {
 	likeCount: number;
 };
 
+type Author = {
+	userId: string;
+	username: string;
+	userImg: string;
+	text: string;
+};
+
 const MyPage = () => {
 	const [posts, setPosts] = useState<Post[] | null>(null);
-	const [author, setAuthor] = useState([]);
+	const [author, setAuthor] = useState<Author | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
@@ -88,7 +95,7 @@ const MyPage = () => {
 
 	return (
 		<>
-			{!isLoading ? (
+			{!isLoading && author ? (
 				<>
 					<VStack bg="white" p={4} rounded="md">
 						<HStack p={2}>
