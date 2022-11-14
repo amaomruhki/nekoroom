@@ -151,7 +151,7 @@ const PhotoUpload = () => {
 		<>
 			{currentUser && !isLoading ? (
 				<VStack align="left" spacing={4}>
-					<Heading as="h2">投稿を投稿する</Heading>
+					<Heading as="h2">写真を投稿する</Heading>
 					<Spacer />
 					<HStack>
 						<Heading as="h3" size="md">
@@ -313,7 +313,7 @@ const PhotoUpload = () => {
 							onClick={uploadPost}
 							disabled={!selectedFile || isLoading}
 						>
-							投稿を投稿する
+							写真を投稿する
 						</PrimaryButton>
 					</Center>
 				</VStack>
