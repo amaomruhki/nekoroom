@@ -1,34 +1,23 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Neko Room（ネコルーム）
 
-## Getting Started
+[http://localhost:3000](http://localhost:3000)
 
-First, run the development server:
+## アプリ概要
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+NekoRoom は猫を飼っている方のお部屋や猫用アイテムの写真を共有するサイトです。
+お部屋写真と一緒に使っているアイテムを登録でき、写真を見たユーザーはリンクから商品購入ができます。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+おしゃれな部屋にしたいけど、なにより愛猫に快適に過ごしてほしい。
+愛猫が気に入ってくれるのが一番だけど、猫用アイテムは部屋のテイストに合わせたい。
+そんな猫と人間の Win-Win な部屋作りの実現をお手伝いします。
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## 作成した経緯
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+私が猫と暮らしはじめたとき、インテリアや猫用アイテム選びにはとても悩みました。
+実際に猫と暮らす人がどんな部屋に住んでいるのか、
+どんなアイテムがいいのかネットで実例を探してみるものの、
+猫を飼っている人の SNS アカウントはインテリアの投稿が少なく、探すのに一苦労。
+ネットショップのアイテムの商品レビューはテキスト中心で使用写真はなく、
+実際に部屋に置いたイメージがつかみづらいものでした。
+猫を飼っている人に特化したインテリア写真の共有サイトがあれば一度に欲しい情報にアクセスできるのに・・・
+と思ったのが開発のきっかけです。
