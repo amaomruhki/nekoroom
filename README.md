@@ -38,3 +38,6 @@ NekoRoom は猫を飼っている方のお部屋や猫用アイテムの写真�
 | --- | --- | --- |
 |![詳細23](https://user-images.githubusercontent.com/105156227/201678453-b36a53eb-b75c-4353-b651-6482e0d0e557.png) | ![マイページ](https://user-images.githubusercontent.com/105156227/201684957-0e4ce459-fde8-4bb2-ab80-1c34637fb6cf.png)|![いいにゃ](https://user-images.githubusercontent.com/105156227/201685212-8a5709e8-440e-4366-bac2-da5f4bb02c48.png) |
 | アイテムアイコンをクリックするとアイテムの詳細と楽天市場へのリンクが表示されます| 自己紹介やこれまでの投稿が表示されます | 自分がいいにゃした投稿が表示されます |
+
+### 画面遷移図
+[https://www.figma.com/proto/k21Dy0phIWWxxyGkRAVZ6t/NekoRoom?page-id=807%3A9212&node-id=822%3A9619&starting-point-node-id=811%3A9410](https://www.figma.com/proto/k21Dy0phIWWxxyGkRAVZ6t/NekoRoom?page-id=807%3A9212&node-id=822%3A9619&starting-point-node-id=811%3A9410)
