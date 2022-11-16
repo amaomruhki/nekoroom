@@ -47,8 +47,8 @@ const MyPage = () => {
 					(snapshot) => {
 						Promise.all(
 							snapshot.docs.map(async (document) => {
-								const likePostId = await document.data().postId;
-								const likePostAuthorId = await document.data().likePostAuthorId;
+								const likePostId = document.data().postId;
+								const likePostAuthorId = document.data().likePostAuthorId;
 								if (likePostId) {
 									const likePostRef = doc(
 										db,
@@ -67,6 +67,8 @@ const MyPage = () => {
 										likeCount: likePostInfo.data()?.likeCount,
 										createTime: likePostInfo.data()?.createTime,
 									};
+								} else {
+									alert("データない");
 								}
 							})
 						)
