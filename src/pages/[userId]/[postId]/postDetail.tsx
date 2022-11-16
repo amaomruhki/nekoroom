@@ -218,6 +218,7 @@ const PostDetail = () => {
 				if (router.isReady) {
 					const userId = router.query.userId;
 					const postId = router.query.postId;
+					console.log(`${router.query.postId}&${router.query.userId}`);
 					onSnapshot(
 						query(
 							collection(
@@ -241,8 +242,8 @@ const PostDetail = () => {
 										return {
 											...document.data(),
 											commentId: document.id,
-											commentedUsername: commentedUserInfo.data()!.username,
-											commentedUserImg: commentedUserInfo.data()!.userImg,
+											commentedUsername: commentedUserInfo.data()?.username,
+											commentedUserImg: commentedUserInfo.data()?.userImg,
 											comment: document.data().comment,
 											createTime: document.data().createTime,
 										};
@@ -265,7 +266,7 @@ const PostDetail = () => {
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [router.isReady, router.query.userId]);
 
 	// コメント投稿
 	async function sendComment(event: React.MouseEvent<HTMLButtonElement>) {
