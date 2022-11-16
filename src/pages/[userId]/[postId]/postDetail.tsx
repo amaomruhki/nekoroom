@@ -218,7 +218,6 @@ const PostDetail = () => {
 				if (router.isReady) {
 					const userId = router.query.userId;
 					const postId = router.query.postId;
-					console.log(`${router.query.postId}&${router.query.userId}`);
 					onSnapshot(
 						query(
 							collection(
@@ -249,11 +248,13 @@ const PostDetail = () => {
 										};
 									}
 								})
-							).then((data) => {
-								data;
-								setComments(data);
-								console.log(data);
-							});
+							)
+								.then((data) => {
+									data;
+									setComments(data);
+									console.log(data);
+								})
+								.finally(() => setIsLoading(false));
 						}
 					);
 				}

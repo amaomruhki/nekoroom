@@ -69,11 +69,13 @@ const MyPage = () => {
 									};
 								}
 							})
-						).then((data) => {
-							data;
-							setMyLikes(data);
-							console.log(data);
-						});
+						)
+							.then((data) => {
+								data;
+								setMyLikes(data);
+								console.log(data);
+							})
+							.finally(() => setIsLoading(false));
 					}
 				);
 			}
