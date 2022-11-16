@@ -251,12 +251,14 @@ const PostDetail = () => {
 							).then((data) => {
 								data;
 								setComments(data);
+								console.log(data);
 							});
 						}
 					);
 				}
 			};
 			setIsLoading(false);
+
 			return () => unsubscribe();
 		} catch (error) {
 			alert(error);
