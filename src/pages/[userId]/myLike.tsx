@@ -67,8 +67,6 @@ const MyPage = () => {
 										likeCount: likePostInfo.data()?.likeCount,
 										createTime: likePostInfo.data()?.createTime,
 									};
-								} else {
-									alert("データない");
 								}
 							})
 						)
