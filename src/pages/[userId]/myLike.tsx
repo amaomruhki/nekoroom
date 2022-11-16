@@ -27,7 +27,7 @@ type Post =
 	  }
 	| undefined;
 
-const MyPage = () => {
+const MyLike = () => {
 	const [myLikes, setMyLikes] = useState<Post[] | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [currentUser] = useRecoilState(userState);
@@ -69,17 +69,15 @@ const MyPage = () => {
 									};
 								}
 							})
-						)
-							.then((data) => {
-								data;
-								setMyLikes(data);
-								console.log(data);
-							})
-							.finally(() => setIsLoading(false));
+						).then((data) => {
+							data;
+							setMyLikes(data);
+						});
 					}
 				);
 			}
 		};
+		setIsLoading(false);
 		return () => unsubscribe();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -129,4 +127,4 @@ const MyPage = () => {
 	);
 };
 
-export default MyPage;
+export default MyLike;
