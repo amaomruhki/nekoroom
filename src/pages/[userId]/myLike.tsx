@@ -47,10 +47,10 @@ const MyPage = () => {
 					(snapshot) => {
 						Promise.all(
 							snapshot.docs.map(async (document) => {
-								const likePostId = document.data().postId;
-								const likePostAuthorId = document.data().likePostAuthorId;
+								const likePostId = await document.data().postId;
+								const likePostAuthorId = await document.data().likePostAuthorId;
 								if (likePostId) {
-									const likePostRef = await doc(
+									const likePostRef = doc(
 										db,
 										"users",
 										likePostAuthorId,
