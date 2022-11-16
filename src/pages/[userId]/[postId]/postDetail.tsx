@@ -212,51 +212,56 @@ const PostDetail = () => {
 
 	// コメントの取得
 	useEffect(() => {
-		setIsLoading(true);
-		const unsubscribe = () => {
-			if (router.isReady) {
-				const userId = router.query.userId;
-				const postId = router.query.postId;
-				onSnapshot(
-					query(
-						collection(
-							db,
-							"users",
-							userId as string,
-							"posts",
-							postId as string,
-							"comments"
+		try {
+			setIsLoading(true);
+			const unsubscribe = () => {
+				if (router.isReady) {
+					const userId = router.query.userId;
+					const postId = router.query.postId;
+					onSnapshot(
+						query(
+							collection(
+								db,
+								"users",
+								userId as string,
+								"posts",
+								postId as string,
+								"comments"
+							),
+							orderBy("createTime", "desc")
 						),
-						orderBy("createTime", "desc")
-					),
-					(snapshot) => {
-						Promise.all(
-							snapshot.docs.map(async (document) => {
-								// コメントユーザーデータ取得
-								const commentedUserId = document.data().commentedUserId;
-								if (commentedUserId) {
-									const commentedUserRef = doc(db, "users", commentedUserId);
-									const commentedUserInfo = await getDoc(commentedUserRef);
-									return {
-										...document.data(),
-										commentId: document.id,
-										commentedUsername: commentedUserInfo.data()!.username,
-										commentedUserImg: commentedUserInfo.data()!.userImg,
-										comment: document.data().comment,
-										createTime: document.data().createTime,
-									};
-								}
-							})
-						).then((data) => {
-							data;
-							setComments(data);
-						});
-					}
-				);
-			}
-		};
-		setIsLoading(false);
-		return () => unsubscribe();
+						(snapshot) => {
+							Promise.all(
+								snapshot.docs.map(async (document) => {
+									// コメントユーザーデータ取得
+									const commentedUserId = document.data().commentedUserId;
+									if (commentedUserId) {
+										const commentedUserRef = doc(db, "users", commentedUserId);
+										const commentedUserInfo = await getDoc(commentedUserRef);
+										return {
+											...document.data(),
+											commentId: document.id,
+											commentedUsername: commentedUserInfo.data()!.username,
+											commentedUserImg: commentedUserInfo.data()!.userImg,
+											comment: document.data().comment,
+											createTime: document.data().createTime,
+										};
+									}
+								})
+							).then((data) => {
+								data;
+								setComments(data);
+							});
+						}
+					);
+				}
+			};
+			setIsLoading(false);
+			return () => unsubscribe();
+		} catch (error) {
+			alert(error);
+		}
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
