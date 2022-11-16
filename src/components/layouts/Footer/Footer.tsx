@@ -1,6 +1,6 @@
 import NextLink from "next/link";
 import { Container, Flex, Icon, Link, Avatar } from "@chakra-ui/react";
-import { HiHome } from "react-icons/Hi";
+import { HiHome } from "react-icons/hi";
 import { FaPlusCircle, FaUser } from "react-icons/Fa";
 import { PadIcon } from "../../elements/Icon/Icon";
 import { useRecoilState } from "recoil";
