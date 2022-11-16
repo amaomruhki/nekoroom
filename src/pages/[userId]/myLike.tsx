@@ -72,6 +72,7 @@ const MyPage = () => {
 						).then((data) => {
 							data;
 							setMyLikes(data);
+							console.log(data);
 						});
 					}
 				);
