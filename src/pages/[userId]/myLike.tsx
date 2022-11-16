@@ -50,7 +50,7 @@ const MyPage = () => {
 								const likePostId = document.data().postId;
 								const likePostAuthorId = document.data().likePostAuthorId;
 								if (likePostId) {
-									const likePostRef = doc(
+									const likePostRef = await doc(
 										db,
 										"users",
 										likePostAuthorId,
@@ -80,7 +80,6 @@ const MyPage = () => {
 				);
 			}
 		};
-		setIsLoading(false);
 		return () => unsubscribe();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
