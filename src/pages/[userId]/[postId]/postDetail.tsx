@@ -259,7 +259,6 @@ const PostDetail = () => {
 					);
 				}
 			};
-			setIsLoading(false);
 
 			return () => unsubscribe();
 		} catch (error) {
