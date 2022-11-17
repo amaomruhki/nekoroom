@@ -73,12 +73,9 @@ type Post = {
 	caption: string;
 	likeCount: number;
 	createTime: Timestamp;
-};
-
-type Author = {
 	userId: string;
-	username: any;
-	userImg: any;
+	username: string;
+	userImg: string;
 };
 
 type Item = {
@@ -100,7 +97,6 @@ type LikeUsers = {
 const PostDetail = () => {
 	const [items, setItems] = useState<Item[] | null>(null);
 	const [post, setPost] = useState<Post | null>(null);
-	const [author, setAuthor] = useState<Author | null>(null);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [comment, setComment] = useState<string>("");
@@ -109,38 +105,24 @@ const PostDetail = () => {
 	const [currentUser] = useRecoilState(userState);
 	const router = useRouter();
 
-	//投稿したユーザー情報を取得
-	useEffect(() => {
-		setIsLoading(true);
-		if (router.isReady) {
-			const authorId = router.query.userId as string;
-			const unsubscribe = onSnapshot(doc(db, "users", authorId), (snapshot) => {
-				const userData = {
-					userId: authorId,
-					username: snapshot.data()?.username,
-					userImg: snapshot.data()?.userImg,
-				};
-				setAuthor(userData);
-			});
-			return () => unsubscribe();
-		}
-	}, [router.isReady, router.query.userId]);
-
 	//投稿した記事情報を取得
 	useEffect(() => {
 		setIsLoading(true);
 		if (router.isReady) {
-			const authorId = router.query.userId;
-			const postId = router.query.postId;
+			const { userId: authorId, postId } = router.query;
 			const unsubscribe = onSnapshot(
 				doc(db, "users", authorId as string, "posts", postId as string),
-				(snapshot) => {
+				async (snapshot) => {
+					const authorData = await getDoc(doc(db, "users", authorId as string));
 					const postData = {
-						postId: snapshot.data()?.id,
+						postId: snapshot.data()?.postId,
+						userId: snapshot.data()?.userId,
 						image: snapshot.data()?.image,
 						caption: snapshot.data()?.caption,
 						likeCount: snapshot.data()?.likeCount,
 						createTime: snapshot.data()?.createTime,
+						username: authorData.data()?.username,
+						userImg: authorData.data()?.userImg,
 					};
 					setPost(postData);
 				}
@@ -148,188 +130,135 @@ const PostDetail = () => {
 			return () => unsubscribe();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [router.isReady, router.query.userId]);
+	}, [router, router.query]);
 
 	//アイテム取得
 	useEffect(() => {
-		setIsLoading(true);
-		if (router.isReady) {
-			const authorId = router.query.userId;
-			const postId = router.query.postId;
-			const itemsRef = query(
-				collection(
-					db,
-					"users",
-					authorId as string,
-					"posts",
-					postId as string,
-					"items"
-				),
-				where("postId", "==", postId)
-			);
-			onSnapshot(itemsRef, (querySnapshot) => {
-				const itemsData = querySnapshot.docs.map((doc) => {
-					return {
-						itemId: doc.id,
-						postId: doc.data().postId,
-						itemImg: doc.data().itemImg,
-						itemName: doc.data().itemName,
-						price: doc.data().price,
-						shopName: doc.data().shopName,
-						itemUrl: doc.data().itemUrl,
-					};
-				});
-				setItems(itemsData);
+		if (!post) return;
+		const itemsRef = query(
+			collection(db, "users", post.userId, "posts", post.postId, "items"),
+			where("postId", "==", post.postId)
+		);
+		const unsub = onSnapshot(itemsRef, (querySnapshot) => {
+			const itemsData = querySnapshot.docs.map((doc) => {
+				return {
+					itemId: doc.id,
+					postId: doc.data().postId,
+					itemImg: doc.data().itemImg,
+					itemName: doc.data().itemName,
+					price: doc.data().price,
+					shopName: doc.data().shopName,
+					itemUrl: doc.data().itemUrl,
+				};
 			});
-		}
-		setIsLoading(false);
+			setItems(itemsData);
+		});
+		return () => unsub();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [router.isReady, router.query.userId]);
+	}, [post]);
 
 	//投稿に対してlikeしたユーザーを絞り込んで取得
 	useEffect(() => {
-		if (router.isReady && currentUser) {
-			const postId = router.query.postId;
-			const loginUserId = currentUser!.uid;
-			const likeUsersRef = query(
-				collection(db, "users", loginUserId, "likeUsers"),
-				where("postId", "==", postId)
-			);
-			onSnapshot(likeUsersRef, (querySnapshot) => {
-				const likeUsersData = querySnapshot.docs.map((doc) => {
-					return {
-						...doc.data(),
-						id: doc.id,
-						likeUserId: doc.data().likeUserId,
-						postId: doc.data().postId,
-					};
-				});
-				setLikeUsers(likeUsersData);
+		if (!post || !currentUser) return;
+		const loginUserId = currentUser.uid;
+		const likeUsersRef = query(
+			collection(db, "users", loginUserId, "likeUsers"),
+			where("postId", "==", post.postId)
+		);
+		const unsub = onSnapshot(likeUsersRef, (querySnapshot) => {
+			const likeUsersData = querySnapshot.docs.map((doc) => {
+				return {
+					...doc.data(),
+					id: doc.id,
+					likeUserId: doc.data().likeUserId,
+					postId: doc.data().postId,
+				};
 			});
-		}
+			setLikeUsers(likeUsersData);
+		});
+		return () => unsub();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [router.isReady, router.query.userId]);
+	}, [post]);
 
 	// コメントの取得
 	useEffect(() => {
-		try {
-			setIsLoading(true);
-			const unsubscribe = () => {
-				if (router.isReady) {
-					const userId = router.query.userId;
-					const postId = router.query.postId;
-					onSnapshot(
-						query(
-							collection(
-								db,
-								"users",
-								userId as string,
-								"posts",
-								postId as string,
-								"comments"
-							),
-							orderBy("createTime", "desc")
-						),
-						(snapshot) => {
-							Promise.all(
-								snapshot.docs.map(async (document) => {
-									// コメントユーザーデータ取得
-									const commentedUserId = document.data().commentedUserId;
-									if (commentedUserId) {
-										const commentedUserRef = doc(db, "users", commentedUserId);
-										const commentedUserInfo = await getDoc(commentedUserRef);
-										return {
-											...document.data(),
-											commentId: document.id,
-											commentedUsername: commentedUserInfo.data()?.username,
-											commentedUserImg: commentedUserInfo.data()?.userImg,
-											comment: document.data().comment,
-											createTime: document.data().createTime,
-										};
-									}
-								})
-							)
-								.then((data) => {
-									data;
-									setComments(data);
-									console.log(data);
-								})
-								.finally(() => setIsLoading(false));
-						}
-					);
-				}
-			};
+		if (!post) return;
 
-			return () => unsubscribe();
-		} catch (error) {
-			alert(error);
-		}
+		const unsubscribe = () => {
+			onSnapshot(
+				query(
+					collection(
+						db,
+						"users",
+						post.userId,
+						"posts",
+						post.postId,
+						"comments"
+					),
+					orderBy("createTime", "desc")
+				),
+				(snapshot) => {
+					Promise.all(
+						snapshot.docs.map(async (document) => {
+							// コメントユーザーデータ取得
+							const commentedUserId = document.data().commentedUserId;
+							const commentedUserRef = doc(db, "users", commentedUserId);
+							const commentedUserInfo = await getDoc(commentedUserRef);
+							console.log(commentedUserInfo.data());
+							return {
+								...document.data(),
+								commentId: document.id,
+								commentedUsername: await commentedUserInfo.data()?.username,
+								commentedUserImg: await commentedUserInfo.data()?.userImg,
+								comment: document.data().comment,
+								createTime: document.data().createTime,
+							};
+						})
+					).then((data) => {
+						setComments(data);
+					});
+				}
+			);
+		};
+		setIsLoading(false);
+
+		return () => unsubscribe();
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [router.isReady, router.query.userId]);
+	}, [router, post, likeUsers]);
 
 	// コメント投稿
-	async function sendComment(event: React.MouseEvent<HTMLButtonElement>) {
+	const sendComment = async (event: React.MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
-		const commentToSend = comment;
-		const commentedUserUid = currentUser?.uid;
-		const userId = router.query.userId;
-		const postId = router.query.postId;
-		console.log("コメントテスト");
+		if (!post || !currentUser) return;
+		const { userId, postId } = post;
+		const commentedUserId = currentUser.uid;
 
 		setComment("");
-		await addDoc(
-			collection(
-				db,
-				"users",
-				userId as string,
-				"posts",
-				postId as string,
-				"comments"
-			),
-			{
-				comment: commentToSend,
-				commentedUserId: commentedUserUid,
-				createTime: serverTimestamp(),
-			}
-		);
-	}
+		await addDoc(collection(db, "users", userId, "posts", postId, "comments"), {
+			comment,
+			commentedUserId,
+			createTime: serverTimestamp(),
+		});
+	};
 
 	//like（いいにゃ）のカウントを増減処理(posts,likePosts,likeUsersをバッチ処理)
 	const handleLikeCount = async () => {
+		if (!post || !currentUser) return;
 		const batch = writeBatch(db);
-		const postId = router.query.postId;
-		const authorId = router.query.userId;
-		const loginUserId = currentUser!.uid;
-		const postRef = doc(
-			db,
-			"users",
-			authorId as string,
-			"posts",
-			postId as string
-		);
+		const { userId, postId } = post;
+		const loginUserId = currentUser.uid;
+		const postRef = doc(db, "users", userId, "posts", postId);
 		const postInfo = await getDoc(postRef);
-		const likePostsDoc = doc(
-			db,
-			"users",
-			loginUserId as string,
-			"likePosts",
-			postId as string
-		);
-		const likeUsersDoc = doc(
-			db,
-			"users",
-			loginUserId as string,
-			"likeUsers",
-			postId as string
-		);
+		const likePostsDoc = doc(db, "users", loginUserId, "likePosts", postId);
+		const likeUsersDoc = doc(db, "users", loginUserId, "likeUsers", postId);
 		const { v4: uuidv4 } = require("uuid");
 
 		//likeがゼロの場合
 		if (postInfo.data()!.likeCount === 0) {
 			batch.set(likePostsDoc, {
-				likePostAuthorId: authorId,
-				postId,
+				likePostAuthorId: userId,
+				postId: postId,
 				createTime: serverTimestamp(),
 			});
 
@@ -349,7 +278,7 @@ const PostDetail = () => {
 			} else {
 				//ログインuserがlikeしていない場合、likeを追加
 				batch.set(likePostsDoc, {
-					likePostAuthorId: authorId,
+					likePostAuthorId: userId,
 					postId,
 					createTime: serverTimestamp(),
 				});
@@ -369,7 +298,7 @@ const PostDetail = () => {
 
 	return (
 		<>
-			{!isLoading && post && author ? (
+			{!isLoading && post ? (
 				<Grid
 					templateColumns={{
 						sm: "repeat(1, 1fr)",
@@ -378,17 +307,17 @@ const PostDetail = () => {
 					gap={2}
 				>
 					<GridItem maxW="420px">
-						{currentUser && currentUser!.uid === router.query.userId ? (
+						{currentUser && currentUser.uid === post.userId ? (
 							<Stack m={4}>
 								<NextLink
 									href={{
 										pathname: "/[userId]/[postId]/postEdit",
 										query: {
-											userId: router.query.userId,
-											postId: router.query.postId,
+											userId: post.userId,
+											postId: post.postId,
 										},
 									}}
-									as={`/${router.query.userId}/${router.query.postId}/postEdit`}
+									as={`/${post.userId}/${post.postId}/postEdit`}
 									passHref
 								>
 									<Button
@@ -408,7 +337,7 @@ const PostDetail = () => {
 							<AspectRatio ratio={1 / 1}>
 								<Image
 									src={post.image}
-									alt={`${author?.username}'s photo`}
+									alt={`${post.username}'s photo`}
 									objectFit="cover"
 								/>
 							</AspectRatio>
@@ -418,21 +347,17 @@ const PostDetail = () => {
 										href={{
 											pathname: "/[userId]/myPage",
 											query: {
-												userId: router.query.userId,
-												postId: router.query.postId,
+												userId: post.userId,
+												postId: post.postId,
 											},
 										}}
-										as={`/${router.query.userId}/myPage`}
+										as={`/${post.userId}/myPage`}
 									>
-										<Avatar
-											size="md"
-											name={author.username}
-											src={author.userImg}
-										/>
+										<Avatar size="md" name={post.username} src={post.userImg} />
 									</NextLink>
 									<VStack align="left">
 										<Text fontSize="md" as="b">
-											{author?.username}
+											{post.username}
 										</Text>
 										<Text fontSize="sm">
 											{parseTimestampToDate(post.createTime, "/")}
