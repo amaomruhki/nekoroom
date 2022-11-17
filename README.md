@@ -72,10 +72,10 @@ NekoRoom は猫を飼っている方のお部屋や猫用アイテムの写真�
 
 ## ローカル環境下での動作方法
 
-１　 git clone https://github.com/amaomruhki/nekoroom.git
-２　 cd nekoroom
-３　 yarn
-４　 yarn dev
+1. git clone https://github.com/amaomruhki/nekoroom.git
+2. cd nekoroom
+3. yarn
+4. yarn dev
 
 ## 画面遷移図
 
