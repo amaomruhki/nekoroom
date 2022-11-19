@@ -208,8 +208,8 @@ const PostDetail = () => {
 							return {
 								...document.data(),
 								commentId: document.id,
-								commentedUsername: await commentedUserInfo.data()?.username,
-								commentedUserImg: await commentedUserInfo.data()?.userImg,
+								commentedUsername: commentedUserInfo.data()?.username,
+								commentedUserImg: commentedUserInfo.data()?.userImg,
 								comment: document.data().comment,
 								createTime: document.data().createTime,
 							};
