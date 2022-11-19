@@ -2,6 +2,10 @@
 
 [https://nekoroom.vercel.app/](https://nekoroom.vercel.app/)
 
+## アプリデモ
+
+![nekoroomDemo](https://user-images.githubusercontent.com/105156227/202844970-60f9c85b-da97-4ba4-9108-a70232187de9.gif)
+
 ## アプリ概要
 
 NekoRoom は猫を飼っている方のお部屋や猫用アイテムの写真を共有するサイトです。<br>
@@ -69,13 +73,6 @@ NekoRoom は猫を飼っている方のお部屋や猫用アイテムの写真�
 
 - firebase(v9.10.0)
 - rakuten_web_service（外部 API）
-
-## ローカル環境下での動作方法
-
-1. git clone https://github.com/amaomruhki/nekoroom.git
-2. cd nekoroom
-3. yarn
-4. yarn dev
 
 ## 画面遷移図
 
