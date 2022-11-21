@@ -36,51 +36,49 @@ const MyLike = () => {
 	// likeした投稿の取得
 	useEffect(() => {
 		setIsLoading(true);
+		if (!router.isReady) return;
+		const { userId } = router.query;
 		const unsubscribe = () => {
-			if (router.isReady) {
-				const userId = router.query.userId;
-				onSnapshot(
-					query(
-						collection(db, "users", userId as string, "likePosts"),
-						orderBy("createTime", "desc")
-					),
-					(snapshot) => {
-						Promise.all(
-							snapshot.docs.map(async (document) => {
-								const likePostId = document.data().postId;
-								const likePostAuthorId = document.data().likePostAuthorId;
-								if (likePostId) {
-									const likePostRef = doc(
-										db,
-										"users",
-										likePostAuthorId,
-										"posts",
-										likePostId
-									);
-									const likePostInfo = await getDoc(likePostRef);
-									return {
-										...document.data(),
-										postId: likePostInfo.data()?.postId,
-										userId: likePostInfo.data()?.userId,
-										image: likePostInfo.data()?.image,
-										caption: likePostInfo.data()?.caption,
-										likeCount: likePostInfo.data()?.likeCount,
-										createTime: likePostInfo.data()?.createTime,
-									};
-								}
-							})
-						).then((data) => {
-							data;
-							setMyLikes(data);
-						});
-					}
-				);
-			}
+			onSnapshot(
+				query(
+					collection(db, "users", userId as string, "likePosts"),
+					orderBy("createTime", "desc")
+				),
+				(snapshot) => {
+					Promise.all(
+						snapshot.docs.map(async (document) => {
+							const likePostId = document.data().postId;
+							const likePostAuthorId = document.data().likePostAuthorId;
+							if (!likePostId) return;
+							const likePostRef = doc(
+								db,
+								"users",
+								likePostAuthorId,
+								"posts",
+								likePostId
+							);
+							const likePostInfo = await getDoc(likePostRef);
+							return {
+								...document.data(),
+								postId: likePostInfo.data()?.postId,
+								userId: likePostInfo.data()?.userId,
+								image: likePostInfo.data()?.image,
+								caption: likePostInfo.data()?.caption,
+								likeCount: likePostInfo.data()?.likeCount,
+								createTime: likePostInfo.data()?.createTime,
+							};
+						})
+					).then((data) => {
+						data;
+						setMyLikes(data);
+					});
+				}
+			);
 		};
 		setIsLoading(false);
 		return () => unsubscribe();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [router, router.query]);
 
 	return (
 		<>
