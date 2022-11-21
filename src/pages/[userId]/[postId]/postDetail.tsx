@@ -108,27 +108,26 @@ const PostDetail = () => {
 	//投稿した記事情報を取得
 	useEffect(() => {
 		setIsLoading(true);
-		if (router.isReady) {
-			const { userId: authorId, postId } = router.query;
-			const unsubscribe = onSnapshot(
-				doc(db, "users", authorId as string, "posts", postId as string),
-				async (snapshot) => {
-					const authorData = await getDoc(doc(db, "users", authorId as string));
-					const postData = {
-						postId: snapshot.data()?.postId,
-						userId: snapshot.data()?.userId,
-						image: snapshot.data()?.image,
-						caption: snapshot.data()?.caption,
-						likeCount: snapshot.data()?.likeCount,
-						createTime: snapshot.data()?.createTime,
-						username: authorData.data()?.username,
-						userImg: authorData.data()?.userImg,
-					};
-					setPost(postData);
-				}
-			);
-			return () => unsubscribe();
-		}
+		if (!router.isReady) return;
+		const { userId: authorId, postId } = router.query;
+		const unsubscribe = onSnapshot(
+			doc(db, "users", authorId as string, "posts", postId as string),
+			async (snapshot) => {
+				const authorData = await getDoc(doc(db, "users", authorId as string));
+				const postData = {
+					postId: snapshot.data()?.postId,
+					userId: snapshot.data()?.userId,
+					image: snapshot.data()?.image,
+					caption: snapshot.data()?.caption,
+					likeCount: snapshot.data()?.likeCount,
+					createTime: snapshot.data()?.createTime,
+					username: authorData.data()?.username,
+					userImg: authorData.data()?.userImg,
+				};
+				setPost(postData);
+			}
+		);
+		return () => unsubscribe();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router, router.query]);
 
