@@ -127,6 +127,7 @@ const PostDetail = () => {
 				setPost(postData);
 			}
 		);
+		setIsLoading(false);
 		return () => unsubscribe();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router, router.query]);
@@ -219,8 +220,6 @@ const PostDetail = () => {
 				}
 			);
 		};
-		setIsLoading(false);
-
 		return () => unsubscribe();
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
