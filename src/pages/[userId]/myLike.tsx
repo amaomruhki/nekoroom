@@ -5,6 +5,7 @@ import {
 	collection,
 	doc,
 	getDoc,
+	getDocs,
 	onSnapshot,
 	orderBy,
 	query,
@@ -58,6 +59,7 @@ const MyLike = () => {
 								likePostId
 							);
 							const likePostInfo = await getDoc(likePostRef);
+							console.log(likePostInfo);
 							return {
 								...document.data(),
 								postId: likePostInfo.data()?.postId,
@@ -71,7 +73,6 @@ const MyLike = () => {
 					).then((data) => {
 						data;
 						setMyLikes(data);
-						console.log(data);
 					});
 				}
 			);

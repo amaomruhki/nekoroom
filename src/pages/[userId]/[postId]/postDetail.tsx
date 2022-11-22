@@ -203,7 +203,7 @@ const PostDetail = () => {
 							const commentedUserId = document.data().commentedUserId;
 							const commentedUserRef = doc(db, "users", commentedUserId);
 							const commentedUserInfo = await getDoc(commentedUserRef);
-							console.log(commentedUserInfo.data());
+
 							return {
 								...document.data(),
 								commentId: document.id,
