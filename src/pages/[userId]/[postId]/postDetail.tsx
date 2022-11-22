@@ -184,43 +184,35 @@ const PostDetail = () => {
 	useEffect(() => {
 		if (!post) return;
 
-		const unsubscribe = () => {
-			onSnapshot(
-				query(
-					collection(
-						db,
-						"users",
-						post.userId,
-						"posts",
-						post.postId,
-						"comments"
-					),
-					orderBy("createTime", "desc")
-				),
-				(snapshot) => {
-					Promise.all(
-						snapshot.docs.map(async (document) => {
-							// コメントユーザーデータ取得
-							const commentedUserId = document.data().commentedUserId;
-							const commentedUserRef = doc(db, "users", commentedUserId);
-							const commentedUserInfo = await getDoc(commentedUserRef);
+		const unsub = onSnapshot(
+			query(
+				collection(db, "users", post.userId, "posts", post.postId, "comments"),
+				orderBy("createTime", "desc")
+			),
+			(snapshot) => {
+				Promise.all(
+					snapshot.docs.map(async (document) => {
+						// コメントユーザーデータ取得
+						const commentedUserId = document.data().commentedUserId;
+						const commentedUserRef = doc(db, "users", commentedUserId);
+						const commentedUserInfo = await getDoc(commentedUserRef);
 
-							return {
-								...document.data(),
-								commentId: document.id,
-								commentedUsername: commentedUserInfo.data()?.username,
-								commentedUserImg: commentedUserInfo.data()?.userImg,
-								comment: document.data().comment,
-								createTime: document.data().createTime,
-							};
-						})
-					).then((data) => {
-						setComments(data);
-					});
-				}
-			);
-		};
-		return () => unsubscribe();
+						return {
+							...document.data(),
+							commentId: document.id,
+							commentedUsername: commentedUserInfo.data()?.username,
+							commentedUserImg: commentedUserInfo.data()?.userImg,
+							comment: document.data().comment,
+							createTime: document.data().createTime,
+						};
+					})
+				).then((data) => {
+					setComments(data);
+				});
+			}
+		);
+
+		return () => unsub();
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router, post, likeUsers]);

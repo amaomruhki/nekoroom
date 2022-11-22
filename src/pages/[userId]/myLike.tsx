@@ -58,7 +58,6 @@ const MyLike = () => {
 							likePostId
 						);
 						const likePostInfo = await getDoc(likePostRef);
-						console.log(likePostInfo);
 						return {
 							...document.data(),
 							postId: likePostInfo.data()?.postId,
