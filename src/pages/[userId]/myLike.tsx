@@ -71,7 +71,6 @@ const MyLike = () => {
 							};
 						})
 					).then((data) => {
-						data;
 						setMyLikes(data);
 					});
 				}
