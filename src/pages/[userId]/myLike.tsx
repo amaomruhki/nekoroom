@@ -39,43 +39,42 @@ const MyLike = () => {
 		setIsLoading(true);
 		if (!router.isReady) return;
 		const { userId } = router.query;
-		const unsubscribe = () => {
-			onSnapshot(
-				query(
-					collection(db, "users", userId as string, "likePosts"),
-					orderBy("createTime", "desc")
-				),
-				(snapshot) => {
-					Promise.all(
-						snapshot.docs.map(async (document) => {
-							const likePostId = document.data().postId;
-							const likePostAuthorId = document.data().likePostAuthorId;
-							if (!likePostId) return;
-							const likePostRef = doc(
-								db,
-								"users",
-								likePostAuthorId,
-								"posts",
-								likePostId
-							);
-							const likePostInfo = await getDoc(likePostRef);
-							console.log(likePostInfo);
-							return {
-								...document.data(),
-								postId: likePostInfo.data()?.postId,
-								userId: likePostInfo.data()?.userId,
-								image: likePostInfo.data()?.image,
-								caption: likePostInfo.data()?.caption,
-								likeCount: likePostInfo.data()?.likeCount,
-								createTime: likePostInfo.data()?.createTime,
-							};
-						})
-					).then((data) => {
-						setMyLikes(data);
-					});
-				}
-			);
-		};
+		const unsubscribe = onSnapshot(
+			query(
+				collection(db, "users", userId as string, "likePosts"),
+				orderBy("createTime", "desc")
+			),
+			(snapshot) => {
+				Promise.all(
+					snapshot.docs.map(async (document) => {
+						const likePostId = document.data().postId;
+						const likePostAuthorId = document.data().likePostAuthorId;
+						if (!likePostId) return;
+						const likePostRef = doc(
+							db,
+							"users",
+							likePostAuthorId,
+							"posts",
+							likePostId
+						);
+						const likePostInfo = await getDoc(likePostRef);
+						console.log(likePostInfo);
+						return {
+							...document.data(),
+							postId: likePostInfo.data()?.postId,
+							userId: likePostInfo.data()?.userId,
+							image: likePostInfo.data()?.image,
+							caption: likePostInfo.data()?.caption,
+							likeCount: likePostInfo.data()?.likeCount,
+							createTime: likePostInfo.data()?.createTime,
+						};
+					})
+				).then((data) => {
+					setMyLikes(data);
+				});
+			}
+		);
+
 		setIsLoading(false);
 		return () => unsubscribe();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
