@@ -32,6 +32,8 @@ const Login = () => {
 			router.push("/");
 		} catch (error) {
 			alert("エラーが発生しました");
+			setIsLoading(false);
+			router.push("/auth/login");
 		}
 	};
 
@@ -42,6 +44,7 @@ const Login = () => {
 			router.push("/");
 		} catch (error) {
 			alert("エラーが発生しました");
+			setIsLoading(false);
 			router.push("/auth/login");
 		}
 	};

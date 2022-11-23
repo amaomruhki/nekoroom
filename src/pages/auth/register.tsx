@@ -9,6 +9,7 @@ import {
 	Avatar,
 	Stack,
 	HStack,
+	Button,
 } from "@chakra-ui/react";
 import PrimaryButton from "../../components/elements/Button/PrimaryButton";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
@@ -23,6 +24,8 @@ import {
 import { db, storage } from "../../../lib/firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import Loading from "../../components/elements/Loading/Loading";
+import { FcGoogle } from "react-icons/fc";
+import { useGoogleLogin } from "../../components/elements/Auth/auth";
 
 const Register = () => {
 	const [email, setEmail] = useState("");
@@ -174,6 +177,20 @@ const Register = () => {
 					>
 						新規登録
 					</PrimaryButton>
+					<Button
+						width="200px"
+						height="45px"
+						bg="#ffffff"
+						variant="outline"
+						leftIcon={<FcGoogle />}
+						border="2px"
+						borderColor="#4285f4"
+						color="#4285f4"
+						_hover={{ opacity: 1.2 }}
+						onClick={useGoogleLogin}
+					>
+						Googleで新規登録
+					</Button>
 					<Link href="/auth/login">
 						<Text
 							as="u"
