@@ -4,6 +4,7 @@ import theme from "../components/theme/theme";
 import { RecoilRoot } from "recoil";
 import Layout from "../components/layouts/Layout";
 
+
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
 	return (
 		<RecoilRoot>

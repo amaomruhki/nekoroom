@@ -39,6 +39,7 @@ const MyLike = () => {
 		setIsLoading(true);
 		if (!router.isReady) return;
 		const { userId } = router.query;
+		// アロー関数入れてしまうと、関数の中に入ると実行できない、クリーンアップ時に始めて実行
 		const unsubscribe = onSnapshot(
 			query(
 				collection(db, "users", userId as string, "likePosts"),
