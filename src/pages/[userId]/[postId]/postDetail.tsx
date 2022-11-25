@@ -212,6 +212,7 @@ const PostDetail = () => {
 			}
 		);
 
+		// アンマウントする、ページ遷移するときに実行するクリーンアップ関数
 		return () => unsub();
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
