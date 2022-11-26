@@ -40,7 +40,7 @@ const Footer = () => {
 								<Center>
 									<Icon
 										as={HiHome}
-										color="#3d3d3d"
+										color="#d6d6d6"
 										w={8}
 										h={8}
 										_hover={{ color: "#E4626E" }}
@@ -64,7 +64,7 @@ const Footer = () => {
 										<Center>
 											<Icon
 												as={FaPlusCircle}
-												color="#3d3d3d"
+												color="#d6d6d6"
 												w={8}
 												h={8}
 												_hover={{ color: "#E4626E" }}
@@ -92,7 +92,7 @@ const Footer = () => {
 										<Center>
 											<Icon
 												as={PadIcon}
-												color="#3d3d3d"
+												color="#d6d6d6"
 												w={8}
 												h={8}
 												_hover={{ color: "#E4626E" }}
@@ -136,7 +136,7 @@ const Footer = () => {
 										<Center>
 											<Icon
 												as={FaPlusCircle}
-												color="#3d3d3d"
+												color="#d6d6d6"
 												w={8}
 												h={8}
 												_hover={{ color: "#E4626E" }}
@@ -157,7 +157,7 @@ const Footer = () => {
 										<Center>
 											<Icon
 												as={PadIcon}
-												color="#3d3d3d"
+												color="#d6d6d6"
 												w={8}
 												h={8}
 												_hover={{ color: "#E4626E" }}
@@ -177,7 +177,7 @@ const Footer = () => {
 										<Center>
 											<Icon
 												as={FaUser}
-												color="#3d3d3d"
+												color="#d6d6d6"
 												w={8}
 												h={8}
 												_hover={{ color: "#E4626E" }}
