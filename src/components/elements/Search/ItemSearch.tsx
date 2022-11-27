@@ -16,7 +16,7 @@ type Props = {
 };
 
 // 検索エリア
-const ItemSearch = ({
+export const ItemSearch = ({
 	value,
 	handleFreeWord,
 	handleSubmit,
@@ -53,5 +53,3 @@ const ItemSearch = ({
 		</FormControl>
 	);
 };
-
-export default ItemSearch;

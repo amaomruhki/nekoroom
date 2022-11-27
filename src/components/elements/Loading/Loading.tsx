@@ -1,6 +1,6 @@
 import { Flex, VStack, Spinner, Text } from "@chakra-ui/react";
 
-const Loading = () => {
+export const Loading = () => {
 	return (
 		<Flex align="center" justify="center" height="100vh">
 			<VStack>
@@ -10,5 +10,3 @@ const Loading = () => {
 		</Flex>
 	);
 };
-
-export default Loading;

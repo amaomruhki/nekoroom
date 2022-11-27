@@ -15,7 +15,7 @@ type Props = {
 };
 
 // 検索結果表示
-const Result = ({ result, setItemResult, onClose, setValue }: Props) => {
+export const Result = ({ result, setItemResult, onClose, setValue }: Props) => {
 	return (
 		<>
 			<Grid
@@ -74,5 +74,3 @@ const Result = ({ result, setItemResult, onClose, setValue }: Props) => {
 		</>
 	);
 };
-
-export default Result;

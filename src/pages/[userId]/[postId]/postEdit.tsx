@@ -44,11 +44,10 @@ import {
 } from "firebase/firestore";
 import { userState } from "../../../Atoms/userAtom";
 import { db } from "../../../../lib/firebase";
-import useFetchData from "../../../Hooks/useFetchData";
+import { useFetchData } from "../../../Hooks/useFetchData";
 import PrimaryButton from "../../../components/elements/Button/PrimaryButton";
-import ItemSearch from "../../../components/elements/Search/ItemSearch";
-import Loading from "../../../components/elements/Loading/Loading";
-import Result from "../../../components/elements/Search/Result";
+import { Loading } from "../../../components/elements/Loading/Loading";
+import { ItemAddModal } from "../../../components/elements/ItemAddModal";
 
 type ItemResult = {
 	postId: string;
@@ -339,39 +338,17 @@ const PostEdit = () => {
 							アイテムをリセット
 						</PrimaryButton>
 					</HStack>
-
-					<Modal isOpen={"item" === selectedButton} onClose={onCloseDialog}>
-						<ModalOverlay />
-						<ModalContent>
-							<ModalHeader mt={6}>
-								<ItemSearch
-									value={value}
-									handleFreeWord={handleFreeWord}
-									handleSubmit={handleSubmit}
-									placeholder="アイテム名を入力"
-								/>
-							</ModalHeader>
-							<ModalCloseButton />
-							<ModalBody>
-								{fetching ? (
-									<Loading />
-								) : (
-									//fetch完了したらレスポンスデータを表示
-									<Result
-										result={result}
-										setItemResult={setItemResult}
-										onClose={onCloseDialog}
-										setValue={setValue}
-									/>
-								)}
-							</ModalBody>
-							<ModalFooter>
-								<NextLink href="https://developers.rakuten.com/" passHref>
-									<Link target="_blank">Supported by Rakuten Developers</Link>
-								</NextLink>
-							</ModalFooter>
-						</ModalContent>
-					</Modal>
+					<ItemAddModal
+						onCloseDialog={onCloseDialog}
+						result={result}
+						fetching={fetching}
+						handleSubmit={handleSubmit}
+						setItemResult={setItemResult}
+						value={value}
+						setValue={setValue}
+						selectedButton={selectedButton}
+						handleFreeWord={handleFreeWord}
+					/>
 					<Spacer />
 					<VStack>
 						<PrimaryButton

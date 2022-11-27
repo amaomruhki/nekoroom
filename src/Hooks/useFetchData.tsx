@@ -2,10 +2,10 @@ import { useState } from "react";
 import axios from "axios";
 
 // Rakuten APIで用意されているエンドポイント
-const BASE_URL =
+export const BASE_URL =
 	"https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706?format=json";
 
-const useFetchData = () => {
+export const useFetchData = () => {
 	//ローディング用
 	const [fetching, setFetching] = useState(false);
 	//レスポンス格納用
@@ -46,5 +46,3 @@ const useFetchData = () => {
 
 	return { fetching, result, handleSubmit };
 };
-
-export default useFetchData;
