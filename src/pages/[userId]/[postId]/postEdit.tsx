@@ -186,6 +186,10 @@ const PostEdit = () => {
 				);
 			}
 		}
+		router.push({
+			pathname: "/[userId]/[postId]/postDetail",
+			query: { userId: authorId, postId: postId },
+		});
 		setIsLoading(false);
 	};
 
