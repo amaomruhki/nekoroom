@@ -1,11 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
 import {
 	Box,
-	Link,
-	Container,
 	Heading,
 	VStack,
 	Text,
@@ -14,13 +11,6 @@ import {
 	Spacer,
 	Image,
 	HStack,
-	Modal,
-	ModalBody,
-	ModalCloseButton,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalOverlay,
 	Button,
 	Divider,
 	AlertDialog,
@@ -151,59 +141,52 @@ const PostEdit = () => {
 
 	//投稿内容をアップロード
 	const editPost = async () => {
-		if (isLoading) return;
-		if (router.isReady) {
-			const authorId = router.query.userId as string;
-			const postId = router.query.postId as string;
-			setIsLoading(true);
-			await updateDoc(doc(db, "users", authorId, "posts", postId), {
-				caption: post?.caption,
-				updateTime: serverTimestamp(),
-			});
+		setIsLoading(true);
+		if (!router.isReady) return;
+		const authorId = router.query.userId as string;
+		const postId = router.query.postId as string;
+		setIsLoading(true);
+		await updateDoc(doc(db, "users", authorId, "posts", postId), {
+			caption: post?.caption,
+			updateTime: serverTimestamp(),
+		});
 
-			if (Object.keys(itemResult).length != 0) {
-				const postRef = await getDoc(
-					doc(db, "users", authorId, "posts", postId)
+		if (Object.keys(itemResult).length != 0) {
+			const postRef = await getDoc(doc(db, "users", authorId, "posts", postId));
+			const itemId = await postRef.data()?.itemId;
+			if (itemId) {
+				const itemRef = doc(
+					db,
+					"users",
+					authorId,
+					"posts",
+					postId,
+					"items",
+					itemId
 				);
-				const itemId = await postRef.data()?.itemId;
-				if (itemId) {
-					const itemRef = doc(
-						db,
-						"users",
-						authorId,
-						"posts",
-						postId,
-						"items",
-						itemId
-					);
-					await updateDoc(itemRef, {
+				await updateDoc(itemRef, {
+					itemImg: itemResult.imageUrl,
+					itemName: itemResult.itemName,
+					price: itemResult.price,
+					shopName: itemResult.shopName,
+					itemUrl: itemResult.itemUrl,
+				});
+			} else {
+				await addDoc(
+					collection(db, "users", authorId, "posts", postId, "items"),
+					{
+						...itemResult,
+						postId: postId,
 						itemImg: itemResult.imageUrl,
 						itemName: itemResult.itemName,
 						price: itemResult.price,
 						shopName: itemResult.shopName,
 						itemUrl: itemResult.itemUrl,
-					});
-				} else {
-					await addDoc(
-						collection(db, "users", authorId, "posts", postId, "items"),
-						{
-							...itemResult,
-							postId: postId,
-							itemImg: itemResult.imageUrl,
-							itemName: itemResult.itemName,
-							price: itemResult.price,
-							shopName: itemResult.shopName,
-							itemUrl: itemResult.itemUrl,
-						}
-					);
-				}
+					}
+				);
 			}
-			setIsLoading(false);
-			router.push({
-				pathname: "/[userId]/[postId]/postDetail",
-				query: { userId: authorId, postId: postId },
-			});
 		}
+		setIsLoading(false);
 	};
 
 	//投稿削除
@@ -339,7 +322,7 @@ const PostEdit = () => {
 						</PrimaryButton>
 					</HStack>
 					<ItemAddModal
-						onCloseDialog={onCloseDialog}
+						onClose={onCloseDialog}
 						result={result}
 						fetching={fetching}
 						handleSubmit={handleSubmit}

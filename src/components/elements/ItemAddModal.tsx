@@ -15,23 +15,25 @@ import { Result } from "./Search/Result";
 import { Dispatch, SetStateAction } from "react";
 
 type Props = {
-	onCloseDialog: () => void;
+	onClose: () => void;
 	handleFreeWord: (event: any) => void;
 	handleSubmit: (value: any) => void;
 	value: { freeWord: string };
 	fetching: boolean;
+	isOpen?: boolean;
 	setItemResult: Dispatch<SetStateAction<{}>>;
 	setValue: Dispatch<
 		SetStateAction<{
 			freeWord: string;
 		}>
 	>;
-	selectedButton: string;
+	selectedButton?: string;
 	result: {};
 };
 
 export const ItemAddModal = ({
-	onCloseDialog,
+	onClose,
+	isOpen,
 	fetching,
 	handleSubmit,
 	result,
@@ -42,7 +44,10 @@ export const ItemAddModal = ({
 	handleFreeWord,
 }: Props) => {
 	return (
-		<Modal isOpen={"item" === selectedButton} onClose={onCloseDialog}>
+		<Modal
+			isOpen={isOpen ? isOpen : "item" === selectedButton}
+			onClose={onClose}
+		>
 			<ModalOverlay />
 			<ModalContent>
 				<ModalHeader mt={6}>
@@ -62,7 +67,7 @@ export const ItemAddModal = ({
 						<Result
 							result={result}
 							setItemResult={setItemResult}
-							onClose={onCloseDialog}
+							onClose={onClose}
 							setValue={setValue}
 						/>
 					)}

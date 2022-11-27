@@ -13,7 +13,7 @@ import {
 import PrimaryButton from "../../components/elements/Button/PrimaryButton";
 import { FcGoogle } from "react-icons/fc";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import Loading from "../../components/elements/Loading/Loading";
+import { Loading } from "../../components/elements/Loading/Loading";
 import { useGoogleLogin } from "../../components/elements/Auth/auth";
 
 const Login = () => {

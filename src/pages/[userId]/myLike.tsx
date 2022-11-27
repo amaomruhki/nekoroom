@@ -15,7 +15,7 @@ import { db } from "../../../lib/firebase";
 import { useRouter } from "next/router";
 import { userState } from "../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
-import Loading from "../../components/elements/Loading/Loading";
+import { Loading } from "../../components/elements/Loading/Loading";
 
 type Post =
 	| {

@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
 import {
@@ -14,13 +13,6 @@ import {
 	Center,
 	Image,
 	HStack,
-	Modal,
-	ModalBody,
-	ModalCloseButton,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalOverlay,
 	useDisclosure,
 } from "@chakra-ui/react";
 import {
@@ -33,11 +25,10 @@ import {
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { db, storage } from "../../lib/firebase";
 import PrimaryButton from "../components/elements/Button/PrimaryButton";
-import ItemSearch from "../components/elements/Search/ItemSearch";
-import Result from "../components/elements/Search/Result";
-import useFetchData from "../Hooks/useFetchData";
-import Loading from "../components/elements/Loading/Loading";
+import { useFetchData } from "../Hooks/useFetchData";
+import { Loading } from "../components/elements/Loading/Loading";
 import { userState } from "../Atoms/userAtom";
+import { ItemAddModal } from "../components/elements/ItemAddModal";
 
 const PhotoUpload = () => {
 	const filePickerRef = useRef<HTMLInputElement>(null);
@@ -74,12 +65,12 @@ const PhotoUpload = () => {
 
 	//投稿内容をアップロード
 	const uploadPost = async () => {
-		if (isLoading) return;
 		setIsLoading(true);
+		if (!currentUser) return;
 		const postsRef = await addDoc(
-			collection(db, "users", currentUser!.uid, "posts"),
+			collection(db, "users", currentUser.uid, "posts"),
 			{
-				userId: currentUser!.uid,
+				userId: currentUser.uid,
 				caption: inputCaption,
 				createTime: serverTimestamp(),
 				updateTime: serverTimestamp(),
@@ -273,38 +264,17 @@ const PhotoUpload = () => {
 							</>
 						)}
 					</HStack>
-					<Modal isOpen={isOpen} onClose={onClose}>
-						<ModalOverlay />
-						<ModalContent>
-							<ModalHeader mt={6}>
-								<ItemSearch
-									value={value}
-									handleFreeWord={handleFreeWord}
-									handleSubmit={handleSubmit}
-									placeholder="アイテム名を入力"
-								/>
-							</ModalHeader>
-							<ModalCloseButton />
-							<ModalBody>
-								{fetching ? (
-									<Loading />
-								) : (
-									//fetch完了したらレスポンスデータを表示
-									<Result
-										result={result}
-										setItemResult={setItemResult}
-										onClose={onClose}
-										setValue={setValue}
-									/>
-								)}
-							</ModalBody>
-							<ModalFooter>
-								<NextLink href="https://developers.rakuten.com/" passHref>
-									<Link target="_blank">Supported by Rakuten Developers</Link>
-								</NextLink>
-							</ModalFooter>
-						</ModalContent>
-					</Modal>
+					<ItemAddModal
+						onClose={onClose}
+						isOpen={isOpen}
+						result={result}
+						fetching={fetching}
+						handleSubmit={handleSubmit}
+						setItemResult={setItemResult}
+						value={value}
+						setValue={setValue}
+						handleFreeWord={handleFreeWord}
+					/>
 					<Spacer />
 					<Center>
 						<PrimaryButton

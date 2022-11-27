@@ -52,7 +52,7 @@ import {
 } from "../../../utils/DataFormat";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import PrimaryButton from "../../../components/elements/Button/PrimaryButton";
-import Loading from "../../../components/elements/Loading/Loading";
+import { Loading } from "../../../components/elements/Loading/Loading";
 import { userState } from "../../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
 

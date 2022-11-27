@@ -21,7 +21,7 @@ import {
 } from "firebase/firestore";
 import { db, storage } from "../../../lib/firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
-import Loading from "../../components/elements/Loading/Loading";
+import { Loading } from "../../components/elements/Loading/Loading";
 import { userState } from "../../Atoms/userAtom";
 import { useRecoilState } from "recoil";
 
