@@ -8,13 +8,10 @@ import {
 	Spacer,
 	Link,
 	FormControl,
-	Alert,
-	AlertIcon,
-	AlertTitle,
-	AlertDescription,
 } from "@chakra-ui/react";
 import PrimaryButton from "../../components/elements/Button/PrimaryButton";
 import { usePasswordReset } from "../../components/elements/Auth/auth";
+import { AlertMessage } from "../../components/elements/AlertMessage";
 
 const PasswordReset = (): JSX.Element => {
 	const [email, setEmail] = useState("");
@@ -49,40 +46,22 @@ const PasswordReset = (): JSX.Element => {
 							}}
 						/>
 						{error && (
-							<Alert
-								status="error"
-								mt={2}
-								flexDirection="column"
-								alignItems="center"
-								justifyContent="center"
-								textAlign="center"
-							>
-								<AlertIcon />
-								<AlertTitle mt={4} mb={1} fontSize="md">
-									メールが送信できませんでした
-								</AlertTitle>
-								<AlertDescription maxWidth="sm">
-									メールアドレスが間違っているか、アカウントの登録がない可能性があります
-								</AlertDescription>
-							</Alert>
+							<AlertMessage
+								title={"メールが送信できませんでした"}
+								description={
+									" メールアドレスが間違っているか、アカウントの登録がない可能性があります"
+								}
+								status={"error"}
+							/>
 						)}
 						{success && (
-							<Alert
-								status="success"
-								mt={2}
-								flexDirection="column"
-								alignItems="center"
-								justifyContent="center"
-								textAlign="center"
-							>
-								<AlertIcon />
-								<AlertTitle mt={4} mb={1} fontSize="md">
-									メールが送信されました
-								</AlertTitle>
-								<AlertDescription maxWidth="sm">
-									メールが見つからない場合は、迷惑メールフォルダに振り分けられている可能性があります
-								</AlertDescription>
-							</Alert>
+							<AlertMessage
+								title={"メールが送信されました"}
+								description={
+									"メールが見つからない場合は、迷惑メールフォルダに振り分けられている可能性があります"
+								}
+								status={"success"}
+							/>
 						)}
 					</FormControl>
 					<VStack mt={4}>
