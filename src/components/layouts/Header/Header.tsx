@@ -51,8 +51,6 @@ const Header = () => {
 		return () => unsubscribe();
 	}, [auth, setCurrentUser]);
 
-	console.log(currentUser);
-
 	const onLogout = () => {
 		signOut(auth);
 		setCurrentUser(null);
