@@ -25,7 +25,7 @@ import { db, storage } from "../../../lib/firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { Loading } from "../../components/elements/Loading/Loading";
 import { FcGoogle } from "react-icons/fc";
-import { useGoogleLogin } from "../../components/elements/Auth/auth";
+import { useAuth } from "../../components/elements/Auth/auth";
 
 const Register = () => {
 	const [email, setEmail] = useState("");
@@ -35,6 +35,7 @@ const Register = () => {
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const router = useRouter();
+	const { googleLogin } = useAuth();
 
 	const onSignIn = async () => {
 		try {
@@ -67,7 +68,8 @@ const Register = () => {
 					}
 				);
 			}
-			window.location.href = "/";
+			setIsLoading(false);
+			router.push("/");
 		} catch (error) {
 			alert(error);
 			setIsLoading(false);
@@ -186,8 +188,8 @@ const Register = () => {
 						border="2px"
 						borderColor="#4285f4"
 						color="#4285f4"
-						_hover={{ opacity: 1.2 }}
-						onClick={useGoogleLogin}
+						_hover={{ backgroundColor: "#4285f4", color: "#ffffff" }}
+						onClick={googleLogin}
 					>
 						Googleで新規登録
 					</Button>

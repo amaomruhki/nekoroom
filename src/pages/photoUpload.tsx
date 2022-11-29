@@ -91,7 +91,7 @@ const PhotoUpload = () => {
 				);
 			}
 		);
-
+		// アイテムがセットされていたらアップロード
 		if (Object.keys(itemResult).length != 0) {
 			const itemsRef = await addDoc(
 				collection(
@@ -112,30 +112,13 @@ const PhotoUpload = () => {
 					itemUrl: itemResult.itemUrl,
 				}
 			);
-			await updateDoc(
-				doc(db, "users", currentUser!.uid, "posts", postsRef.id),
-				{
-					itemId: itemsRef.id,
-				}
-			);
-			await updateDoc(
-				doc(
-					db,
-					"users",
-					currentUser!.uid,
-					"posts",
-					postsRef.id,
-					"items",
-					itemsRef.id
-				),
-				{
-					itemId: itemsRef.id,
-				}
-			);
+			await updateDoc(doc(db, "users", currentUser.uid, "posts", postsRef.id), {
+				itemId: itemsRef.id,
+			});
 		}
 		setSelectedFile(null);
 		setIsLoading(false);
-		router.push(`${currentUser!.uid}/${postsRef.id}/postDetail`);
+		router.push(`${currentUser.uid}/${postsRef.id}/postDetail`);
 	};
 
 	return (
