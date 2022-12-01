@@ -51,7 +51,8 @@ const MyPage = () => {
 	useEffect(() => {
 		setIsLoading(true);
 		if (router.isReady) {
-			const authorId = router.query.userId as string;
+			const authorId = router.query.userId;
+			if (typeof authorId !== "string") return;
 			const unsubscribe = onSnapshot(doc(db, "users", authorId), (snapshot) => {
 				const userData = {
 					userId: snapshot.data()?.uid,
@@ -69,7 +70,8 @@ const MyPage = () => {
 	useEffect(() => {
 		setIsLoading(true);
 		if (router.isReady) {
-			const userId = router.query.userId as string;
+			const userId = router.query.userId;
+			if (typeof userId !== "string") return;
 			const unsubscribe = onSnapshot(
 				query(
 					collection(db, "users", userId, "posts"),
