@@ -80,8 +80,9 @@ const PostEdit = () => {
 	useEffect(() => {
 		setIsLoading(true);
 		if (router.isReady) {
-			const authorId = router.query.userId as string;
-			const postId = router.query.postId as string;
+			const authorId = router.query.userId;
+			const postId = router.query.postId;
+			if (typeof authorId !== "string" || typeof postId !== "string") return;
 			const unsubscribe = onSnapshot(
 				doc(db, "users", authorId, "posts", postId),
 				(snapshot) => {
@@ -104,8 +105,9 @@ const PostEdit = () => {
 	useEffect(() => {
 		setIsLoading(true);
 		if (router.isReady) {
-			const authorId = router.query.userId as string;
-			const postId = router.query.postId as string;
+			const authorId = router.query.userId;
+			const postId = router.query.postId;
+			if (typeof authorId !== "string" || typeof postId !== "string") return;
 			const itemsRef = query(
 				collection(db, "users", authorId, "posts", postId, "items"),
 				where("postId", "==", postId)
@@ -143,8 +145,9 @@ const PostEdit = () => {
 	const editPost = async () => {
 		setIsLoading(true);
 		if (!router.isReady) return;
-		const authorId = router.query.userId as string;
-		const postId = router.query.postId as string;
+		const authorId = router.query.userId;
+		const postId = router.query.postId;
+		if (typeof authorId !== "string" || typeof postId !== "string") return;
 		setIsLoading(true);
 		await updateDoc(doc(db, "users", authorId, "posts", postId), {
 			caption: post?.caption,
@@ -197,8 +200,9 @@ const PostEdit = () => {
 	const handleDelete = () => {
 		if (isLoading) return;
 		if (router.isReady) {
-			const authorId = router.query.userId as string;
-			const postId = router.query.postId as string;
+			const authorId = router.query.userId;
+			const postId = router.query.postId;
+			if (typeof authorId !== "string" || typeof postId !== "string") return;
 			setIsLoading(true);
 			deleteDoc(doc(db, "users", authorId, "posts", postId));
 			setIsLoading(false);

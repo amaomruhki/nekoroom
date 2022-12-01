@@ -79,7 +79,8 @@ const PhotoUpload = () => {
 		);
 		setInputCaption("");
 		const imageRef = ref(storage, `posts/${postsRef.id}/image`);
-		await uploadString(imageRef, selectedFile as string, "data_url").then(
+		if (typeof selectedFile !== "string") return;
+		await uploadString(imageRef, selectedFile, "data_url").then(
 			async (snapshot) => {
 				const downloadURL = await getDownloadURL(imageRef);
 				await updateDoc(

@@ -110,10 +110,11 @@ const PostDetail = () => {
 		setIsLoading(true);
 		if (!router.isReady) return;
 		const { userId: authorId, postId } = router.query;
+		if (typeof authorId !== "string" || typeof postId !== "string") return;
 		const unsubscribe = onSnapshot(
-			doc(db, "users", authorId as string, "posts", postId as string),
+			doc(db, "users", authorId, "posts", postId),
 			async (snapshot) => {
-				const authorData = await getDoc(doc(db, "users", authorId as string));
+				const authorData = await getDoc(doc(db, "users", authorId));
 				const postData = {
 					postId: snapshot.data()?.postId,
 					userId: snapshot.data()?.userId,
