@@ -25,7 +25,7 @@ import { db, storage } from "../../../lib/firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { Loading } from "../../components/elements/Loading/Loading";
 import { FcGoogle } from "react-icons/fc";
-import { useAuth } from "../../components/elements/Auth/auth";
+import { useAuth } from "../../Hooks/useAuth";
 
 const Register = () => {
 	const [email, setEmail] = useState("");
