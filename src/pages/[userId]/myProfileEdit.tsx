@@ -44,7 +44,8 @@ const MyProfileEdit = () => {
 	useEffect(() => {
 		if (currentUser) {
 			setIsLoading(true);
-			const loginUserId = currentUser.uid as string;
+			const loginUserId = currentUser.uid;
+			if (typeof loginUserId !== "string") return;
 			const unsubscribe = onSnapshot(
 				doc(db, "users", loginUserId),
 				(snapshot) => {

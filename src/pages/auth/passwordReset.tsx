@@ -10,7 +10,7 @@ import {
 	FormControl,
 } from "@chakra-ui/react";
 import PrimaryButton from "../../components/elements/Button/PrimaryButton";
-import { usePasswordReset } from "../../components/elements/Auth/auth";
+import { usePasswordReset } from "../../Hooks/useAuth";
 import { AlertMessage } from "../../components/elements/AlertMessage";
 
 const PasswordReset = (): JSX.Element => {

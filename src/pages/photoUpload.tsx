@@ -117,7 +117,6 @@ const PhotoUpload = () => {
 				itemId: itemsRef.id,
 			});
 		}
-		setSelectedFile(null);
 		setIsLoading(false);
 		router.push(`${currentUser.uid}/${postsRef.id}/postDetail`);
 	};

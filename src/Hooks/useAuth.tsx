@@ -8,7 +8,7 @@ import {
 	signInWithPopup,
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { db } from "../../../../lib/firebase";
+import { db } from "../../lib/firebase";
 
 export const useAuth = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);

@@ -12,7 +12,7 @@ import {
 import PrimaryButton from "../../components/elements/Button/PrimaryButton";
 import { FcGoogle } from "react-icons/fc";
 import { Loading } from "../../components/elements/Loading/Loading";
-import { useAuth } from "../../components/elements/Auth/auth";
+import { useAuth } from "../../Hooks/useAuth";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
